@@ -1,6 +1,7 @@
 # 16_SPCS
 > Outline a brief description of your project.
-> Live demo [_here_](https://www.example.com). 
+> Live demo [_here_](https://www.example.com). <!-- will post link when demo is live -->
+
 
 
 ## Table of Contents
@@ -61,9 +62,6 @@ To do:
 - Feature to be added 2
 
 ## Contact
-SpOC/S9A analysts 
-Capt William McEntee (william.mcentee.2@spaceforce.mil)
-Lt Michelle McGee (michelle.mcgee.2@spaceforce.mil)
-Dr. Benjamin Johnson (Benjamin.johnson.90.ctr@spaceforce.mil)
+SpOC/S9A analysts - Capt William McEntee (william.mcentee.2@spaceforce.mil), Lt Michelle McGee (michelle.mcgee.2@spaceforce.mil), Dr. Benjamin Johnson (benjamin.johnson.90.ctr@spaceforce.mil)
 
 
