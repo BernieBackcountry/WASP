@@ -16,14 +16,18 @@
 
 
 ## General Information
-- General information about project
-- Problem, Purpose, Solution, Impact
+Pair Building Process
+Operators at the 16th Space Control Squadron (16 SPCS) use the Bounty Hunter (BH) system to monitor, detect, characterize, and geolocate sources of radiated electromagnetic energy on geostationary satellites. BH requires a pair of satellites for geolocation. This process of satellite pairing is time-intensive because operators must research satellite statistics from several websites since there is no master database. Additionally, the pair of satellites must fulfill a criteria of requirements including degrees of separation, footprint overlap, transponder overlap, frequency overlap, polarity overlap, and database entry. These requirements are achieved sequentially. Thus, if all requirments except polarity overlap are achieved, the operator must start over. This current approach involves trial and error tests to confirm a successful geolocation.
+
+S9A proposes a web scraping tool to automate one step at a time in this satellite pairing process. Since much of the research is conducted on non-government websites housing satellite data, a web scraper would provide the most immediate impact in allievating the time operators spend scanning the various web pages for relevant data. Since many of the websites the 16th uses in their satellite pairing process are non-NIPR, non-government websites, the intent is to deploy the tool on a web application accessible from any CAC-enabled computer.  
+
+The time it takes to perform one successful satellite pair ranges from two hours to two weeks due to the criteria required to make a pair and the lack of a consolidated database for the satellites. Automation of this process would greatly benefit the 16 SPCS because it allows operators to focus on their specific, highly trained skillsets.
+
 
 
 ## Technologies Used
 - Tech 1 - version 1.0
-- Tech 2 - version 2.0
-- Tech 3 - version 3.0
+
 
 
 ## Features
