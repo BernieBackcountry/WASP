@@ -1,5 +1,5 @@
 # 16_SPCS
-> Outline a brief description of your project.
+> S9A created a web scraping tool to automate the lengthy, human-centric satellite pairing process used by the 16th Space Control Squadron to geolocate sources of electronic warfare jammers.
 > Live demo [_here_](https://www.example.com). <!-- will post link when demo is live -->
 
 
@@ -16,7 +16,7 @@
 
 
 ## General Information
-Pair Building Process
+
 Operators at the 16th Space Control Squadron (16 SPCS) use the Bounty Hunter (BH) system to monitor, detect, characterize, and geolocate sources of radiated electromagnetic energy on geostationary satellites. BH requires a pair of satellites for geolocation. This process of satellite pairing is time-intensive because operators must research satellite statistics from several websites since there is no master database. Additionally, the pair of satellites must fulfill a criteria of requirements including degrees of separation, footprint overlap, transponder overlap, frequency overlap, polarity overlap, and database entry. These requirements are achieved sequentially. Thus, if all requirments except polarity overlap are achieved, the operator must start over. This current approach involves trial and error tests to confirm a successful geolocation.
 
 S9A proposes a web scraping tool to automate one step at a time in this satellite pairing process. Since much of the research is conducted on non-government websites housing satellite data, a web scraper would provide the most immediate impact in allievating the time operators spend scanning the various web pages for relevant data. Since many of the websites the 16th uses in their satellite pairing process are non-NIPR, non-government websites, the intent is to deploy the tool on a web application accessible from any CAC-enabled computer.  
@@ -26,7 +26,7 @@ The time it takes to perform one successful satellite pair ranges from two hours
 
 
 ## Technologies Used
-- Tech 1 - version 1.0
+- Baseline web scraper tool built with Python
 
 
 
