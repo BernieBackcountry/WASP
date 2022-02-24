@@ -28,6 +28,14 @@ The time it takes to perform one successful satellite pair ranges from two hours
 ## Technologies Used
 - Baseline web scraper tool built with Python
 
+## Sources
+- [Satstar](http://satstar.net/satellites.html) - links to footprints
+- [Satstar BeamFinder](http://satstar.net/setup.html) - find beams over given location
+- [LyngSat](https://www.lyngsat.com/) - signals and beacon frequencies
+- [AlterVista](http://frequencyplansatellites.altervista.org/) - commercial internet transponder plans (PDFs)
+- [DishPointer](https://www.dishpointer.com) - calculating pointing angles
+- [CelesTrak](http://celestrak.com/NORAD/elements/geo.txt) - TLE data
+
 
 
 ## Features
