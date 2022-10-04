@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import numpy as np
 import itertools
+import re
 
 
 def get_url_content(link):
@@ -13,7 +14,7 @@ def get_url_content(link):
         1. BeautifulSoup object
     """
     html_text = requests.get(link).text
-    bsoup = BeautifulSoup(html_text, 'html5lib')
+    bsoup = BeautifulSoup(html_text, 'lxml')
     return bsoup
 
 
@@ -104,6 +105,7 @@ def read_table(tables):
                 df.iloc[i:i+rep_row, col_stat:col_stat+rep_col] = cell.getText()
                 if col_stat < df.shape[1]-1:
                     col_stat += rep_col
+        temp = df.iloc[-1].values[0]
         df.drop(index=df.index[0], axis=0, inplace=True)
         df.drop(index=df.index[-1], axis=0, inplace=True)
         df.columns = df.iloc[0]
@@ -123,32 +125,6 @@ def clean_table(tables):
     tables_clean = []
     for i in range(0, len(tables)):
         df = tables[i]
-        # Check if we can split into three
-        temp_df = df['Frequency\nBeam\nEIRP (dBW)'].str.split('\n', expand=True)
-        if len(temp_df.columns) == 2:
-            df[['Frequency', 'EIRP (dBW)']] = df['Frequency\nBeam\nEIRP (dBW)'].str.split('\n', 1, expand=True)
-            df['Beam'] = np.nan
-        elif len(temp_df.columns) == 1:
-            df['Frequency'] = df['Frequency\nBeam\nEIRP (dBW)']
-            df['Beam'] = np.nan
-            df['EIRP (dBW'] = np.nan
-        elif len(temp_df.columns >= 3):
-            df[['Frequency', 'Beam,', 'EIRP (dBW)']] = df['Frequency\nBeam\nEIRP (dBW)'].str.split('\n', 2, expand=True)
-        else:
-            print('Error in splitting columns')
-            print('number of possible splits')
-            print(len(temp_df.columns))
-        df.drop(columns=['Frequency\nBeam\nEIRP (dBW)'], inplace=True)
-
-        # temp_df = df['System\nSR\nFEC'].str.split('\n', 2, expand=True)
-        # if len(temp_df.columns) != 3:
-
-        # else:
-        #  df[['System', 'SR', 'FEC']] = df['System\nSR\nFEC'].str.split('\n', 2, expand=True)
-
-        # df[['System', 'SR', 'FEC']] = df['System\nSR\nFEC'].str.split('\n', 2, expand=True)
-        # df.drop(columns=['System\nSR\nFEC', '\n'], inplace=True)
-
         df.replace('\n', ' ', regex=True, inplace=True)
         df.columns = df.columns.str.replace('\n', ' ', regex=True)
         tables_clean.append(df)
@@ -156,29 +132,34 @@ def clean_table(tables):
 
 
 asia = 'https://www.lyngsat.com/asia.html'
-europe = 'https://www.lyngsat.com/europe.html'
-atlantic = 'https://www.lyngsat.com/atlantic.html'
-america = 'https://www.lyngsat.com/america.html'
-satellites = [asia, europe, atlantic, america]
+#europe = 'https://www.lyngsat.com/europe.html'
+#atlantic = 'https://www.lyngsat.com/atlantic.html'
+#america = 'https://www.lyngsat.com/america.html'
+satellites = [asia] #, europe, atlantic, america]
 
 all_urls = []
 for n in range(0, len(satellites)):
     all_urls += get_urls(satellites[n])
+    
+temp = set(all_urls)
+all_urls = list(temp)
 
+satellites_list = []
 final_tables = []
 for p in range(0, len(all_urls)):
-    soup = get_url_content(all_urls[p])
+    url = all_urls[p]
+    soup = get_url_content(url)
     tables = get_key_tables(soup)
     dfs = read_table(tables)
     if not dfs:
         continue
     dfs_clean = clean_table(dfs)
-    final_tables.append(dfs_clean)
+    sat = re.search('https://www.lyngsat.com/(.*).html', url).group(1).replace("-", " ")
+    satellites_list.append(sat)
+    final_tables.append(dfs)
 
 final_dfs = list(itertools.chain.from_iterable(final_tables))
-column_names = ['Frequency',
-                'Beam',
-                'EIRP (dBW)',
+column_names = ['Frequency Beam EIRP (dBW)',
                 'System SR FEC',
                 'Logo SID',
                 'Provider Name Channel Name',
@@ -188,8 +169,11 @@ column_names = ['Frequency',
                 'Encryption',
                 'Source Updated ']
 
+print(satellites_list)
 for k in range(0, len(final_dfs)):
     final_dfs[k] = final_dfs[k].reindex(columns=column_names)
+    final_dfs[k].insert(0, 'Satellite', satellites_list[k]*len(final_dfs[k].index))
 
 master_table = pd.concat(final_dfs)
-master_table.to_csv('C:/Users/lexi.denhard/Documents/Lyngsat-Satellite-Data.csv', encoding='utf-8', index=False)
+#print(master_table)
+master_table.to_csv('Lyngsat-sats.csv', encoding='utf-8-sig', index=False)
