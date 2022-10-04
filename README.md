@@ -41,17 +41,17 @@ The time it takes to perform one successful satellite pair ranges from two hours
 ## Features
 List the ready features here:
 - Data tables from satstar, lyngsat, and celestrak
-- Consolidated pdf master file of transponder plans from celestrak
+- Consolidated pdf master file of transponder plans from altervista
 
 
 ## Setup
-What are the project requirements/dependencies? Which web sources are NIPR accessible vs non-NIPR accessible?
+What are the project requirements/dependencies? Which web sources are NIPR accessible vs non-NIPR accessible? What is the host platform?
 
 Proceed to describe how to install / setup one's local environment / get started with the project.
 
 
 ## Usage
-What is the user interface for this tool (dashboard, web-based application, NIPR VAULT, Microsoft Power App via a Teams channel, Microsoft Teams page where S9A posts updated data, etc)? What is the ideal time interval for re-running the tool and delivering updated "master data"? 
+What is the user interface for this tool (dashboard or web-based application)? What is the ideal time interval for re-running the tool and delivering updated "master data"? 
 
 Provide various use cases and code examples here.
 
@@ -65,7 +65,8 @@ Project is: _in progress_ . Prototype web scraping tool complete.
 ## Next Steps
 
 To do:
-- Understand deployment needs and environment
+- Demo intitial functionality of prototype tool
+- Host design sprint for ideal user interface
 - Deploy IOC tool
 - User Testing/Validation on IOC tool
 - Improve IOC tool to deliver FOC tool
