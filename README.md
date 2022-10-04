@@ -23,6 +23,7 @@ S9A proposes a web scraping tool to automate one step at a time in this satellit
 
 The time it takes to perform one successful satellite pair ranges from two hours to two weeks due to the criteria required to make a pair and the lack of a consolidated database for the satellites. Automation of this process would greatly benefit the 16 EWS because it allows operators to focus on their specific, highly trained skillsets.
 
+The time it takes to perform one successful satellite pair ranges from two hours to two weeks due to the strict criteria required to make a pair and the lack of a consolidated database for the satellites. Automation of this process greatly benefits the 16 EWS because it allows operators to focus on their specific, highly trained skillsets.
 
 
 ## Technologies Used
