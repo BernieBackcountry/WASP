@@ -1,9 +1,12 @@
 # Import libraries
 import requests
 import PyPDF2
+from PyPDF2 import PdfMerger
 from bs4 import BeautifulSoup
 
-  
+import utilities as utilities 
+
+
 url_list = [
 "http://frequencyplansatellites.altervista.org/ABS.html",
 "http://frequencyplansatellites.altervista.org/AlcomSat.html",
@@ -83,32 +86,36 @@ url_list = [
 "http://frequencyplansatellites.altervista.org/XM-Radio.html",
 "http://frequencyplansatellites.altervista.org/Yahsat.html"]
 
+path = utilities.get_project_path().joinpath('data', 'altervista_pdfs')
 
+merger = PdfMerger()
+i = 0
 for url in url_list:
-    # Requests URL and get response object
-    response = requests.get(url)
+  # Requests URL and get response object
+  response = requests.get(url)
 
-    # Parse text obtained
-    soup = BeautifulSoup(response.text, 'html.parser')
+  # Parse text obtained
+  soup = BeautifulSoup(response.text, 'html.parser')
 
-    # Find all hyperlinks present on webpage
-    links = soup.find_all('a')
+  # Find all hyperlinks present on webpage
+  links = soup.find_all('a')
 
+  # From all links check for pdf link and
+  # if present download file
+  i = 0 + i
+  for link in links:
+    if ('.pdf' in link.get('href', [])):
+      # Get response object for link
+      response = requests.get(link.get('href'))
+    
+      # Write content in pdf file
+      pdf = open(path.joinpath("pdf_%s.pdf" % i), 'wb')
+      pdf.write(response.content)
+      pdf.close()
+          
+      merger.append(path.joinpath("pdf_%s.pdf" % i))
+      i+=1
 
-
-    # From all links check for pdf link and
-    # if present download file
-    i = 0+i
-    for link in links:
-        if ('.pdf' in link.get('href', [])):
-
-            print("Downloading file: ", i)
-
-            # Get response object for link
-            response = requests.get(link.get('href'))
-
-            # Write content in pdf file
-            pdf = open("pdf"+str(i)+".pdf", 'wb')
-            pdf.write(response.content)
-            pdf.close()
-            i += 1
+path = utilities.get_project_path().joinpath('data')
+merger.write(path / "altervista_combined.pdf")
+merger.close()

@@ -4,6 +4,9 @@ import pandas as pd
 import re
 import pickle
 
+import utilities as utilities
+
+
 class scraper():
     def __init__(self):
         pass
@@ -26,7 +29,7 @@ class scraper():
 
         keep_cols = ['Position', 'Satellite Name', 'Norad', 'Cospar', 'Operator', 'Comments']
         self.front_page_table = self.front_page_table.loc[:, keep_cols]
-        print(self.front_page_table)
+        return self.front_page_table
 
     def get_beam_maps(self):
         self.beam_url_dict = dict()
@@ -35,17 +38,16 @@ class scraper():
             html = requests.get(url).text
             self.beam_url_dict[id] = re.findall('beam=(.+?)"', html)
 
-            with open('scrapers/satbeams/outputs/norad_beam_dict.pkl', 'wb') as handle:
-                pickle.dump(self.beam_url_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            #with open('scrapers/satbeams/outputs/norad_beam_dict.pkl', 'wb') as handle:
+            #    pickle.dump(self.beam_url_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        print(self.beam_url_dict)
-
-
-
-
+        #print(self.beam_url_dict)
 
 
 scraper = scraper()
 scraper.get_front_page_html()
-scraper.parse_front_page_soup()
+front_page = scraper.parse_front_page_soup()
 scraper.get_beam_maps()
+
+path = utilities.get_project_path().joinpath("data")
+front_page.to_csv(path / "satbeam_frontpage.csv", index=None)
