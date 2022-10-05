@@ -5,6 +5,8 @@ import numpy as np
 import itertools
 import re
 
+import utilities as utilities
+
 
 def get_url_content(link):
     """
@@ -175,5 +177,6 @@ for k in range(0, len(final_dfs)):
     final_dfs[k].insert(0, 'Satellite', satellites_list[k]*len(final_dfs[k].index))
 
 master_table = pd.concat(final_dfs)
-#print(master_table)
-master_table.to_csv('Lyngsat-sats.csv', encoding='utf-8-sig', index=False)
+
+path = utilities.get_project_path().joinpath('data')
+master_table.to_csv(path / "lyngsat_satellites.csv", encoding='utf-8-sig', index=False)
