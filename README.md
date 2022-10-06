@@ -1,6 +1,6 @@
 # 16_EWS
 > S9A created a web scraping tool to automate the lengthy, human-centric satellite pairing process used by the 16th Electronic Warfare Squadron to geolocate sources of electronic warfare jammers.
-> Live demo [_here_](https://www.example.com). <!-- will post link when demo is live -->
+
 
 
 
@@ -26,6 +26,7 @@ The time it takes to perform one successful satellite pair ranges from two hours
 
 ## Technologies Used
 - Baseline web scraper tool built with Python
+- Initial capable scraper hosted on the VAULT platform: an Air and Space Force cloud-based plaform for data activities
 
 ## Sources
 - [Satstar](http://satstar.net/satellites.html) - links to footprints
@@ -52,19 +53,17 @@ Proceed to describe how to install / setup one's local environment / get started
 ## Usage
 What is the user interface for this tool (dashboard or web-based application)? What is the ideal time interval for re-running the tool and delivering updated "master data"? 
 
-Provide various use cases and code examples here.
-
-`write-your-code-here`
 
 
 ## Project Status
-Project is: _in progress_ . Prototype web scraping tool complete.
+Project is: _in progress_ . Prototype web scraping tool complete. Initial functionality achieved.
 
 
 ## Next Steps
 
 To do:
 - Demo intitial functionality of prototype tool
+- Fine-tune tool based on 16th operator input
 - Host design sprint for ideal user interface
 - Deploy IOC tool
 - User Testing/Validation on IOC tool
