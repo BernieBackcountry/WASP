@@ -1,0 +1,7 @@
+pandas
+requests
+bs4
+pickle
+PyPDF2
+itertools
+urllib.request
