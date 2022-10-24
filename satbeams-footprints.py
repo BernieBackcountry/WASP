@@ -13,6 +13,7 @@ for link in soup.findAll('a', {'class': 'link'}):
         print ("https://satbeams.com/"+str((link['href'])))
     except KeyError:
         pass
+#use requests to iteratively click each link and download the images
 
 #For each individual satellite page, identifies the link for the footprint images. Downloading images not working yet
 #start on active satellite page, get all href of a tags, which are a child of a td tag
