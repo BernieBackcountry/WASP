@@ -1,5 +1,6 @@
 #Start on active satellites webpage, click links to each satellite, download jpgs of footprints, tag all info to satellite, return to active satellite webpage, and repeat
 import requests
+import urllib.request
 from bs4 import BeautifulSoup
 
 url = 'https://satbeams.com/satellites?status=active'
@@ -51,9 +52,13 @@ if __name__ == "__main__":
     image_links = extract_image_links(webpage, headers)
     
     print(image_links)
- 
        
      # Download all images - NOT WORKING
-    for i, url in enumerate(image_links):
-        file_name = f'image_{i}.jpg'
-        download_image(url, file_name, headers)
+    #for i, url in enumerate(image_links):
+     #   file_name = f'image_{i}.jpg'
+     #  download_image(url, file_name, headers)
+
+    #https://pyshark.com/download-images-from-a-web-page-using-python/#download-images-from-url
+    for link in image_links:
+     filename = link.split("/")[-1].split("?")[0]
+     urllib.request.urlretrieve(link, filename=filename)
