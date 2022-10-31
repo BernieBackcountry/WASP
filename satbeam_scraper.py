@@ -7,6 +7,7 @@ import re
 # import shutil #save img locally
 from bs4 import BeautifulSoup
 
+# test commit and push
 
 def find_by_label(soup, label):
     return soup.find("b", text=re.compile(label)).next_sibling
