@@ -23,6 +23,8 @@ satbeam_text = requests.get('https://satbeams.com/satellites?status=active').tex
 soup = BeautifulSoup(satbeam_text, "html.parser")
 res = utilities.run_threads(soup, {"User-Agent": "Chrome/51.0.2704.103",}, path2)
 
+print("DONE")
+
 save_satellite_info(res, path1)
 
 with open(path1 / 'satbeam.pkl', 'rb') as f:
