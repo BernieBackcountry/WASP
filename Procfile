@@ -1,0 +1,1 @@
+web: gunicorn 16th_scraper_dash.app:server --workers 4
