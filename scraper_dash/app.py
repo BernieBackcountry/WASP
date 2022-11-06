@@ -1,38 +1,94 @@
 import dash
+from dash import html
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
+import pandas as pd
+from pathlib import Path
+
 
 import scraper_dash.utilities as utilities 
+
+
+df_celestrak = pd.read_csv('C:/Users/lexi.denhard/PROJECTS/temp/16_SPCS/scraper/data/celestrak.csv', header=0)
+df_satbeam = pd.read_csv('C:/Users/lexi.denhard/PROJECTS/temp/16_SPCS/scraper/data/satbeam.csv', header=0)
+
+celestrak_satellites = df_celestrak['Satellite'].tolist()
+satbeam_satellites = df_satbeam['Satellite'].tolist()
+acceptable_satellites = list(set(celestrak_satellites + satbeam_satellites))
+
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
 app.layout = utilities.create_layout()
 
-acceptable_satellites = ["test", "yee"]
 
 # Call back for search bar
 @app.callback(
-    Output(component_id='tabs-content', component_property='value'),
+    Output(component_id='search-message', component_property='children'),
     [Input(component_id='sat-id', component_property='value')])
 def get_general_info(sat: str):
-    if sat in acceptable_satellites:
-        return "Click a tab to view information for " + sat
+    if sat is None:
+        raise PreventUpdate
     else:
-        return []
+        if sat.upper() in acceptable_satellites:
+            return html.P("Click a tab to view information for " + sat.upper())
+        else:
+            return html.P(sat + " is not a valid satellite input.")
 
 
-# # Callback for tab navigation - fill textbox dependent on tab id
-# @app.callback(Output('tabs-content', 'children'),
-#               Input('tabs', 'value'))
-# def render_content(tab):
-#     if tab == 'tab-general':
-#         return html.Div([
-#             html.H3('Tab content 1')
-#         ])
-#     elif tab == 'tab-telemetry':
-#         return html.Div([
-#             html.H3('Tab content 2')
-#         ])
-#     elif tab == 'tab-footprints':
+# Callback for tab navigation - fill textbox dependent on tab id
+@app.callback(Output('tabs-content', 'children'),
+              [Input(component_id='sat-id', component_property='value'), Input('tabs', 'value')])
+def render_content(sat: str, tab):
+    if sat is None:
+        raise PreventUpdate
+    else:
+        if sat.upper() in acceptable_satellites:
+            if tab == 'tab-general':
+                return populate_general_info(sat) 
+            elif tab == 'tab-telemetry':
+                return populate_telemetry(sat)
+            elif tab == 'tab-footprints':
+                return populate_footprints(sat)
+        return ""
+
+
+def populate_general_info(sat: str):
+    if sat.upper() in satbeam_satellites:
+        df = df_satbeam[df_satbeam['Satellite'] == sat.upper()]
+        sat_id = sat.upper()
+        position = str(df['Position'].iloc[0])
+        norad = str(df['NORAD'].iloc[0])
+        return html.P(["Satellite: " + sat_id, html.Br(), "Position: " + position, html.Br(), "NORAD: " + norad], 
+                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+    else:
+        return html.P("Information not available.", 
+                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+
+
+def populate_telemetry(sat: str):
+    if sat.upper() in celestrak_satellites:
+        df = df_celestrak[df_celestrak['Satellite'] == sat.upper()]
+        temp = str(df['Telemetry'].iloc[0]).split("\n", 1)
+        tle_1 = temp[0]
+        tle_2 = temp[1]
+        return html.P([tle_1, html.Br(), tle_2], style={'color': "black", 'left-margin': '20px', 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+    else:
+        return html.P("Information not available.", 
+                        style={'color': "black", 'left-margin': '20px', 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+
+
+def populate_footprints(sat: str):
+    if sat.upper() in satbeam_satellites:
+        path = Path('C:/Users/lexi.denhard/PROJECTS/temp/16_SPCS/scraper/data/images')
+        images = path.joinpath(sat.upper()).glob('*.jpg')
+        children = []
+        for image in images:
+            children.append(utilities.encode_image(image))
+        return html.Div(children, style={'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll'})
+    else:
+        return html.P("Information not available.", 
+                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
 
 
 if  __name__ == '__main__':

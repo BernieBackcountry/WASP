@@ -13,7 +13,7 @@ def create_layout() -> html.Div:
 
 def create_information_layout() -> html.Div:
         return html.Div(className='three columns div-user-controls', children=[
-            create_title(), create_description(), create_search_bar(), create_logo()])
+            create_title(), create_description(), create_search_bar(), create_search_message(), create_logo()])
 
 
 def create_data_layout() -> html.Div:
@@ -32,8 +32,12 @@ def create_description() -> html.P:
 
 def create_search_bar() -> html.Div:
     return html.Div(className='search_bar', children=[
-        dcc.Input(id="sat-id", type="text", placeholder="Input a satellite", style={'height': 'auto', 'width': 'auto', 'marginLeft': '10px'}),
+        dcc.Input(id="sat-id", type="text", placeholder="Input a satellite", debounce=True, style={'height': 'auto', 'width': 'auto', 'marginLeft': '10px'}),
     ])
+
+
+def create_search_message() -> html.Div:
+    return html.Div(id='search-message', style={'height': '25px'})
 
 
 def create_logo() -> html.Div:
@@ -41,16 +45,14 @@ def create_logo() -> html.Div:
         utilities.encode_image(path=utilities.get_project_path().joinpath('assets', 'spoc_logo.png'))])
 
 
-
 def create_tabs() -> html.Div:
-    style = {'width': 700, 'height': 500, 'resize': 'none', 'border-style': 'solid', 'border-color': '#862633', 'border-width': '5px', 'margin': '32px'}
+    style = {'width': 1100, 'height': 500, 'resize': 'none', 'margin': '32px'}
     return html.Div([
-        dcc.Tabs(id="tabs", value='tab-1', style={'width': '100%','font-size': '150%','height': '50%', 'margin-top': '30px', 'margin-left': '0px'}, children=[
+        dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='General Info', value='tab-general'),
             dcc.Tab(label='Telemetry Data', value='tab-telemetry'),
-            dcc.Tab(label='Footprints', value='tab-footprints')
-        ]),
-        dbc.Textarea(id='tabs-content', style=style)])
+            dcc.Tab(label='Footprints', value='tab-footprints')]),
+        html.Div(id='tabs-content')], style=style)
 
 
 def create_contact_information() -> html.Footer:
