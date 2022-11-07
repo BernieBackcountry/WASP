@@ -1,4 +1,5 @@
-bs4
-pandas 
-requests
-tqdm
+bs4-0.0.1
+requests 2.22.0
+pandas 1.3.5
+tdqm-0.0.1
+pathlib-1.0.1
