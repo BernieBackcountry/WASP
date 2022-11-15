@@ -50,7 +50,7 @@ def create_tabs() -> html.Div:
     return html.Div([
         dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='General Info', value='tab-general'),
-            dcc.Tab(label='Telemetry Data', value='tab-telemetry'),
+            dcc.Tab(label='TLE', value='tab-telemetry'),
             dcc.Tab(label='Footprints', value='tab-footprints')]),
         html.Div(id='tabs-content')], style=style)
 
