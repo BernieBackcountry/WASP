@@ -1,10 +1,8 @@
 import queue
 import pandas as pd
 from bs4 import BeautifulSoup
-import re
 import requests
 import threading
-import pickle
 from tqdm import tqdm
 from pathlib import Path
 
