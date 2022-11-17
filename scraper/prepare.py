@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import pickle
 
 import scraper.utilities as utilities
 
