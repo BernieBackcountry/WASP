@@ -54,7 +54,7 @@ def run_threads(soup: BeautifulSoup, headers: dict, path1: Path, path2: Path):
     thread_results = []
     q = queue.Queue()
     all_urls = get_all_urls(soup, headers)
-    all_urls = all_urls
+    all_urls = all_urls[:15]
     threads = [threading.Thread(target=fetch_url, args=(url, headers, path2, q)) for url in all_urls]
     for thread in threads:
         thread.start()
@@ -72,23 +72,27 @@ def fetch_url(url, headers, path, q):
         # Parse the HTML content of the webpage
         soup = BeautifulSoup(response.content, 'html.parser')
         # Scrap satellite info
-        sat_id, sat_extra, pos, norad = get_satellite_info(soup)
+        sat_id, sat_extra, pos, norad, beacon = get_satellite_info(soup)
         # Put satellite info on queue
-        q.put([sat_id, sat_extra, pos, norad])
+        q.put([sat_id, sat_extra, pos, norad, beacon])
         # Create image directories
-        # create_image_directories(sat_id, path)
-        # # Scrap images info
-        # images = get_satellite_footprints(soup)
-        # # Save images 
-        # save_satellite_footprints(sat_id, path, images)
+        create_image_directories(sat_id, path)
+        # Scrap images info
+        images = get_satellite_footprints(soup)
+        # Save images 
+        save_satellite_footprints(sat_id, path, images)
 
 
 def find_by_label(soup: BeautifulSoup, label: str) -> str:
-    return str(soup.find("b", text=re.compile(label)).next_sibling)
+    span = soup.find("b", text=label)
+    if span:
+        return str(span.next_sibling)
+    else:
+        return ""
 
 
 def find_by_next(soup: BeautifulSoup, label: str, tag: str) -> str:
-    span = soup.select("b", text=re.compile(label))[0]
+    span = soup.select("b", text=label)[0]
     return span.find_next(tag)
 
 
@@ -105,7 +109,8 @@ def get_satellite_info(soup: BeautifulSoup) -> str:
         sat_extra = ""
     position = str(find_by_label(soup, "Position:"))
     norad = str(find_by_next(soup, "NORAD:", "a").contents[0])
-    return sat_id, sat_extra, position, norad
+    beacon = str(find_by_label(soup, "Beacon(s):"))
+    return sat_id, sat_extra, position, norad, beacon
     
 
 def create_image_directories(satellite: str, path: Path):
@@ -146,14 +151,17 @@ def save_satellite_info(results: list, path: Path):
     sat_extra = []
     pos = []
     nor = []
+    beac = []
     for ele in results:
         sat.append(ele[0])
         sat_extra.append(ele[1])
         pos.append(ele[2])
         nor.append(ele[3])
+        beac.append(ele[4])
     dict_ = {'Satellite': sat,
             'Extra': sat_extra,
             'Position': pos,
-            'NORAD': nor}
+            'NORAD': nor, 
+            'Beacon': beac}
     df = pd.DataFrame(dict_)
     df.to_csv(path / 'satbeam.csv', index=False)
