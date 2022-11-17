@@ -52,7 +52,7 @@ def run_threads(soup: BeautifulSoup, headers: dict, path1: Path, path2: Path):
     thread_results = []
     q = queue.Queue()
     all_urls = get_all_urls(soup, headers)
-    all_urls = all_urls[:15]
+    all_urls = all_urls
     threads = [threading.Thread(target=fetch_url, args=(url, headers, path2, q)) for url in all_urls]
     for thread in threads:
         thread.start()
@@ -76,9 +76,9 @@ def fetch_url(url, headers, path, q):
         # Create image directories
         create_image_directories(sat_id, path)
         # Scrap images info
-        images = get_satellite_footprints(soup)
+        images, image_titles = get_satellite_footprints(soup)
         # Save images 
-        save_satellite_footprints(sat_id, path, images)
+        save_satellite_footprints(sat_id, path, images, image_titles)
 
 
 def find_by_label(soup: BeautifulSoup, label: str) -> str:
@@ -116,24 +116,29 @@ def create_image_directories(satellite: str, path: Path):
 
 
 def get_satellite_footprints(soup: BeautifulSoup) -> list:
-    # Find all of the image tags:
-    images = soup.findAll('img')
+    # Find all of the appropriate image tags:
+    temp = soup.find('div', {'id': 'sliderDiv'})
+    images = temp.find_all('img')
     # Extract 'src' attribute of every image
     image_links = []
+    image_titles = []
     for image in images:
-        image_links.append(image.attrs['src'])
         #Filter for JPG format image links
-        image_links = [image for image in image_links if image.endswith('.jpg')]      
+        if image.attrs['src'].endswith('.jpg'):
+            image_links.append(image.attrs['src'])
+            #Find corresponding image titles
+            image_titles.append(image.find_previous_sibling('h2').text)
+            image_links = [image for image in image_links]      
     one = 'https://satbeams.com'
     images =  [one+i for i in image_links]
-    return images 
+    return images, image_titles
 
 
-def save_satellite_footprints(sat_id: str, path: Path, images: list):
+def save_satellite_footprints(sat_id: str, path: Path, images: list, image_titles: list):
     path = path.joinpath(sat_id)
     # download and save images 
-    for image in tqdm(images):
-        file_name = image.split('/')[-1]
+    for i, image in tqdm(enumerate(images)):
+        file_name = image_titles[i] + ".jpg"
         try:
             r = requests.get(image, stream=True, timeout=20)
             if r.status_code == 200:
