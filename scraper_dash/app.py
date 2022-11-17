@@ -59,11 +59,12 @@ def populate_general_info(sat: str):
         sat_id = sat.upper()
         position = str(df['Position'].iloc[0])
         norad = str(df['NORAD'].iloc[0])
-        return html.P(["Satellite: " + sat_id, html.Br(), "Position: " + position, html.Br(), "NORAD: " + norad], 
-                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+        beacon = str(df['Beacon'].iloc[0])
+        return html.P(["Satellite: " + sat_id, html.Br(), "Position: " + position, html.Br(), "NORAD: " + norad, html.Br(), "Beacon(s): " + beacon], 
+                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'})
     else:
         return html.P("Information not available.", 
-                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'})
 
 
 def populate_telemetry(sat: str):
@@ -72,10 +73,10 @@ def populate_telemetry(sat: str):
         temp = str(df['Telemetry'].iloc[0]).split("\n", 1)
         tle_1 = temp[0]
         tle_2 = temp[1]
-        return html.P([tle_1, html.Br(), tle_2], style={'color': "black", 'left-margin': '20px', 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+        return html.P([tle_1, html.Br(), tle_2], style={'color': "black", 'left-margin': '20px', 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'})
     else:
         return html.P("Information not available.", 
-                        style={'color': "black", 'left-margin': '20px', 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+                        style={'color': "black", 'left-margin': '20px', 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'})
 
 
 def populate_footprints(sat: str):
@@ -84,11 +85,12 @@ def populate_footprints(sat: str):
         images = path.joinpath(sat.upper()).glob('*.jpg')
         children = []
         for image in images:
+            children.append(image.stem)
             children.append(utilities.encode_image(image))
-        return html.Div(children, style={'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll'})
+        return html.Div(children, style={'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll', 'color': 'black', 'font-size': '25px'})
     else:
         return html.P("Information not available.", 
-                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left'})
+                        style={'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'})
 
 
 if  __name__ == '__main__':
