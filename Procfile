@@ -1,1 +1,1 @@
-web: gunicorn 16th_scraper_dash.app:server --workers 4
+web: gunicorn scraper_dash.app:server --workers 4
