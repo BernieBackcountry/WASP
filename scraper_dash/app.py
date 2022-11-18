@@ -13,8 +13,8 @@ path = utilities.get_project_path().resolve().parent.joinpath('scraper')
 path_celestrak = path.joinpath('data','celestrak.csv')
 path_satbeam = path.joinpath('data','satbeam.csv')
 
-df_celestrak = pd.read_csv(path_celestrak, header=0)
-df_satbeam = pd.read_csv(path_satbeam, header=0)
+df_celestrak = pd.read_csv(f'{path_celestrak}', header=0)
+df_satbeam = pd.read_csv(f'{path_satbeam}', header=0)
 
 celestrak_satellites = df_celestrak['Satellite'].tolist()
 satbeam_satellites = df_satbeam['Satellite'].tolist()
