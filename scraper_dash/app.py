@@ -84,7 +84,7 @@ def populate_telemetry(sat: str):
 
 def populate_footprints(sat: str):
     if sat.upper() in satbeam_satellites:
-        path = Path('C:/Users/lexi.denhard/PROJECTS/temp/16_SPCS/scraper/data/images')
+        path = path.joinpath('images')
         images = path.joinpath(sat.upper()).glob('*.jpg')
         children = []
         for image in images:
