@@ -9,7 +9,7 @@ def get_project_path() -> Path:
 
 
 def get_data_path() -> Path:
-    return Path('scraper_data') 
+    return Path('scraper/data') 
 
 
 def encode_image(path: Path) -> html.Img:
