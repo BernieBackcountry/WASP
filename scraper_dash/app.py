@@ -8,9 +8,10 @@ from pathlib import Path
 
 import scraper_dash.utilities as utilities 
 
-path = utilities.get_data_path()
-path_celestrak = path.joinpath('celestrak.csv')
-path_satbeam = path.joinpath('satbeam.csv')
+
+path = utilities.get_project_path().resolve().parent.joinpath('scraper')
+path_celestrak = path.joinpath('data','celestrak.csv')
+path_satbeam = path.joinpath('data','satbeam.csv')
 
 df_celestrak = pd.read_csv(path_celestrak, header=0)
 df_satbeam = pd.read_csv(path_satbeam, header=0)
@@ -84,7 +85,8 @@ def populate_telemetry(sat: str):
 
 def populate_footprints(sat: str):
     if sat.upper() in satbeam_satellites:
-        path = path.joinpath('images')
+        path = utilities.get_project_path().resolve().parent.joinpath('scraper')
+        path = path.joinpath('data', 'images')
         images = path.joinpath(sat.upper()).glob('*.jpg')
         children = []
         for image in images:
