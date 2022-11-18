@@ -8,8 +8,12 @@ from pathlib import Path
 
 import scraper_dash.utilities as utilities 
 
-df_celestrak = pd.read_csv('scraper/data/celestrak.csv', header=0)
-df_satbeam = pd.read_csv('scraper/data/satbeam.csv', header=0)
+path = utilities.get_data_path()
+path_celestrak = path.joinpath('celestrak.csv')
+path_satbeam = path.joinpath('satbeam.csv')
+
+df_celestrak = pd.read_csv(path_celestrak, header=0)
+df_satbeam = pd.read_csv(path_satbeam, header=0)
 
 celestrak_satellites = df_celestrak['Satellite'].tolist()
 satbeam_satellites = df_satbeam['Satellite'].tolist()
