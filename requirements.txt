@@ -5,3 +5,4 @@ tdqm==0.0.1
 pathlib==1.0.1
 dash
 gunicorn
+dash_bootstrap_components
