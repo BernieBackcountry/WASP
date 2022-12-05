@@ -21,28 +21,27 @@ satbeam_satellites = df_satbeam['Satellite'].tolist()
 acceptable_satellites = list(set(celestrak_satellites + satbeam_satellites))
 
 
+acceptable_satellites.sort()
+options = [{'label': sat, 'value': sat} for sat in acceptable_satellites]
+
+
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
 app.layout = utilities.create_layout()
 
 
-# Call back for search bar
-@app.callback(
-    Output(component_id='search-message', component_property='children'),
-    [Input(component_id='sat-id', component_property='value')])
-def get_general_info(sat: str):
-    if sat is None:
+@app.callback(Output(component_id="sat-dropdown", component_property="options"),
+    [Input(component_id="sat-dropdown", component_property="search_value")])
+def update_options(search_value):
+    if not search_value:
         raise PreventUpdate
-    else:
-        if sat.upper() in acceptable_satellites:
-            return html.P("Click a tab to view information for " + sat.upper())
-        else:
-            return html.P(sat + " is not a valid satellite input.")
+    search_value = search_value.lower()
+    return [o["label"] for o in options if o["value"].lower().startswith(search_value)]
 
 
-# Callback for tab navigation - fill textbox dependent on tab id
-@app.callback(Output('tabs-content', 'children'),
-              [Input(component_id='sat-id', component_property='value'), Input('tabs', 'value')])
+@app.callback(Output(component_id="tabs-content", component_property="children"),
+    [Input(component_id="sat-dropdown", component_property="value"),
+     Input(component_id='tabs', component_property='value')])
 def render_content(sat: str, tab):
     if sat is None:
         raise PreventUpdate

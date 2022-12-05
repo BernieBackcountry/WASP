@@ -13,7 +13,7 @@ def create_layout() -> html.Div:
 
 def create_information_layout() -> html.Div:
         return html.Div(className='three columns div-user-controls', children=[
-            create_title(), create_description(), create_search_bar(), create_search_message(), create_logo()])
+            create_title(), create_description(), create_sat_dropdown(), create_search_message(), create_logo()])
 
 
 def create_data_layout() -> html.Div:
@@ -30,9 +30,9 @@ def create_description() -> html.P:
     return html.P("This tool consolidates pertinent information to the satellite pair-building process. Enter a satellite below to obtain its related data.")
 
 
-def create_search_bar() -> html.Div:
-    return html.Div(className='search_bar', children=[
-        dcc.Input(id="sat-id", type="text", placeholder="Input a satellite", debounce=True, style={'height': 'auto', 'width': 'auto', 'marginLeft': '10px'}),
+def create_sat_dropdown() -> html.Div:
+    return html.Div(id="sat-dropdown-parent", className='search_dropdown', children=[
+        dcc.Dropdown(id="sat-dropdown", placeholder="Input a satellite", style={'marginLeft': '5px'}),
     ])
 
 
@@ -47,7 +47,7 @@ def create_logo() -> html.Div:
 
 def create_tabs() -> html.Div:
     style = {'width': 1100, 'height': 500, 'resize': 'none', 'margin': '32px'}
-    return html.Div([
+    return html.Div(id="tabs-parent", children=[
         dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='General Info', value='tab-general'),
             dcc.Tab(label='TLE', value='tab-telemetry'),
