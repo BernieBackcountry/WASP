@@ -1,7 +1,6 @@
 import base64
 from dash import html
 from pathlib import Path
-from typing import Dict, Optional
 
 
 def get_project_path() -> Path:
