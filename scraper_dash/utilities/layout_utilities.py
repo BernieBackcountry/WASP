@@ -1,7 +1,4 @@
 from dash import dcc, html
-import dash_bootstrap_components as dbc
-import pandas as pd
-import plotly.graph_objs as go
 
 import scraper_dash.utilities as utilities
 
@@ -13,7 +10,7 @@ def create_layout() -> html.Div:
 
 def create_information_layout() -> html.Div:
         return html.Div(className='three columns div-user-controls', children=[
-            create_title(), create_description(), create_sat_dropdown(), create_search_message(), create_logo()])
+            create_title(), create_description(), create_search_dropdown(), create_search_message(), create_logo()])
 
 
 def create_data_layout() -> html.Div:
@@ -23,15 +20,15 @@ def create_data_layout() -> html.Div:
 
 
 def create_title() -> html.H1:
-    return html.H1("16th EWS Webscraping Tool")
+    return html.H1("16th EWS W.A.S.P.")
 
 
 def create_description() -> html.P:
-    return html.P("This tool consolidates pertinent information to the satellite pair-building process. Enter a satellite below to obtain its related data.")
+    return html.P("The Webscraping Application for Satellite Pairing (WASP) consolidates pertinent information to the satellite pair-building process. Enter a satellite below to obtain its related data.")
 
 
-def create_sat_dropdown() -> html.Div:
-    return html.Div(id="sat-dropdown-parent", className='search_dropdown', children=[
+def create_search_dropdown() -> html.Div:
+    return html.Div(className='search_dropdown', children=[
         dcc.Dropdown(id="sat-dropdown", placeholder="Input a satellite", style={'marginLeft': '5px'}),
     ])
 
@@ -47,7 +44,7 @@ def create_logo() -> html.Div:
 
 def create_tabs() -> html.Div:
     style = {'width': 1100, 'height': 500, 'resize': 'none', 'margin': '32px'}
-    return html.Div(id="tabs-parent", children=[
+    return html.Div([
         dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='General Info', value='tab-general'),
             dcc.Tab(label='TLE', value='tab-telemetry'),
