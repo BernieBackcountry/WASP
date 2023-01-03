@@ -5,7 +5,7 @@ import numpy as np
 import itertools
 import re
 
-import utilities as utilities
+import wasp_tool.utilities as utilities
 
 
 def get_url_content(link):
@@ -50,7 +50,7 @@ def get_key_tables(bsoup):
     key_tables = []
     for index, table in enumerate(bsoup.find_all('table')):
         text = table.text
-        string_check = "https://www.lyngsat.com/"
+        string_check = "https://www.lyngsat.com/" # had to smart search for table
         if (string_check in text) and (index != 0):
             key_tables.append(table)
             continue
@@ -129,6 +129,7 @@ def clean_table(tables):
         df = tables[i]
         df.replace('\n', ' ', regex=True, inplace=True)
         df.columns = df.columns.str.replace('\n', ' ', regex=True)
+        df.drop(columns=['Logo SID', 'ONID-TID Compression Format', 'VPID', 'C/N lock Audio', 'Encryption', 'Source Updated'], inplace=True)
         tables_clean.append(df)
     return tables_clean
 
@@ -139,6 +140,7 @@ asia = 'https://www.lyngsat.com/asia.html'
 #america = 'https://www.lyngsat.com/america.html'
 satellites = [asia] #, europe, atlantic, america]
 
+# check all urls at home
 all_urls = []
 for n in range(0, len(satellites)):
     all_urls += get_urls(satellites[n])
@@ -146,10 +148,15 @@ for n in range(0, len(satellites)):
 temp = set(all_urls)
 all_urls = list(temp)
 
+# get satellite name during the url search: can turn it into a dictionary instead of list 
+# Let's also grab the band from the main page 
+# color for status' yellow and green are on; white unavailable, red below horizon and unusable
+
 satellites_list = []
 final_tables = []
-for p in range(0, len(all_urls)):
+for p in range(0, 1): # len(all_urls)
     url = all_urls[p]
+    print(url)
     soup = get_url_content(url)
     tables = get_key_tables(soup)
     dfs = read_table(tables)
@@ -158,20 +165,23 @@ for p in range(0, len(all_urls)):
     dfs_clean = clean_table(dfs)
     sat = re.search('https://www.lyngsat.com/(.*).html', url).group(1).replace("-", " ")
     satellites_list.append(sat)
-    final_tables.append(dfs)
+    print(dfs_clean)
+    
+   # final_tables.append(dfs)
 
-final_dfs = list(itertools.chain.from_iterable(final_tables))
-column_names = ['Frequency Beam EIRP (dBW)',
-                'System SR FEC',
-                'Logo SID',
-                'Provider Name Channel Name',
-                'ONID-TID Compression Format',
-                'VPID',
-                'C/N lock audio',
-                'Encryption',
-                'Source Updated ']
+#final_dfs = list(itertools.chain.from_iterable(final_tables))
+#column_names = ['Frequency Beam EIRP (dBW)',
+#                'System SR FEC',
+#                'Logo SID',
+#                'Provider Name Channel Name',
+#                'ONID-TID Compression Format',
+#                'VPID',
+#                'C/N lock audio',
+#                'Encryption',
+#                'Source Updated ']
 
-print(satellites_list)
+#print(satellites_list)
+
 for k in range(0, len(final_dfs)):
     final_dfs[k] = final_dfs[k].reindex(columns=column_names)
     final_dfs[k].insert(0, 'Satellite', satellites_list[k]*len(final_dfs[k].index))
