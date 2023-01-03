@@ -6,7 +6,7 @@ import threading
 from tqdm import tqdm
 from pathlib import Path
 
-import scraper.utilities as utilities 
+import wasp_tool.utilities as utilities 
 
 # CelesTrak Functions
 def prepare_text(text: list) -> dict:

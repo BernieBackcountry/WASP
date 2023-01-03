@@ -3,7 +3,7 @@ from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 import pandas as pd
 
-import scraper_dash.utilities as utilities 
+import wasp_tool_dash.utilities as utilities 
 
 
 path = utilities.get_project_path().resolve().parent.joinpath('scraper')

@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-import scraper.utilities as utilities
+import wasp_tool.utilities as utilities
 
 path1 = utilities.get_project_path().joinpath('data')
 path2 = utilities.get_project_path().joinpath('data', 'images')
