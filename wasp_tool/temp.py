@@ -8,7 +8,7 @@ import re
 import wasp_tool.utilities as utilities
 
 
-def get_region_urls(link):
+def get_region_urls(link) -> list:
     text = requests.get(link).text
     soup = BeautifulSoup(text, 'lxml')
     asia = link + str(soup.find('a', text='Asia', href=True)['href'])
@@ -19,7 +19,7 @@ def get_region_urls(link):
     return [asia, europe, atlantic, america]
 
 
-def get_satellite_urls(url):
+def get_satellite_urls(url) -> dict:
     response = requests.get(url, timeout=20)
     # Check if the status_code is 200
     if response.status_code == 200:    
@@ -32,13 +32,16 @@ def get_satellite_urls(url):
         # remove extraneous href entries 
         href_sub = dict([(k,val) for k,val in href_all.items() if "http" not in val and "and" not in val])
         # remove repeat entries with incorrect key values 
-        href_final = dict([(k,val) for k,val in href_sub.items() if "." not in k])
+        href_dict = dict([(k,val) for k,val in href_sub.items() if "." not in k])
         # convert hrefs to urls
-        url_list = ["https://www.lyngsat.com/" + s for s in href_final.values()]
-        return url_list
+        for k, val in href_dict.items():
+            href_dict[k] = "https://www.lyngsat.com/" + val
+        return href_dict
 
 
-def get_key_tables(url):
+def get_key_tables(dict_item):
+    sat_name = dict_item.key
+    url = dict_item.value
     response = requests.get(url, timeout=20)
     # Check if the status_code is 200
     if response.status_code == 200:    
@@ -53,10 +56,10 @@ def get_key_tables(url):
                 # only the bigtable has a class
                 if not table.has_attr("class"):
                     key_tables.append(table)
-        return key_tables
+        return sat_name, key_tables
 
 
-def read_tables(html_tables):
+def read_tables(sat_name, html_tables):
     df_tables = []
     # table is in html
     for table in (html_tables):
@@ -94,6 +97,7 @@ def read_tables(html_tables):
                 if col_stat < df.shape[1]-1:
                     col_stat += rep_col
     return [df]
+    # send sat name into clean tables
         # temp = df.iloc[-1].values[0]
         # df.drop(index=df.index[0], axis=0, inplace=True)
         # df.drop(index=df.index[-1], axis=0, inplace=True)
@@ -123,7 +127,7 @@ def clean_table(df_tables):
     
         print(df_clean)
         # instantiate empty clean dataframe with desired columns 
-        df_new = pd.DataFrame(np.ones((len(df_clean), 10))*np.nan, columns=['Satellite', 'Frequency', 'Transponder', 'Beam', 'EIRP (dBW)', 'System', 'SR', 'FEC', 'Provider Name', 'Channel Name'])
+        df_new = pd.DataFrame(np.ones((len(df_clean), 11))*np.nan, columns=['Satellite', 'Frequency', 'Transponder', 'Beam', 'EIRP (dBW)', 'System', 'SR', 'FEC', 'Provider Name', 'Channel Name', 'Channel On'])
         print(df_new)
         # iterate through rows with same info for col 0
         rows = df_clean[0].unique()
@@ -195,15 +199,16 @@ main_page = 'https://www.lyngsat.com/'
 region_urls = get_region_urls(main_page)
 
 # satDict = {}
+sat_dict = get_satellite_urls(region_urls[0])
 # #names and corresponding urls for all regions
 # for region in region_urls:
-#     sat_list, url_list = get_satellite_urls(region[0])
+#     sat_dict = get_satellite_urls(region[0])
     # satNames.extend(sat_list)
     # satUrls.extend(url_list)
 
 # think we want to keep the dictionary aspect to make table keeping easy 
 # df columns are [Satellite Name, Frequency Polarity, Transponder, Beam, EIRP(dBW), System, SR, FEC, Provider Name, Channel Name]
 
-tabs = get_key_tables('https://www.lyngsat.com/NSS-9.html')
-temp = read_tables(tabs)
+satName, key_tables = get_key_tables('NSS-9', 'https://www.lyngsat.com/NSS-9.html')
+temp = read_tables(sat_name, key_tables)
 clean_table(temp)
