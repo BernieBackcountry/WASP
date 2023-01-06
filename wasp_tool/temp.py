@@ -129,18 +129,47 @@ def clean_table(df_tables):
         rows = df_clean[0].unique()
         for val in rows:
             df_temp = df_clean.loc[df_clean[0].isin([val])]
+            print(df_temp)
+            
+            # split column 0 
+            col0_value = df_temp.iloc[0, 0]
+            split0_value = col0_value.split("\n")
+            for split in split0_value:
+                if "tp" in split:
+                    df_new.loc[df_temp.index, "Transponder"] = split
+                    continue
+                elif any(s.isdigit() for s in split) == False:
+                    df_new.loc[df_temp.index, "Beam"] = split
+                    continue
+                elif ("L" in split) or ("R" in split) or ("H" in split) or ("V" in split):
+                    df_new.loc[df_temp.index, "Frequency"] = split
+                    continue
+                else:
+                    if "*" in split:
+                        split = split.replace("*", "")
+                    df_new.loc[df_temp.index, "EIRP (dBW)"] = split
+                    
+            # split column 1
+            col1_value = df_temp.iloc[0, 1]
+            split1_value = col1_value.split("\n")
+            for split in split1_value:
+                if "/" in split:
+                    df_new.loc[df_temp.index, "FEC"] = split
+                    continue
+                elif all(s.isdigit() for s in split):
+                    df_new.loc[df_temp.index, "SR"] = split
+                    continue
+                else:
+                    df_new.loc[df_temp.index, "System"] = split
+            
             for i in range(0, len(df_temp)):
-                # split column 0 
-
-                # split column 1
-
                 # split column 2
                 test_string = df_temp.iloc[i, 2]
                 if "*" in test_string:
                     new_string = test_string.replace("*", "")
                     df_new.loc[df_temp.index, "Provider Name"] = new_string
                 else:
-                    df_new.loc[i, "Channel Name"] = test_string
+                    df_new.loc[df_temp.index[i], "Channel Name"] = test_string
         print(df_new)
                 
 
