@@ -23,7 +23,8 @@ def get_lyngsat_info(region_urls: list) -> dict:
     for region in region_urls:
         print(region)
         # dict sat names and href for each region
-        sat_dict = get_satellite_urls(region)
+        #sat_dict = get_satellite_urls(region)
+        sat_dict = {'NSS 9': "https://www.lyngsat.com/NSS-9.html"}
         # loop through each regional satellite
         for key, val in sat_dict.items():
             sat_name = key
@@ -90,11 +91,12 @@ def read_tables(sat_name: str, html_tables: list) -> list:
         num_rows = len(rows)
         # set col num but we only care about cols 1,2,and 4
         num_cols = 10
-        #replace table breaks with new lines
+        # replace table breaks with new lines
         for br in table.find_all('br'):
             br.replace_with("\n")
         # instantialize empty df
         df = pd.DataFrame(np.ones((num_rows, num_cols))*np.nan)
+        
         rep_col = 1
         # handle multi-row columns
         for i, row in enumerate(rows):
@@ -102,11 +104,13 @@ def read_tables(sat_name: str, html_tables: list) -> list:
                 col_stat = df.iloc[i, :][df.iloc[i, :].isnull()].index[0]
             except IndexError:
                 print(i, row)
+
             for j, cell in enumerate(row.find_all(['td', 'th'])):
                 rep_row = get_row_spans(cell)
-            # find first non-na col and fill that one
+                # find first non-na col and fill that one
                 while any(df.iloc[i, col_stat:col_stat+rep_col].notnull()):
                     col_stat += 1
+
                 # check if <i> is a child of cell
                 children = cell.findChildren()
                 for child in children:
@@ -121,7 +125,35 @@ def read_tables(sat_name: str, html_tables: list) -> list:
                     col_stat += rep_col
                     
         tables.append(df)
-    tables_clean = clean_tables(sat_name, tables)
+    
+    tables_clean, tables_drop = clean_tables(sat_name, tables)
+    
+    yellow = "background:#ffffbb"
+    green = "background:#bbffbb"
+    
+    if tables_drop:
+        for ele in tables_drop:
+            html_tables.pop(ele)
+    
+    for h, table in enumerate(html_tables):
+        table_star = tables_clean[h]
+        # loop through channel name values in a given table
+        for m, channel in enumerate(table_star['Channel Name'].values):
+            # check for string value
+            if (isinstance(channel, str)) and (channel != "\n"):
+                print(channel)
+                # get html for channel cell
+                cell = table.find('td', text=channel)
+                print(cell)
+                # determine colorbox surrounding cell
+                if cell is not None:
+                    colorbox = cell["style"]
+                    print(colorbox)
+                    if (colorbox == green) or (colorbox == yellow):
+                        table_star.loc[m, "Channel On"] = "ON"
+                    else:
+                        table_star.loc[m, "Channel On"] = "OFF"
+    
     return tables_clean
 
 def get_row_spans(cell) -> int:
@@ -134,7 +166,8 @@ def get_row_spans(cell) -> int:
 
 def clean_tables(sat_name: str, df_tables: list) -> list:
     clean_tables = []
-    for df in df_tables:
+    drop_tables = []
+    for k, df in enumerate(df_tables):
         # drop all columns except 0, 1, and 3 corresponding to 1, 2, and 4
         df_clean = df.iloc[:, [0, 1, 3]]
         # drop headers and footer 
@@ -143,6 +176,7 @@ def clean_tables(sat_name: str, df_tables: list) -> list:
         
         # check for empty table
         if df.empty:
+            drop_tables.append(k)
             continue
         else:
             df_clean.reset_index(drop=True, inplace=True)
@@ -199,10 +233,13 @@ def clean_tables(sat_name: str, df_tables: list) -> list:
                     else:
                         df_new.loc[df_temp.index[i], "Channel Name"] = test_string
             clean_tables.append(df_new)
-    return clean_tables
+    return clean_tables, drop_tables
                 
 
 # TODO: channel is ON aka yellow or green 
+
+yellow_box = "background:ffffbb"
+green_box = "background:bbffbb"
 # potentially drop rows without channel name? Ask 16th about this
 
 main_page = 'https://www.lyngsat.com/'
