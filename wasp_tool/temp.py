@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import numpy as np
-import itertools
 import re
 
 import wasp_tool.utilities as utilities
@@ -21,10 +20,9 @@ def get_region_urls(link: str) -> list:
 def get_lyngsat_info(region_urls: list) -> dict:
     lyngsat_dict = {}
     for region in region_urls:
-        print(region)
         # dict sat names and href for each region
-        #sat_dict = get_satellite_urls(region)
-        sat_dict = {'NSS 9': "https://www.lyngsat.com/NSS-9.html"}
+        sat_dict = get_satellite_urls(region)
+        #sat_dict = {'SES 3': "https://www.lyngsat.com/SES-3.html"}
         # loop through each regional satellite
         for key, val in sat_dict.items():
             sat_name = key
@@ -84,7 +82,6 @@ def get_key_tables(url: str) -> list:
 
 def read_tables(sat_name: str, html_tables: list) -> list:
     tables = []
-    df_channel_status = []
     # table is in html
     for table in html_tables:
         rows = table.find_all('tr')
@@ -135,26 +132,40 @@ def read_tables(sat_name: str, html_tables: list) -> list:
         for ele in tables_drop:
             html_tables.pop(ele)
     
-    for h, table in enumerate(html_tables):
+    # get html for Provider Name/Channel Name column of interest only
+    html_columns = []
+    for table in html_tables:
+        col_entries = []
+        # get table rows
+        rows = table.find_all("tr")
+        # for each row grab column entry cell 
+        for r in rows:
+            cell = r.find_all("td")
+            # header/footer condition
+            if len(cell) > 1:
+                # cond for multirow 
+                if len(cell) == 8:
+                    col_entries.append(cell[1])
+                #cond for singular row
+                elif len(cell) == 10:
+                    col_entries.append(cell[3])
+        # drop first entry as it is column name
+        html_columns.append(col_entries[1:])
+
+    #loop through html columns
+    for h, col in enumerate(html_columns):
         table_star = tables_clean[h]
         # loop through channel name values in a given table
-        for m, channel in enumerate(table_star['Channel Name'].values):
-            # check for string value
-            if (isinstance(channel, str)) and (channel != "\n"):
-                print(channel)
-                # get html for channel cell
-                cell = table.find('td', text=channel)
-                print(cell)
-                # determine colorbox surrounding cell
-                if cell is not None:
-                    colorbox = cell["style"]
-                    print(colorbox)
-                    if (colorbox == green) or (colorbox == yellow):
-                        table_star.loc[m, "Channel On"] = "ON"
-                    else:
-                        table_star.loc[m, "Channel On"] = "OFF"
+        for m in range(0, len(table_star['Channel Name'].values)):
+            cell = col[m]
+            channel_status = cell["style"]
+            if (channel_status == green) or (channel_status == yellow):
+                table_star.loc[m, "Channel On"] = "ON"
+            else:
+                table_star.loc[m, "Channel On"] = "OFF"
     
     return tables_clean
+
 
 def get_row_spans(cell) -> int:
     if cell.has_attr('rowspan'):
@@ -236,10 +247,7 @@ def clean_tables(sat_name: str, df_tables: list) -> list:
     return clean_tables, drop_tables
                 
 
-# TODO: channel is ON aka yellow or green 
 
-yellow_box = "background:ffffbb"
-green_box = "background:bbffbb"
 # potentially drop rows without channel name? Ask 16th about this
 
 main_page = 'https://www.lyngsat.com/'
@@ -247,9 +255,13 @@ main_page = 'https://www.lyngsat.com/'
 # obtain satellite regions
 region_urls = get_region_urls(main_page)
 
-lyngsat_dict = get_lyngsat_info([region_urls[0]])
+lyngsat_dict = get_lyngsat_info(region_urls)
 print(lyngsat_dict.keys())
 print(lyngsat_dict['NSS 9'])
 print(lyngsat_dict['JCSAT 4B'])
 # its cause band has and in it; need to rethink delimeter
 print(lyngsat_dict['Superbird B3'])
+
+# store it in a CSV for now ?
+
+#Frequency equals Frequency Case
