@@ -1,7 +1,7 @@
 import requests
 
 
-def prepare_tles(url: str) -> dict:
+def prepare_celestrak(url: str) -> dict:
     tle_dict = {}
     sat_name, sat_name_excess, tle = ([] for i in range(3))
     
@@ -35,4 +35,4 @@ def prepare_tles(url: str) -> dict:
 
 
 def get_tles(url: str) -> list:
-  return requests.get(url).text.split("\n")
+    return requests.get(url).text.split("\n")
