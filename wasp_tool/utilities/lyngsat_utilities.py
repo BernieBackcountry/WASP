@@ -1,40 +1,37 @@
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
-import re
-
-import wasp_tool.utilities as utilities
 
 
-def get_region_urls(link: str) -> list:
-    text = requests.get(link).text
-    soup = BeautifulSoup(text, 'lxml')
-    asia = link + str(soup.find('a', text='Asia', href=True)['href'])
-    europe = link + str(soup.find('a', text='Europe', href=True)['href'])
-    atlantic = link + str(soup.find('a', text='Atlantic', href=True)['href'])
-    america = link + str(soup.find('a', text='America', href=True)['href'])
-    return [asia, europe, atlantic, america]
-
-
-def get_lyngsat_info(region_urls: list) -> dict:
+def prepare_lyngsat(url: str) -> dict:
+    region_urls = get_region_urls(url)
     lyngsat_dict = {}
+    
     for region in region_urls:
         # dict sat names and href for each region
         sat_dict = get_satellite_urls(region)
-        #sat_dict = {'SES 3': "https://www.lyngsat.com/SES-3.html"}
         # loop through each regional satellite
         for key, val in sat_dict.items():
             sat_name = key
             # send in url 
             key_tables = get_key_tables(val)
             # check for empty pages
-            if not key_tables:
-                continue
-            else:
+            if key_tables:
                 tables_clean = read_tables(sat_name, key_tables)
                 lyngsat_dict[sat_name] = tables_clean
+                
     return lyngsat_dict
+    
+    
+def get_region_urls(link: str) -> list:
+    req = requests.get(link)
+    soup = BeautifulSoup(req.text, 'lxml')
+    regions = ["Asia", "Europe", "Atlantic", "America"]
+    urls = []
+    for r in regions:
+        urls.append(link + str(soup.find('a', text=r, href=True)['href']))
+    return urls
 
 
 def get_satellite_urls(url: str) -> dict:
@@ -57,8 +54,8 @@ def get_satellite_urls(url: str) -> dict:
             for k, val in href_dict.items():
                 href_dict[k] = "https://www.lyngsat.com/" + val
             return href_dict
-    except HTTPError as hp:
-        print(hp)
+    except Exception as e:
+          pass
 
 
 def get_key_tables(url: str) -> list:
@@ -76,7 +73,6 @@ def get_key_tables(url: str) -> list:
                 # only the bigtable has a class
                 if not table.has_attr("class"):
                     key_tables.append(table)
-        print(url)
         return key_tables
 
 
@@ -245,23 +241,3 @@ def clean_tables(sat_name: str, df_tables: list) -> list:
                         df_new.loc[df_temp.index[i], "Channel Name"] = test_string
             clean_tables.append(df_new)
     return clean_tables, drop_tables
-                
-
-
-# potentially drop rows without channel name? Ask 16th about this
-
-main_page = 'https://www.lyngsat.com/'
-
-# obtain satellite regions
-region_urls = get_region_urls(main_page)
-
-lyngsat_dict = get_lyngsat_info(region_urls)
-print(lyngsat_dict.keys())
-print(lyngsat_dict['NSS 9'])
-print(lyngsat_dict['JCSAT 4B'])
-# its cause band has and in it; need to rethink delimeter
-print(lyngsat_dict['Superbird B3'])
-
-# store it in a CSV for now ?
-
-#Frequency equals Frequency Case
