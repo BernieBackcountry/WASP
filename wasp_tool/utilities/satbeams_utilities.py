@@ -10,7 +10,6 @@ def prepare_satbeams(url: str) -> dict:
     # get all active satellite url pages
     urls = get_active_sat_urls(soup)
     satbeams_info, footprints = run_threads(soup, urls)
-    print("DONE")
     return satbeams_info, footprints
   
 
@@ -27,7 +26,7 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
     q_info = queue.Queue()
     q_footprints = queue.Queue()
     
-    threads = [threading.Thread(target=fetch_url, args=(url, q_info, q_footprints)) for url in urls[:9]]
+    threads = [threading.Thread(target=fetch_url, args=(url, q_info, q_footprints)) for url in urls]
     for thread in threads:
         thread.start()
         # Get satellite info

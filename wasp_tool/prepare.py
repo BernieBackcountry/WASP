@@ -17,5 +17,5 @@ utilities.save_dict_to_csv(path_data, satbeams_data, "satbeams.csv")
 utilities.save_footprints(path_images, satbeams_data["Satellite"], satbeams_footprints)
 
 # Scrap Lyngsat data
-lyngsat_data = utilities.prepare_tables('https://www.lyngsat.com/')
+lyngsat_data = utilities.prepare_lyngsat('https://www.lyngsat.com/')
 utilities.save_dict_to_csv(path_data, lyngsat_data, "lyngsat.csv")
