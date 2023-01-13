@@ -27,7 +27,7 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
     q_info = queue.Queue()
     q_footprints = queue.Queue()
     
-    threads = [threading.Thread(target=fetch_url, args=(url, q_info, q_footprints)) for url in urls]
+    threads = [threading.Thread(target=fetch_url, args=(url, q_info, q_footprints)) for url in urls[:9]]
     for thread in threads:
         thread.start()
         # Get satellite info
