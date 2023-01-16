@@ -1,6 +1,6 @@
 from dash import dcc, html
 
-import scraper_dash.utilities as utilities
+import wasp_tool_dash.utilities as utilities
 
 
 def create_layout() -> html.Div:

@@ -1,7 +1,7 @@
 from dash import html
 import pandas as pd
 
-import scraper_dash.utilities as utilities
+import wasp_tool_dash.utilities as utilities
 
 
 def populate_general_info(sat: str, satbeam_satellites: list, df_satbeam: pd.DataFrame):
