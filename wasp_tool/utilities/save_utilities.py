@@ -35,4 +35,28 @@ def image_download(path: Path, sat_name: str, image_links: list, image_titles: l
                     for chunk in r:
                         f.write(chunk)
         except Exception as e:
-            pass   
+            pass 
+
+
+def save_pdfs(path: Path, urls: list):
+    for u in urls:
+        sat_name = get_pdf_name(u)
+        utilities.create_directory(path.joinpath(sat_name))
+        file_path = path.joinpath(sat_name)
+        try:
+            req = requests.get(u)
+            file_name = sat_name + ".pdf"
+            print("File", sat_name, "downloading")
+            pdf = open(file_path / file_name, 'wb')
+            pdf.write(req.content)
+            pdf.close()
+        except Exception as e:
+            pass
+
+
+def get_pdf_name(pdf: str):  
+    ele = pdf.split("/")[-1]
+    ele = ele.replace(".pdf", "")
+    ele = ele.replace("_", " ")
+    pdf_name = ele.strip()
+    return pdf_name
