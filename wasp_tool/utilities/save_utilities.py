@@ -3,12 +3,18 @@ from pathlib import Path
 import threading
 from tqdm import tqdm
 import requests
+import json
 
 import wasp_tool.utilities as utilities
 
 def save_dict_to_csv(path: Path, dict_: dict, file_name: str):
     df = pd.DataFrame(dict_)
     df.to_csv(path / file_name, index=False)
+
+
+def save_as_pickle(path: Path, dict_: dict, file_name: str):
+    with open(path / "w") as outfile:
+        json.dump(dict_, outfile)
 
 
 def save_footprints(path: Path, sat_names: list, footprints: list):
@@ -38,13 +44,13 @@ def image_download(path: Path, sat_name: str, image_links: list, image_titles: l
             pass 
 
 
-def save_pdfs(path: Path, urls: list):
-    for u in urls:
-        sat_name = get_pdf_name(u)
+def save_pdfs(path: Path, names: list, urls: list):
+    for i, url in enumerate(urls):
+        sat_name = names[i]
         utilities.create_directory(path.joinpath(sat_name))
         file_path = path.joinpath(sat_name)
         try:
-            req = requests.get(u)
+            req = requests.get(url)
             file_name = sat_name + ".pdf"
             print("File", sat_name, "downloading")
             pdf = open(file_path / file_name, 'wb')
@@ -52,11 +58,3 @@ def save_pdfs(path: Path, urls: list):
             pdf.close()
         except Exception as e:
             pass
-
-
-def get_pdf_name(pdf: str):  
-    ele = pdf.split("/")[-1]
-    ele = ele.replace(".pdf", "")
-    ele = ele.replace("_", " ")
-    pdf_name = ele.strip()
-    return pdf_name
