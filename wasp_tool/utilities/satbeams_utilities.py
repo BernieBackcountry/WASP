@@ -34,7 +34,12 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
         sat_info.append(info)
         # Get satellite footprints
         footprints = q_footprints.get()
-        sat_footprints.append(footprints)
+        if footprints is None:
+            # append empty nested list for None footprints case
+            lst = [[] for _ in range(2)]
+            sat_footprints.append(lst)
+        else:
+            sat_footprints.append(footprints)
     for thread in threads:
         thread.join()
         
@@ -110,8 +115,6 @@ def get_satellite_footprints(soup: BeautifulSoup) -> list:
         tag = 'https://satbeams.com'
         images = [tag+i for i in image_links]
         return [images, image_titles]
-    else:
-      print("NoneType error")
     
     
 def list_to_dict(results: list) -> dict:
