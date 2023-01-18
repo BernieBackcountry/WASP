@@ -24,22 +24,23 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
     sat_info = []
     sat_footprints = []
     q_info = queue.Queue()
-    q_footprints = queue.Queue()
+    #q_footprints = queue.Queue()
     
-    threads = [threading.Thread(target=fetch_url, args=(url, q_info, q_footprints)) for url in urls]
+    threads = [threading.Thread(target=fetch_url, args=(url, q_info)) for url in urls] #, q_footprints
     for thread in threads:
         thread.start()
         # Get satellite info
         info = q_info.get()
         sat_info.append(info)
+        print("Thread")
         # Get satellite footprints
-        footprints = q_footprints.get()
-        if footprints is None:
+        #footprints = q_footprints.get()
+        #if footprints is None:
             # append empty nested list for None footprints case
-            lst = [[] for _ in range(2)]
-            sat_footprints.append(lst)
-        else:
-            sat_footprints.append(footprints)
+        #    lst = [[] for _ in range(2)]
+        #    sat_footprints.append(lst)
+        #else:
+        #    sat_footprints.append(footprints)
     for thread in threads:
         thread.join()
         
@@ -47,7 +48,7 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
     return sat_dict, sat_footprints
 
 
-def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
+def fetch_url(url: str, q1: queue.Queue): #, q2: queue.Queue):
     try:
         response = requests.get(url, timeout=20)
         # Check if the status_code is 200
@@ -59,9 +60,9 @@ def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
             # Put satellite info on queue
             q1.put(sat_info)
             # Scrap footprints
-            sat_footprints = get_satellite_footprints(soup)
+            #sat_footprints = get_satellite_footprints(soup)
             # Put footprints info on queue
-            q2.put(sat_footprints)
+            #q2.put(sat_footprints)
     except Exception as e:
         print(url)
         pass
@@ -69,14 +70,13 @@ def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
 
 def get_satellite_info(soup: BeautifulSoup) -> list:
     sat = find_by_label(soup, "Satellite Name:")
-    sat = sat.replace("-", " ")
     if "(" in sat:
         temp = sat.split("(", 1)
-        sat_name = temp[0].upper().strip()
-        temp_2 = temp[1]
+        sat_name = temp[0].strip() # don't cast to upper
+        temp_2 = temp[1].strip()
         sat_name_excess = temp_2[:-1]
     else:
-        sat_name = sat.upper().strip()
+        sat_name = sat.strip()
         sat_name_excess = ""
     position = str(find_by_label(soup, "Position:"))
     norad_id = str(find_by_next(soup, "NORAD:", "a").contents[0])
