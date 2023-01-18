@@ -13,13 +13,13 @@ def prepare_celestrak(url: str) -> dict:
         if (i % 3 == 0) and (i <= len(text)-3):
             tle_1 = text[i+1].strip().replace(" ", "*")
             tle_2 = text[i+2].strip().replace(" ", "*")
-            sat = line.strip().replace("-", " ")
+            sat = line.strip()
             # strip excess sat names
             if "(" in sat:
                 temp = sat.split("(", 1)
-                sat_id = temp[0].upper().strip()
+                sat_id = temp[0].strip()
                 sat_name.append(sat_id)
-                temp_2 = temp[1]
+                temp_2 = temp[1].strip()
                 sat_name_excess.append(temp_2[:-1])
             else:
                 sat_name.append(sat)
