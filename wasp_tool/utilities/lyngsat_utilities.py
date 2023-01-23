@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 
+import wasp_tool.utilities as utilities
+
 
 def prepare_lyngsat(url: str) -> dict:
     region_urls = get_region_urls(url)
@@ -13,7 +15,7 @@ def prepare_lyngsat(url: str) -> dict:
         sat_dict = get_satellite_urls(region)
         # loop through each regional satellite
         for key, val in sat_dict.items():
-            sat_name = key
+            sat_name = utilities.standardize_satellite(key)
             # send in url 
             key_tables = get_key_tables(val)
             # check for empty pages
