@@ -1,16 +1,18 @@
 import requests
 from bs4 import BeautifulSoup
 
+import wasp_tool.utilities as utilities
+
 
 def prepare_altervista(url: str):
     sat_urls = get_urls(url)
-    sat_names = []
+    pri_satNames = []
     pdf_urls = []
     for sat in sat_urls:
-        temp_pdf, temp_sat = get_pdf_urls(sat)
-        sat_names.extend(temp_sat)
-        pdf_urls.extend(temp_pdf)
-    return sat_names, pdf_urls
+        sat_list, url_list = get_pdf_urls(sat)
+        pri_satNames.extend(sat_list)
+        pdf_urls.extend(url_list)
+    return pri_satNames, pdf_urls
 
 
 def get_urls(url: str) -> list:
@@ -32,13 +34,15 @@ def get_pdf_urls(url: str) -> list:
     for a in sidebar.find_all('a', href=True):
         if ".pdf" in a['href']:
             urls.append(a['href'])
-            sats.append(get_pdf_name(a['href']))
-    return urls, sats
+            # TODOOOOOOOOOOOOOOOOOOOOOOOOOO need to add fucntionality to clean this up
+            temp = a.text
+            pri_satName = utilities.standardize_satellite(temp)
+            sats.append(pri_satName)
+    return sats, urls
 
 
 def get_pdf_name(pdf: str):  
     ele = pdf.split("/")[-1]
     ele = ele.replace(".pdf", "")
-    ele = ele.replace("_", " ")
-    pdf_name = ele.strip()
+    pdf_name = ele.replace("_", " ")
     return pdf_name

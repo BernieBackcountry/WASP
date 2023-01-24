@@ -11,99 +11,98 @@ satbeams = pd.read_csv("wasp_tool/data/satbeams.csv", header=0)
 
 path_data = utilities.get_project_path().joinpath('data')
 
-# going to go with a simple title style of sat name 
-
 sat_lst = list(itertools.chain(altervista["Satellite"], celestrak["Satellite"], satbeams["Satellite"], lyngsat["Satellite"]))
 
-# loop through list of lists 
-for i, ele in enumerate(sat_lst):
-    sat = ele.title()
-    sat = sat.replace("-", " ")
-    sat_lst[i] = sat
+new_sat = []
 
-print(len(sat_lst))
+for sat_name in sat_lst:
+    # strip leading/following spaces
+    name_strip = sat_name.strip()
+    # cast whole string to upper
+    name_upper = name_strip.upper()
+    
+    # CASE 1: replacing sub-strings for consistency
+    case_1 = {"G-SAT": "GSAT", 
+        "HELLASSAT": "HELLAS SAT", 
+        "HELLAS-SAT": "HELLAS SAT", 
+        "HOTBIRD": "HOT BIRD"}
+    for substring in case_1.keys():
+        if substring in name_upper:
+            name_upper = name_upper.replace(substring, case_1[substring])
+            break
+    
+    # CASE 2: replacing white space with dashes
+    dash_add = ["ABS", "AMC", "AMOS", "ARABSAT", "ATHENA FIDUS", "BADR", "BSAT", "BEIDOU ", "BULGARIASAT", "CIEL", "CMS", "EXPRESS AT", 
+    "EXPRESS AM", "GSAT", "HORIZONS", "INSAT", "JCSAT", "KAZSAT", "MEASAT", "NSS", "PAKSAT", "PSN", "SES", "TKSAT",
+    "VIASAT", "VINASAT", "WILDBLUE", "XM "]
+    if any(substring in name_upper for substring in dash_add) and ("SERIES" not in name_upper):
+        name_upper = name_upper.replace(" ", "-", 1)
+    
+    # CASE 3: replacing dashes with white space
+    dash_remove = ["EXPRESS AMU", "THURAYA"]
+    if any(substring in name_upper for substring in dash_remove):
+        name_upper = name_upper.replace("-", " ", 1)
+    
+    new_sat.append(name_upper)
+    
 
-master_list = list(set(sat_lst))
+master_list = list(set(new_sat))
 
 print(len(master_list))
 
-    # do we need to add it to master list and or master dict 
-
-
-
-# to keep track of unique satellite names
-# master_list = []
-
-# don't worry about lyngsat special chars for now
-#1) keep /
-#2) separate ()
-
-
-# altervista Series and West New
-
-#master_list.extend(celestrak["Satellite"])
-# #master_list.extend(celestrak["Extra Names"])
-# master_list.extend(lyngsat["Satellite"])
-# #master_list.extend(altervista["Satellite"])
-# #master_list.extend(satbeams["Satellite"])
-# #master_list.extend(satbeams["Extra Names"])
-
-# print(master_list)
-
-# for ele in master_list:
-#      ele = ele.encode("utf-8")#.replace(u"\u0252", "*")
-
-# #u'00CO'
-# #str.decode("utf-8").replace(u"\u2022", "*")
-
-# print(master_list)
-
-# # to keep track of vehicles with multiple names
-# master_dict = {}
-
-# get sat other names
-# for ele in master_list:
-#     if ele in master_list:
-#         temp = ele.split("(")
-#         key = temp[0].strip()
-#         vals = []
-#         if "," in temp[1]:
-        
-#         else:
-#             vals.append(temp[1].strip()[-1])
-#         master_dict[key] = vals
-
-# / are half owned satellites and should nto be separated 
-
-
-# split into separate elements by comma
-# master_list = [ele for item in master_list for ele in str(item).split(',')]
-
-# # remove nans
-# master_list = [x for x in master_list if str(x) != 'nan']
-
-# # remove items containing non-ascii chars
-# master_list = [x for x in master_list if str(x).isascii()]
-
-# master_list = [x.replace("-", " ") for x in master_list]
-# print(len(master_list))
-
-# master_list = list(set([x.strip().lower() for x in master_list]))
-# print(len(master_list))
-
 dict_ = {"Satellite": master_list}
 
-# split by / and also parenthesis 
+utilities.save_dict_to_csv(path_data, dict_, "master-fixed.csv")
 
-# there is a + sign
 
-# where are all 3 cases coming from
 
-# also series case for altervista
+# same satellites
+# ALPHASAT ALPHASAT I-XL
+# ASIASTAR ASIASTAR 1
+# Astra 2E Astra 2E (Eutelsat 28E)
+# Astra 2F Astra 2F (Eutelsat 28F)
+# Astra 2G Astra 2G (Eutelsat 28G)
+# AZERSPACE AZERSPACE 1
+# Azerspace 2 Azerspace 2/Intelsat 38
+# Bangabandhu 1 Bangabandhusat 1
+# Belintersat 1 Belintersat 1 (Chinasat 15)
+# Bsat 3C Bsat 3C/Jcsat 110R
+# Express Am6 Express Am6 (Eutelsat 53A)
+# Express Amu1 Express Amu1 (Eutelsat 36C)
+# Galaxy 13 Galaxy 13 Horizons 1 Galaxy 13/Horizons 1
+# Hispasat 143W 1 Hispasat 1D
+# Hispasat 1E Hispasat 30W 5
+# Hispasat 1F Hispasat 30W 6
+# TurkmenÃ¤lem/Monacosat Turkmenalem Turkmenalem52E/Monacosat
+# Telstar 18 Vantage (Apstar 5C) Telstar 18V
+# Telstar 12 Vantage Telstar 12V
+# Sgdc Sgdc 1
+# Rascom 1R Rascom Qaf 1R
+# Quetzsat Quetzsat 1
+# PSN-6 Nusantara Satu
+# Mexsat 3 Mexsat Bicentenario
 
-# case of 513-515 altervista
 
-# telstar 5. moving to 66 east orbital location
-# weird satbeams case of extra information
 
-utilities.save_dict_to_csv(path_data, dict_, "master.csv")
+
+# CO-OWNED
+# ASIASAT6/THAICOM 6
+# Echostar 105/Ses 11
+# Echostar 9/Galaxy 23
+
+
+# SERIES
+# ARABSAT 1 Series : 
+
+
+# Even a satellite?
+# Express
+# Hellas Sat 4 & Sgs 1
+# Hispasat 74W 1		is an amazonas
+# Hns 95W		is an echostar
+# Ico G1		is an echostar
+
+# T10/T12		same channels I guess on Lyngsat
+# T11/T14		
+
+# Sbs 1 To 4
