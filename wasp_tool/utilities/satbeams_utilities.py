@@ -11,7 +11,7 @@ def prepare_satbeams(url: str) -> dict:
     soup = BeautifulSoup(req.text, "html.parser")
     # get all active satellite url pages
     urls = get_active_sat_urls(soup)
-    satbeams_info, footprints = run_threads(soup, urls)
+    satbeams_info, footprints = run_threads(urls)
     return satbeams_info, footprints
   
 
@@ -22,27 +22,26 @@ def get_active_sat_urls(soup: BeautifulSoup) -> list:
     return urls
     
 
-def run_threads(soup: BeautifulSoup, urls: list) -> list:
+def run_threads(urls: list) -> list:
     sat_info = []
     sat_footprints = []
     q_info = queue.Queue()
-    #q_footprints = queue.Queue()
+    q_footprints = queue.Queue()
     
-    threads = [threading.Thread(target=fetch_url, args=(url, q_info)) for url in urls] #, q_footprints
+    threads = [threading.Thread(target=fetch_url, args=(url, q_info, q_footprints)) for url in urls]
     for thread in threads:
         thread.start()
         # Get satellite info
         info = q_info.get()
         sat_info.append(info)
-        print("Thread")
         # Get satellite footprints
-        #footprints = q_footprints.get()
-        #if footprints is None:
-            # append empty nested list for None footprints case
-        #    lst = [[] for _ in range(2)]
-        #    sat_footprints.append(lst)
-        #else:
-        #    sat_footprints.append(footprints)
+        footprints = q_footprints.get()
+        if footprints is None:
+        # append empty nested list for None footprints case
+           lst = [[] for _ in range(2)]
+           sat_footprints.append(lst)
+        else:
+           sat_footprints.append(footprints)
     for thread in threads:
         thread.join()
         
@@ -50,29 +49,27 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
     return sat_dict, sat_footprints
 
 
-def fetch_url(url: str, q1: queue.Queue): #, q2: queue.Queue):
-    try:
-        response = requests.get(url, timeout=20)
-        # Check if the status_code is 200
-        if response.status_code == 200:    
-            # Parse the HTML content of the webpage
-            soup = BeautifulSoup(response.content, 'html.parser')
-            # Scrap satellite info
-            sat_info = get_satellite_info(soup)
-            # Put satellite info on queue
-            q1.put(sat_info)
-            # Scrap footprints
-            #sat_footprints = get_satellite_footprints(soup)
-            # Put footprints info on queue
-            #q2.put(sat_footprints)
-    except Exception as e:
-        print(url)
-        pass
+def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
+    response = requests.get(url, timeout=20)
+    # Check if the status_code is 200
+    if response.status_code == 200:  
+        # Parse the HTML content of the webpage
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # Scrap satellite info
+        sat_info = get_satellite_info(soup)
+        # Put satellite info on queue
+        q1.put(sat_info)
+        # Scrap footprints
+        sat_footprints = get_satellite_footprints(soup)
+        # Put footprints info on queue
+        q2.put(sat_footprints)
+    else:
+        print("Unsuccessful request at ", url)
 
 
 def get_satellite_info(soup: BeautifulSoup) -> list:
     satName = find_by_label(soup, "Satellite Name:")
-    if "(" not in pri_satName:
+    if "(" not in satName:
         pri_satName = utilities.standardize_satellite(satName)
         sec_satName = ""
 

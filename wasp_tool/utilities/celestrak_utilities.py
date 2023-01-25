@@ -33,4 +33,9 @@ def prepare_celestrak(url: str) -> dict:
 
 
 def get_tles(url: str) -> list:
-    return requests.get(url).text.split("\n")
+    response = requests.get(url, timeout = 20)
+    if response.status_code == 200:
+        text = response.text.split("\n")
+        return text
+    else:
+        print("Unsuccessful request at ", url)
