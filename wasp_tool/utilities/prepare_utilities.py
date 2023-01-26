@@ -42,33 +42,6 @@ def standardize_satellite(sat_name: str) -> str:
     return new_name
 
 
-# # altervista 
-# def get_pdf_name(pdf: str):  
-#     ele = pdf.split("/")[-1]
-#     ele = ele.replace(".pdf", "")
-#     ele = ele.replace("_", " ")
-#     pdf_name = ele.strip()
-#     return pdf_name
-
-# # celestrak
-#             sat = line.strip()
-#             # strip excess sat names
-#             if "(" in sat:
-#                 temp = sat.split("(", 1)
-#                 sat_id = temp[0].strip()
-#                 sat_name.append(sat_id)
-#                 temp_2 = temp[1].strip()
-#                 sat_name_excess.append(temp_2[:-1])
-#             else:
-#                 sat_name.append(sat)
-#                 sat_name_excess.append("")
-                
-#             tle.append(tle_1 + "\n" + tle_2)
-    
-#     tle_dict = {'Satellite': sat_name, 
-#                 'Extra Names': sat_name_excess,
-#                 'TLE': tle}
-
 def save_dict_to_csv(path: Path, dict_: dict, file_name: str):
     df = pd.DataFrame(dict_)
     df.to_csv(path / file_name, index=False)
@@ -103,7 +76,7 @@ def image_download(path: Path, sat_name: str, image_links: list, image_titles: l
 
 def save_tables(path: Path, dict_: dict):
     for key, lst in dict_.items():
-        # \ causes problem with directory name
+        # / causes problem with directory name
         if "/" in key:
             key = key.replace("/", "-")
         utilities.create_directory(path.joinpath(key))

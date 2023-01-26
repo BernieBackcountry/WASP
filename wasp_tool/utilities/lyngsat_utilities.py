@@ -8,22 +8,33 @@ import wasp_tool.utilities as utilities
 
 def prepare_lyngsat(url: str) -> dict:
     region_urls = get_region_urls(url)
-    lyngsat_dict = {}
-    
+    master_dict = {}
+    priSatNames, secSatNames = ([] for i in range(2))
     for region in region_urls:
         # dict sat names and href for each region
         sat_dict = get_satellite_urls(region)
         # loop through each regional satellite
         for key, val in sat_dict.items():
-            sat_name = utilities.standardize_satellite(key)
+            print(val)
+            if "(" in key:
+                temp = key.split("(", 1)
+                pri_sat = utilities.standardize_satellite(temp[0])
+                priSatNames.append(pri_sat)
+                secSatNames.append(utilities.standardize_satellite(temp[1]))
+            else:
+                pri_sat = utilities.standardize_satellite(key)
+                priSatNames.append(pri_sat)
+                secSatNames.append("")
             # send in url 
             key_tables = get_key_tables(val)
             # check for empty pages
             if key_tables:
-                tables_clean = read_tables(sat_name, key_tables)
-                lyngsat_dict[sat_name] = tables_clean
-                
-    return lyngsat_dict
+                tables_clean = read_tables(pri_sat, key_tables)
+                master_dict[pri_sat] = tables_clean
+
+    dict_ = {'priSatName': priSatNames,
+             'secSatName': secSatNames}
+    return dict_, master_dict
     
     
 def get_region_urls(link: str) -> list:
@@ -37,27 +48,24 @@ def get_region_urls(link: str) -> list:
 
 
 def get_satellite_urls(url: str) -> dict:
-    try:
-        response = requests.get(url, timeout=20, allow_redirects=False)
-        response.raise_for_status()
-        # Check if the status_code is 200
-        if response.status_code == 200:    
-            # Parse the HTML content of the webpage
-            soup = BeautifulSoup(response.content, 'lxml')
-            # create dictionary with href as value and satName as key
-            href_all = {}
-            for href in soup.find_all('a', href=True):
-                href_all[href.text] = href['href']
-            # remove extraneous href entries 
-            href_sub = dict([(k,val) for k,val in href_all.items() if "http" not in val and "and" not in val])
-            # remove repeat entries with incorrect key values 
-            href_dict = dict([(k,val) for k,val in href_sub.items() if "." not in k])
-            # convert hrefs to urls
-            for k, val in href_dict.items():
-                href_dict[k] = "https://www.lyngsat.com/" + val
-            return href_dict
-    except Exception as e:
-          pass
+    response = requests.get(url, timeout=20, allow_redirects=False)
+    # Check if the status_code is 200
+    if response.status_code == 200:    
+        # Parse the HTML content of the webpage
+        soup = BeautifulSoup(response.content, 'lxml')
+        # create dictionary with href as value and satName as key
+        href_all = {}
+        for href in soup.find_all('a', href=True):
+            href_all[href.text] = href['href']
+        # remove extraneous href entries 
+        href_sub = dict([(k,val) for k,val in href_all.items() if "http" not in val and "and" not in val])
+        # remove repeat entries with incorrect key values 
+        href_dict = dict([(k,val) for k,val in href_sub.items() if "." not in k])
+        # convert hrefs to urls
+        for k, val in href_dict.items():
+            href_dict[k] = "https://www.lyngsat.com/" + val
+        return href_dict
+
 
 
 def get_key_tables(url: str) -> list:
@@ -150,7 +158,7 @@ def read_tables(sat_name: str, html_tables: list) -> list:
         # drop first entry as it is column name
         html_columns.append(col_entries[1:])
 
-    #loop through html columns
+    # loop through html columns
     for h, col in enumerate(html_columns):
         table_star = tables_clean[h]
         # loop through channel name values in a given table
