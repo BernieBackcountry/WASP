@@ -3,13 +3,15 @@ from bs4 import BeautifulSoup
 import threading
 import queue
 
+import wasp_tool.utilities as utilities 
+
 
 def prepare_satbeams(url: str) -> dict:
     req = requests.get(url)
     soup = BeautifulSoup(req.text, "html.parser")
     # get all active satellite url pages
     urls = get_active_sat_urls(soup)
-    satbeams_info, footprints = run_threads(soup, urls)
+    satbeams_info, footprints = run_threads(urls)
     return satbeams_info, footprints
   
 
@@ -20,7 +22,7 @@ def get_active_sat_urls(soup: BeautifulSoup) -> list:
     return urls
     
 
-def run_threads(soup: BeautifulSoup, urls: list) -> list:
+def run_threads(urls: list) -> list:
     sat_info = []
     sat_footprints = []
     q_info = queue.Queue()
@@ -35,11 +37,11 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
         # Get satellite footprints
         footprints = q_footprints.get()
         if footprints is None:
-            # append empty nested list for None footprints case
-            lst = [[] for _ in range(2)]
-            sat_footprints.append(lst)
+        # append empty nested list for None footprints case
+           lst = [[] for _ in range(2)]
+           sat_footprints.append(lst)
         else:
-            sat_footprints.append(footprints)
+           sat_footprints.append(footprints)
     for thread in threads:
         thread.join()
         
@@ -48,40 +50,38 @@ def run_threads(soup: BeautifulSoup, urls: list) -> list:
 
 
 def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
-    try:
-        response = requests.get(url, timeout=20)
-        # Check if the status_code is 200
-        if response.status_code == 200:    
-            # Parse the HTML content of the webpage
-            soup = BeautifulSoup(response.content, 'html.parser')
-            # Scrap satellite info
-            sat_info = get_satellite_info(soup)
-            # Put satellite info on queue
-            q1.put(sat_info)
-            # Scrap footprints
-            sat_footprints = get_satellite_footprints(soup)
-            # Put footprints info on queue
-            q2.put(sat_footprints)
-    except Exception as e:
-        print(url)
-        pass
+    response = requests.get(url, timeout=20)
+    # Check if the status_code is 200
+    if response.status_code == 200:  
+        # Parse the HTML content of the webpage
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # Scrap satellite info
+        sat_info = get_satellite_info(soup)
+        # Put satellite info on queue
+        q1.put(sat_info)
+        # Scrap footprints
+        sat_footprints = get_satellite_footprints(soup)
+        # Put footprints info on queue
+        q2.put(sat_footprints)
+    else:
+        print("Unsuccessful request at ", url)
 
 
 def get_satellite_info(soup: BeautifulSoup) -> list:
-    sat = find_by_label(soup, "Satellite Name:")
-    sat = sat.replace("-", " ")
-    if "(" in sat:
-        temp = sat.split("(", 1)
-        sat_name = temp[0].upper().strip()
-        temp_2 = temp[1]
-        sat_name_excess = temp_2[:-1]
+    satName = find_by_label(soup, "Satellite Name:")
+    if "(" not in satName:
+        pri_satName = utilities.standardize_satellite(satName)
+        sec_satName = ""
+
     else:
-        sat_name = sat.upper().strip()
-        sat_name_excess = ""
+        temp = satName.split("(", 1)
+        pri_satName = utilities.standardize_satellite(temp[0])
+        sec_satName = utilities.standardize_satellite(temp[1])
+    
     position = str(find_by_label(soup, "Position:"))
     norad_id = str(find_by_next(soup, "NORAD:", "a").contents[0])
     beacons = str(find_by_label(soup, "Beacon(s):"))
-    return [sat_name, sat_name_excess, position, norad_id, beacons]
+    return [pri_satName, sec_satName, position, norad_id, beacons]
 
 
 def find_by_label(soup: BeautifulSoup, label: str) -> str:
@@ -118,16 +118,16 @@ def get_satellite_footprints(soup: BeautifulSoup) -> list:
     
     
 def list_to_dict(results: list) -> dict:
-    sat_name, sat_name_excess, pos, nor, beac = ([] for i in range(5))
+    pri_sat, sec_sat, pos, nor, beac = ([] for i in range(5))
     for ele in results:
-        sat_name.append(ele[0])
-        sat_name_excess.append(ele[1])
+        pri_sat.append(ele[0])
+        sec_sat.append(ele[1])
         pos.append(ele[2])
         nor.append(ele[3])
         beac.append(ele[4])
         
-    dict_ = {'Satellite': sat_name,
-            'Extra Names': sat_name_excess,
+    dict_ = {'priSatName': pri_sat,
+            'secSatName': sec_sat,
             'Position': pos,
             'NORAD ID': nor, 
             'Beacons': beac}

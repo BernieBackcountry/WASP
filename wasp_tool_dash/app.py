@@ -6,18 +6,23 @@ import pandas as pd
 import wasp_tool_dash.utilities as utilities 
 
 
-path = utilities.get_project_path().resolve().parent.joinpath('scraper')
+path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
 path_celestrak = path.joinpath('data','celestrak.csv')
-path_satbeam = path.joinpath('data','satbeam.csv')
+path_satbeams = path.joinpath('data','satbeams.csv')
+path_lyngsat = path.joinpath('data','lyngsat.csv')
+path_altervista = path.joinpath('data','altervista.csv')
 
 df_celestrak = pd.read_csv(f'{path_celestrak}', header=0)
-df_satbeam = pd.read_csv(f'{path_satbeam}', header=0)
+df_satbeams = pd.read_csv(f'{path_satbeams}', header=0)
+df_lyngsat = pd.read_csv(f'{path_lyngsat}', header=0)
+df_altervista = pd.read_csv(f'{path_altervista}', header=0)
 
-celestrak_satellites = df_celestrak['Satellite'].tolist()
-satbeam_satellites = df_satbeam['Satellite'].tolist()
-acceptable_satellites = list(set(celestrak_satellites + satbeam_satellites))
+celestrak_satellites = df_celestrak['priSatName'].tolist()
+satbeams_satellites = df_satbeams['priSatName'].tolist()
+lyngsat_satellites = df_lyngsat['priSatName'].tolist()
+altervista_satellites = df_altervista['priSatName'].tolist()
 
-
+acceptable_satellites = list(set(celestrak_satellites + satbeams_satellites + lyngsat_satellites + altervista_satellites))
 acceptable_satellites.sort()
 options = [{'label': sat, 'value': sat} for sat in acceptable_satellites]
 
@@ -45,11 +50,15 @@ def render_content(sat: str, tab):
     else:
         if sat.upper() in acceptable_satellites:
             if tab == 'tab-general':
-                return utilities.populate_general_info(sat, satbeam_satellites, df_satbeam) 
+                return utilities.populate_general_info(sat, satbeams_satellites, df_satbeams) 
             elif tab == 'tab-telemetry':
                 return utilities.populate_telemetry(sat, celestrak_satellites, df_celestrak)
             elif tab == 'tab-footprints':
-                return utilities.populate_footprints(sat, satbeam_satellites)
+                return utilities.populate_footprints(sat, satbeams_satellites)
+            elif tab == 'tab-freq_plans':
+                return utilities.populate_freq_plans(sat, altervista_satellites)
+            elif tab == 'tab-channels':
+                return utilities.populate_channels(sat, lyngsat_satellites)
         return ""
 
 

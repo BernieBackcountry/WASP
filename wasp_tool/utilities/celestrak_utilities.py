@@ -1,10 +1,11 @@
 import requests
 
+import wasp_tool.utilities as utilities
+
 
 def prepare_celestrak(url: str) -> dict:
     tle_dict = {}
-    sat_name, sat_name_excess, tle = ([] for i in range(3))
-    
+    pri_satName, sec_satName, tle = ([] for i in range(3))
     # get TLE data
     text = get_tles(url)
     
@@ -12,27 +13,29 @@ def prepare_celestrak(url: str) -> dict:
     for i, line in enumerate(text):
         if (i % 3 == 0) and (i <= len(text)-3):
             tle_1 = text[i+1].strip().replace(" ", "*")
-            tle_2 = text[i+2].strip().replace(" ", "*")
-            sat = line.strip().replace("-", " ")
-            # strip excess sat names
-            if "(" in sat:
-                temp = sat.split("(", 1)
-                sat_id = temp[0].upper().strip()
-                sat_name.append(sat_id)
-                temp_2 = temp[1]
-                sat_name_excess.append(temp_2[:-1])
+            tle_2 = text[i+2].strip().replace(" ", "*")  
+            # separate out pri and sec sat names
+            if "(" not in line:
+                pri_satName.append(utilities.standardize_satellite(line))
+                sec_satName.append("")      
             else:
-                sat_name.append(sat)
-                sat_name_excess.append("")
+                temp = line.split("(")
+                pri_satName.append(utilities.standardize_satellite(temp[0]))
+                sec_satName.append(utilities.standardize_satellite(temp[1]))
                 
             tle.append(tle_1 + "\n" + tle_2)
     
-    tle_dict = {'Satellite': sat_name, 
-                'Extra Names': sat_name_excess,
+    tle_dict = {'priSatName': pri_satName, 
+                'secSatName': sec_satName,
                 'TLE': tle}
                 
     return tle_dict
 
 
 def get_tles(url: str) -> list:
-    return requests.get(url).text.split("\n")
+    response = requests.get(url, timeout = 20)
+    if response.status_code == 200:
+        text = response.text.split("\n")
+        return text
+    else:
+        print("Unsuccessful request at ", url)

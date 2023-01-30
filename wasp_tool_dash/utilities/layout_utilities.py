@@ -48,7 +48,10 @@ def create_tabs() -> html.Div:
         dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='General Info', value='tab-general'),
             dcc.Tab(label='TLE', value='tab-telemetry'),
-            dcc.Tab(label='Footprints', value='tab-footprints')]),
+            dcc.Tab(label='Footprints', value='tab-footprints'),
+            dcc.Tab(label='Frequency Plans', value='tab-freq_plans'),
+            dcc.Tab(label='Channels', value='tab-channels'),
+            ]),
         html.Div(id='tabs-content')], style=style)
 
 
