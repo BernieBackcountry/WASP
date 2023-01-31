@@ -1,0 +1,1 @@
+web: gunicorn scraper_dash.app:server --workers 4
