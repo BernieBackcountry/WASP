@@ -1,5 +1,1 @@
-# VAULT
-# python-3.7.5
-
-# Heroku
 python-3.9.16
