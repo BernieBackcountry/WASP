@@ -1,6 +1,5 @@
 from dash import html
 import pandas as pd
-from pdf2image import convert_from_path
 from dash import dash_table
 
 import wasp_tool_dash.utilities as utilities
@@ -39,7 +38,7 @@ def populate_footprints(sat: str, satbeam_satellites: list):
         path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
         path = path.joinpath('data', 'footprints')
         images = path.joinpath(sat).glob('*.jpg')
-        children = []
+        children=[]
         for image in images:
             children.append(image.stem)
             children.append(utilities.encode_image(image))
@@ -53,15 +52,8 @@ def populate_freq_plans(sat: str, altervista_satellites: list):
     style2 = {'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
     if sat in altervista_satellites:
         path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
-        path = path.joinpath('data', 'freq_plans')
-        pdfs = path.joinpath(sat).glob('*.pdf')
-        for pdf in pdfs:
-            pages = convert_from_path(pdf)
-            for i, page in enumerate(pages):
-                file_path = path.joinpath(sat)
-                file_name = sat + "_" + str(i) + ".jpg"
-                page.save(file_path / file_name, 'JPEG')
-        freq_plans = path.joinpath(sat).glob('*.jpg')
+        path = path.joinpath('data', 'freq_plans', sat)
+        freq_plans = path.glob('*.jpg')
         children = []
         for plan in freq_plans:
             children.append(utilities.encode_image_pdf(plan))
@@ -81,9 +73,11 @@ def populate_channels(sat: str, lyngsat_satellites: list):
         children = []
         dfs = []
         for csv in csvs:
-            dfs.append(pd.read_csv(csv))
+            temp = pd.read_csv(csv)
+            temp.drop("Satellite", axis=1, inplace=True)
+            dfs.append(temp)
         df = pd.concat(dfs)
-        children = dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns], style_data ={'width': '5%'})
+        children = dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns], style_cell ={'fontSize':14})
         return html.Div(children, style=style1)
     else:
         return html.P("Information not available.", style=style2)
