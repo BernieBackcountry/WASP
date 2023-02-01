@@ -1,8 +1,11 @@
 import wasp_tool.utilities as utilities
 
 
-# create data directory and sub-directories
-path = utilities.get_project_path().joinpath('data')
+path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
+
+# create data directory
+utilities.create_directory(path.joinpath('data'))
+path_data = path.joinpath('data')
 
 # Scrap Celestrak data
 celestrak_data = utilities.prepare_celestrak('https://celestrak.com/NORAD/elements/geo.txt')

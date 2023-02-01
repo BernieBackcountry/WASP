@@ -1,8 +1,30 @@
 from dash import html
 import pandas as pd
 from dash import dash_table
+from pathlib import Path
 
 import wasp_tool_dash.utilities as utilities
+
+
+def populate_inputs(path: Path) -> dict:
+    path_data = path.joinpath('data')
+    sources = ['celestrak.csv', 'satbeams.csv', 'lyngsat.csv', 'altervista.csv']
+    accepted_inputs = []
+    for source in sources:
+        source_path = path_data.joinpath(source)
+        if source_path.exists():
+            accepted_inputs.extend(load_sources(source_path, source))
+    
+    accepted_inputs = list(set(accepted_inputs))
+    accepted_inputs.sort()
+    input_options = [{'label': accepted_input, 'value': accepted_input} for accepted_input in accepted_inputs]
+    return input_options
+    
+    
+def load_sources(path: Path, source: str) -> list:
+    df_source = pd.read_csv(f'{path}', header=0)
+    source_inputs = df_source['priSatName'].tolist()
+    return source_inputs
 
 
 def populate_general_info(sat: str, satbeam_satellites: list, df_satbeam: pd.DataFrame):

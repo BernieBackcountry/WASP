@@ -10,7 +10,8 @@ def create_layout() -> html.Div:
 
 def create_information_layout() -> html.Div:
         return html.Div(className='three columns div-user-controls', children=[
-            create_title(), create_description(), create_search_dropdown(), create_search_message(), create_logo()])
+            create_title(), create_description(), create_search_dropdown(), create_search_message(), create_logo(), 
+            create_button_celestrak(), create_button(), create_placeholder_output_one(), create_placeholder_output_two()])
 
 
 def create_data_layout() -> html.Div:
@@ -35,11 +36,32 @@ def create_search_dropdown() -> html.Div:
 
 def create_search_message() -> html.Div:
     return html.Div(id='search-message', style={'height': '25px'})
+ 
+ 
+def create_button_celestrak() -> html.Div:
+    return html.Div(className='button_celestrak', children=[
+        html.Button('Update Celestrak TLEs', id='button-update-celestrak', n_clicks=0, style={'marginLeft': '140px', 'background-color': '#00263A', 'color': '#DBE2E9'})
+    ])
+    
+    
+def create_button() -> html.Div:
+    return html.Div(className='button_data', children=[
+        html.P("Please DO NOT click the button below unless you are part of the app development team.", style={'marginTop': '70px'}),
+        html.Button('Populate Data Sources', id='button-data-pull', n_clicks=0, style={'marginLeft': '140px','background-color': '#00263A', 'color': '#DBE2E9'})
+    ])
 
 
 def create_logo() -> html.Div:
     return html.Div(className='logo', children=[
         utilities.encode_image(path=utilities.get_project_path().joinpath('assets', 'spoc_logo.png'))])
+        
+        
+def create_placeholder_output_one() -> html.Div:
+    return html.Div(id='hidden-div-1', style={'display':'none'})
+    
+    
+def create_placeholder_output_two() -> html.Div:
+    return html.Div(id='hidden-div-2', style={'display':'none'})
 
 
 def create_tabs() -> html.Div:
