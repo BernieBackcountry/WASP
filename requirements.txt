@@ -19,5 +19,6 @@ gunicorn
 lxml
 pandas
 pathlib
+pdf2image
 requests
 tdqm
