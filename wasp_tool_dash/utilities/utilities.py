@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def get_project_path() -> Path:
-    return Path('wasp_tool_dash')
+    return Path.cwd().joinpath('wasp_tool_dash')
 
 
 def encode_image(path: Path) -> html.Img:
