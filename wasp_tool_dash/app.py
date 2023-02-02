@@ -1,4 +1,5 @@
 import dash
+from dash import html
 from dash.dependencies import Input, Output
 
 import wasp_tool_dash.utilities as utilities 
