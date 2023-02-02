@@ -8,7 +8,7 @@ path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
 # condition for checking if app data is populated 
 cond = path.joinpath('data').exists()
 
-app = dash.Dash(__name__, suppress_callback_exceptions=True, url_base_pathname='/driver-proxy/o/0/0325-170123-pours17/8000/')
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
 app.layout = utilities.create_layout()
 
@@ -65,4 +65,4 @@ def render_content(search: str, tab: str):
 
 
 if  __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True)
