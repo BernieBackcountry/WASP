@@ -1,1 +1,1 @@
-web: gunicorn wasp_tool_dash.app:server --workers 4 --timeout 0
+web: gunicorn wasp_tool_dash.app:server --workers 4
