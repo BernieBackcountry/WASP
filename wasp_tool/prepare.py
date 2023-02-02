@@ -2,7 +2,7 @@ import wasp_tool.utilities as utilities
 
 
 # create data directory and sub-directories
-path = utilities.get_project_path()
+path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
 
 utilities.create_directory(path.joinpath('data', 'footprints'))
 utilities.create_directory(path.joinpath('data', 'freq_plans'))
