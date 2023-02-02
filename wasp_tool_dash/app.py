@@ -1,5 +1,4 @@
 import dash
-from dash import html
 from dash.dependencies import Input, Output
 
 import wasp_tool_dash.utilities as utilities 
@@ -31,7 +30,7 @@ def update_search_options(search: str):
 def populate_data_sources(click: int):
     changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
     if click and 'button-data-pull' in changed_ids:
-        script_fn = "wasp_tool/prepare.py"
+        script_fn = path.joinpath('prepare.py')
         exec(open(script_fn).read())
         return "Data successfully pulled"
     return ''
@@ -42,7 +41,7 @@ def populate_data_sources(click: int):
 def update_celestrak_tles(click: int):
     changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
     if click and 'button-update-celestrak' in changed_ids:
-        script_fn = "wasp_tool/prepare_celestrak.py"
+        script_fn = path.joinpath('prepare_celestrak.py')
         exec(open(script_fn).read())
         return "TLEs successfully pulled"
     return ''
