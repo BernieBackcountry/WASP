@@ -16,11 +16,12 @@ app.layout = utilities.create_layout()
     [Input(component_id="sat-dropdown", component_property="search_value")])
 def update_search_options(search: str):
     if cond:
-        inputs = utilities.populate_inputs(path)
-        if not search:
-            return inputs
-        else:
+        inputs = utilities.populate_inputs(path) 
+        if search:
             return [i["label"] for i in inputs if i["value"].startswith(search.upper())]
+        else:
+            return inputs
+            
     else:
         return []
 
