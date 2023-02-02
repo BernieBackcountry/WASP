@@ -1,8 +1,6 @@
 # 16_EWS
-> S9A created a web scraping tool to automate the lengthy, human-centric satellite pairing process used by the 16th Electronic Warfare Squadron to geolocate sources of electronic warfare jammers.
 
-
-
+S9A created a web scraping tool to automate the lengthy, human-centric satellite pairing process used by the 16th Electronic Warfare Squadron to geolocate sources of electronic warfare jammers.
 
 ## Table of Contents
 * [General Info](#general-information)
