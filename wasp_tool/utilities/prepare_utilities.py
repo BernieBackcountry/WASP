@@ -46,7 +46,7 @@ def standardize_satellite(sat_name: str) -> str:
 
 def save_dict_to_csv(path: Path, dict_: dict, file_name: str):
     df = pd.DataFrame(dict_)
-    df.to_csv(path / file_name, index=False)
+    df.to_csv(path.joinpath(file_name), index=False)
 
 
 def save_footprints(path: Path, sat_names: list, footprints: list):
