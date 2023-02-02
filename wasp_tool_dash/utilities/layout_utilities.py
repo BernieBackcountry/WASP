@@ -54,7 +54,7 @@ def create_button() -> html.Div:
 
 def create_logo() -> html.Div:
     return html.Div(className='logo', children=[
-        utilities.encode_image(path=utilities.get_project_path().joinpath('assets', 'spoc_logo.png'))])
+        utilities.encode_image(path=utilities.get_project_path().joinpath('wasp_tool_dash', 'assets', 'spoc_logo.png'))])
         
         
 def create_celestrak_output() -> html.Div:
