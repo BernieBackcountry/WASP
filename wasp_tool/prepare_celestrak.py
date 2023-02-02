@@ -1,7 +1,7 @@
 import wasp_tool.utilities as utilities
 
-
-path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
+print(utilities.get_project_path())
+path = utilities.get_project_path().joinpath('wasp_tool')
 
 # create data directory
 path_data = path.joinpath('data')
