@@ -1,8 +1,5 @@
 import dash
 from dash.dependencies import Input, Output
-from dash.exceptions import PreventUpdate
-import pandas as pd
-from pathlib import Path
 
 import wasp_tool_dash.utilities as utilities 
 
@@ -28,25 +25,25 @@ def update_search_options(search: str):
         return []
 
 
-@app.callback(Output(component_id='hidden-div-1', component_property='children'),
+@app.callback(Output(component_id='sources-output', component_property='children'),
     [Input(component_id="button-data-pull", component_property="n_clicks")])
 def populate_data_sources(click: int):
     changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
     if click and 'button-data-pull' in changed_ids:
         script_fn = "wasp_tool/prepare.py"
         exec(open(script_fn).read())
-        return ''
+        return "Data successfully pulled"
     return ''
         
         
-@app.callback(Output(component_id='hidden-div-2', component_property='children'),
+@app.callback(Output(component_id='celestrak-output', component_property='children'),
     [Input(component_id="button-update-celestrak", component_property="n_clicks")])
 def update_celestrak_tles(click: int):
     changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
     if click and 'button-update-celestrak' in changed_ids:
         script_fn = "wasp_tool/prepare_celestrak.py"
         exec(open(script_fn).read())
-        return ''
+        return "TLEs successfully pulled"
     return ''
     
 
