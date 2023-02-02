@@ -4,8 +4,10 @@ from dash.dependencies import Input, Output
 import wasp_tool_dash.utilities as utilities 
 
 path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
+print(path)
 # condition for checking if app data is populated 
 cond = path.joinpath('data').exists()
+print(cond)
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
