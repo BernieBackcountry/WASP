@@ -20,8 +20,7 @@ def update_search_options(search: str):
         if search:
             return [i["label"] for i in inputs if i["value"].startswith(search.upper())]
         else:
-            return inputs
-            
+            return inputs       
     else:
         return []
 
