@@ -15,7 +15,6 @@ def prepare_lyngsat(url: str) -> dict:
         sat_dict = get_satellite_urls(region)
         # loop through each regional satellite
         for key, val in sat_dict.items():
-            print(val)
             if "(" in key:
                 temp = key.split("(", 1)
                 pri_sat = utilities.standardize_satellite(temp[0])
@@ -25,12 +24,20 @@ def prepare_lyngsat(url: str) -> dict:
                 pri_sat = utilities.standardize_satellite(key)
                 priSatNames.append(pri_sat)
                 secSatNames.append("")
-            # send in url 
-            key_tables = get_key_tables(val)
-            # check for empty pages
-            if key_tables:
-                tables_clean = read_tables(pri_sat, key_tables)
-                master_dict[pri_sat] = tables_clean
+            attempts = 10
+            for i in range(attempts+1):
+                try:
+                    # send in url 
+                    key_tables = get_key_tables(val)
+                    # check for empty pages
+                    if key_tables:
+                        tables_clean = read_tables(pri_sat, key_tables)
+                        master_dict[pri_sat] = tables_clean
+                    print("Attempt", i+1, "successful for", key)
+                    break
+                except:
+                    print("Attempt", i+1, "unsuccessful for", key)
+                    pass
 
     dict_ = {'priSatName': priSatNames,
              'secSatName': secSatNames}
@@ -69,7 +76,7 @@ def get_satellite_urls(url: str) -> dict:
 
 
 def get_key_tables(url: str) -> list:
-    response = requests.get(url, timeout=20)
+    response = requests.get(url, timeout=30)
     # Check if the status_code is 200
     if response.status_code == 200:    
         # Parse the HTML content of the webpage

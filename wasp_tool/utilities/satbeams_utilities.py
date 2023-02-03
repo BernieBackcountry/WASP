@@ -70,6 +70,7 @@ def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
                 break
         except:
             print("Attempt", i+1, "unsuccessful request at ", url)
+            pass
 
 
 def get_satellite_info(soup: BeautifulSoup) -> list:
