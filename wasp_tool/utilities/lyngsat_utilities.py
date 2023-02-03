@@ -25,7 +25,7 @@ def prepare_lyngsat(url: str) -> dict:
                 priSatNames.append(pri_sat)
                 secSatNames.append("")
             attempts = 10
-            for i in range(attempts+1):
+            for i in range(attempts):
                 try:
                     # send in url 
                     key_tables = get_key_tables(val)

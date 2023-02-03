@@ -51,7 +51,7 @@ def run_threads(urls: list) -> list:
 
 def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
     attempts = 3
-    for i in range(attempts+1):
+    for i in range(attempts):
         try:
             response = requests.get(url, timeout=20)
             # Check if the status_code is 200
