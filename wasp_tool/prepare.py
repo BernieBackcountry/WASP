@@ -1,6 +1,5 @@
 import wasp_tool.utilities as utilities
 
-
 # create data directory and sub-directories
 path = utilities.get_project_path().joinpath('wasp_tool')
 
@@ -18,6 +17,12 @@ celestrak_data = utilities.prepare_celestrak('https://celestrak.com/NORAD/elemen
 utilities.save_dict_to_csv(path_data, celestrak_data, "celestrak.csv")
 print("CELESTRAK COMPLETE")
 
+# # Scrap Altervista data
+altervista_data, altervista_pdfs = utilities.prepare_altervista('http://frequencyplansatellites.altervista.org/')
+utilities.save_dict_to_csv(path_data, altervista_data, "altervista.csv")
+utilities.save_pdfs(path_freq_plans, altervista_data['priSatName'], altervista_pdfs)
+print("ALTERVISTA COMPLETE") 
+
 # Scrap Satbeams data
 satbeams_data, satbeams_footprints = utilities.prepare_satbeams('https://satbeams.com/satellites?status=active')
 utilities.save_dict_to_csv(path_data, satbeams_data, "satbeams.csv")
@@ -29,9 +34,3 @@ lyngsat_data, lyngsat_tables = utilities.prepare_lyngsat('https://www.lyngsat.co
 utilities.save_dict_to_csv(path_data, lyngsat_data, "lyngsat.csv")
 utilities.save_tables(path_channels, lyngsat_tables)
 print("LYNGSAT COMPLETE")
-
-# Scrap Altervista data
-altervista_data, altervista_pdfs = utilities.prepare_altervista('http://frequencyplansatellites.altervista.org/')
-utilities.save_dict_to_csv(path_data, altervista_data, "altervista.csv")
-utilities.save_pdfs(path_freq_plans, altervista_data['priSatName'], altervista_pdfs)
-print("ALTERVISTA COMPLETE") 
