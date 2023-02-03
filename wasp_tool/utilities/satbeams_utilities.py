@@ -50,21 +50,26 @@ def run_threads(urls: list) -> list:
 
 
 def fetch_url(url: str, q1: queue.Queue, q2: queue.Queue):
-    response = requests.get(url, timeout=20)
-    # Check if the status_code is 200
-    if response.status_code == 200:  
-        # Parse the HTML content of the webpage
-        soup = BeautifulSoup(response.content, 'html.parser')
-        # Scrap satellite info
-        sat_info = get_satellite_info(soup)
-        # Put satellite info on queue
-        q1.put(sat_info)
-        # Scrap footprints
-        sat_footprints = get_satellite_footprints(soup)
-        # Put footprints info on queue
-        q2.put(sat_footprints)
-    else:
-        print("Unsuccessful request at ", url)
+    attempts = 3
+    for i in range(attempts+1):
+        try:
+            response = requests.get(url, timeout=20)
+            # Check if the status_code is 200
+            if response.status_code == 200:  
+                print("Attempt", i+1, "successful at", url)
+                # Parse the HTML content of the webpage
+                soup = BeautifulSoup(response.content, 'html.parser')
+                # Scrap satellite info
+                sat_info = get_satellite_info(soup)
+                # Put satellite info on queue
+                q1.put(sat_info)
+                # Scrap footprints
+                sat_footprints = get_satellite_footprints(soup)
+                # Put footprints info on queue
+                q2.put(sat_footprints)
+                break
+        except:
+            print("Attempt", i+1, "unsuccessful request at ", url)
 
 
 def get_satellite_info(soup: BeautifulSoup) -> list:
