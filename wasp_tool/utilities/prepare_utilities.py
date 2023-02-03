@@ -94,7 +94,7 @@ def save_pdfs(path: Path, names: list, urls: list):
         utilities.create_directory(path.joinpath(sat_name))
         file_path = path.joinpath(sat_name)
         try:
-            req = requests.get(url, timeout=20)
+            req = requests.get(url)
             pdf_name = sat_name + ".pdf"
             print("File", sat_name, "downloading")
             # write to pdf
