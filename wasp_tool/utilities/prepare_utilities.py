@@ -101,12 +101,14 @@ def save_pdfs(path: Path, names: list, urls: list):
             pdf = open(file_path / pdf_name, 'wb')
             pdf.write(req.content)
             pdf.close()
+            print("Pdf written")
             # save pdf as new jpg
             pages = convert_from_path(file_path / pdf_name)
             for i, page in enumerate(pages):
                 jpg_name = sat_name + "_" + str(i) + ".jpg"
                 page.save(file_path / jpg_name, 'JPEG', optimize=True, quality=75)
             # delete original pdf
+            print("jpegs created")
             os.remove(file_path / pdf_name)
         except:
             print("Unable to download", sat_name)
