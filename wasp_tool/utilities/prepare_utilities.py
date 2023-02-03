@@ -94,7 +94,7 @@ def save_pdfs(path: Path, names: list, urls: list):
         utilities.create_directory(path.joinpath(sat_name))
         file_path = path.joinpath(sat_name)
         try:
-            req = requests.get(url)
+            req = requests.get(url, timeout=20)
             pdf_name = sat_name + ".pdf"
             print("File", sat_name, "downloading")
             # write to pdf
@@ -108,5 +108,6 @@ def save_pdfs(path: Path, names: list, urls: list):
                 page.save(file_path / jpg_name, 'JPEG', optimize=True, quality=75)
             # delete original pdf
             os.remove(file_path / pdf_name)
-        except Exception as e:
+        except:
+            print("Unable to download", sat_name)
             pass
