@@ -93,23 +93,24 @@ def save_pdfs(path: Path, names: list, urls: list):
         sat_name = names[i]
         utilities.create_directory(path.joinpath(sat_name))
         file_path = path.joinpath(sat_name)
-        try:
-            req = requests.get(url)
-            pdf_name = sat_name + ".pdf"
-            print("File", sat_name, "downloading")
-            # write to pdf
-            pdf = open(file_path / pdf_name, 'wb')
-            pdf.write(req.content)
-            pdf.close()
-            print("Pdf written")
-            # save pdf as new jpg
-            pages = convert_from_path(file_path / pdf_name)
-            for i, page in enumerate(pages):
-                jpg_name = sat_name + "_" + str(i) + ".jpg"
-                page.save(file_path / jpg_name, 'JPEG', optimize=True, quality=75)
-            # delete original pdf
-            print("jpegs created")
-            os.remove(file_path / pdf_name)
-        except:
-            print("Unable to download", sat_name)
-            pass
+        #try:
+        req = requests.get(url)
+        pdf_name = sat_name + ".pdf"
+        print("File", sat_name, "downloading")
+        # write to pdf
+        pdf = open(file_path / pdf_name, 'wb')
+        pdf.write(req.content)
+        pdf.close()
+
+        # save pdf as new jpg
+        pages = convert_from_path(file_path / pdf_name)
+        print(pages)
+        for i, page in enumerate(pages):
+            jpg_name = sat_name + "_" + str(i) + ".jpg"
+            page.save(file_path / jpg_name, 'JPEG', optimize=True, quality=75)
+        # delete original pdf
+        print("jpegs created")
+        os.remove(file_path / pdf_name)
+        # except:
+        #     print("Unable to download", sat_name)
+        #     pass
