@@ -15,7 +15,6 @@
 bs4
 dash
 dash_bootstrap_components
-fitz
 gunicorn
 lxml
 pandas
