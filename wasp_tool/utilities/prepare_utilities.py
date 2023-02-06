@@ -96,9 +96,9 @@ def save_pdfs(path: Path, names: list, urls: list):
         try:
             req = requests.get(url)
             pdf_name = sat_name + ".pdf"
-            print("File", sat_name, "downloading")
             # write to pdf
             pdf = open(file_path / pdf_name, 'wb')
+            print("Downloading", sat_name)
             pdf.write(req.content)
             pdf.close()
 
@@ -110,8 +110,8 @@ def save_pdfs(path: Path, names: list, urls: list):
                 pix.save(file_path / jpg_name, 'JPEG')
             pages.close()
             # delete original pdf
-            print("jpegs created")
             os.remove(file_path / pdf_name)
+            print("File", sat_name, "downloaded successfully")
         except:
             print("Unable to download", sat_name)
             pass
