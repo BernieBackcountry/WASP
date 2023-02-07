@@ -22,6 +22,7 @@ def prepare_altervista(url: str):
 def get_urls(url: str) -> list:
     req = requests.get(url, timeout=20)
     soup = BeautifulSoup(req.text, "lxml")
+    req.close()
     sidebar = soup.find("div", id="sidebar")
     urls = []
     for a in sidebar.find_all('a', href=True):
@@ -32,6 +33,7 @@ def get_urls(url: str) -> list:
 def get_pdf_urls(url: str) -> list:
     req = requests.get(url, timeout=20)
     soup = BeautifulSoup(req.text, "lxml")
+    req.close()
     sidebar = soup.find("div", id="sidebar")
     priSats, secSats, urls = ([] for i in range(3)) 
     for a in sidebar.find_all('a', href=True):

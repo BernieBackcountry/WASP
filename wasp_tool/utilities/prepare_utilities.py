@@ -95,6 +95,7 @@ def save_pdfs(path: Path, names: list, urls: list):
         file_path = path.joinpath(sat_name)
         # try:
         req = requests.get(url)
+        req.close()
         pdf_name = sat_name + ".pdf"
             # write to pdf
         pdf = open(file_path / pdf_name, 'wb')
