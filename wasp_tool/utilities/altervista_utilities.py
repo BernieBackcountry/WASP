@@ -20,7 +20,7 @@ def prepare_altervista(url: str):
 
 
 def get_urls(url: str) -> list:
-    req = requests.get(url, timeout=20)
+    req = requests.get(url, timeout=30)
     soup = BeautifulSoup(req.text, "lxml")
     req.close()
     sidebar = soup.find("div", id="sidebar")
@@ -49,7 +49,7 @@ def get_pdf_urls(url: str) -> list:
 
 
 def get_sats(text: str):
-    delimiters = ["(", "-->", "-- >", "--"]
+    delimiters = ["(", "-->", "-- >", "--", "/"]
     if any(s in text for s in delimiters):
         min = 1000
         for delim in delimiters:
