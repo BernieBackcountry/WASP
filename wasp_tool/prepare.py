@@ -3,7 +3,10 @@ import time
 
 # create data directory and sub-directories
 path = utilities.get_project_path().joinpath('wasp_tool')
+
 path_data = path.joinpath('data')
+utilities.create_directory(path_data)
+
 path_footprints = path.joinpath('data', 'footprints')
 path_freq_plans = path.joinpath('data', 'freq_plans')
 path_channels = path.joinpath('data', 'channels')
