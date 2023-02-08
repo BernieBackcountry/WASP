@@ -8,13 +8,7 @@ path_footprints = path.joinpath('data', 'footprints')
 path_freq_plans = path.joinpath('data', 'freq_plans')
 path_channels = path.joinpath('data', 'channels')
 
-<<<<<<< HEAD
 start_time = time.time()
-=======
-utilities.create_directory(path_footprints)
-utilities.create_directory(path_freq_plans)
-utilities.create_directory(path_channels)
->>>>>>> 3b6718ec003383046bd9501cb764e2675db425bc
 
 # Scrap Celestrak data
 celestrak_data = utilities.prepare_celestrak('https://celestrak.com/NORAD/elements/geo.txt')
