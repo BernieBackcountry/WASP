@@ -49,11 +49,7 @@ def get_pdf_urls(url: str) -> list:
 
 
 def get_sats(text: str):
-<<<<<<< HEAD
     delimiters = ["(", "-->", "-- >", "--", "/"]
-=======
-    delimiters = ["/", "(", "-->", "-- >", "--"]
->>>>>>> 3b6718ec003383046bd9501cb764e2675db425bc
     if any(s in text for s in delimiters):
         min = 1000
         for delim in delimiters:
