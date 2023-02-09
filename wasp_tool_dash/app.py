@@ -1,14 +1,13 @@
 import dash
-from dash import html
 from dash.dependencies import Input, Output
 
 import wasp_tool_dash.utilities as utilities 
 
-path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
+path = utilities.get_project_path().joinpath('wasp_tool')
 # condition for checking if app data is populated 
 cond = path.joinpath('data').exists()
 
-app = dash.Dash(__name__, suppress_callback_exceptions=True, url_base_pathname='/driver-proxy/o/0/0325-170123-pours17/8000/')
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
 app.layout = utilities.create_layout()
 
@@ -17,11 +16,11 @@ app.layout = utilities.create_layout()
     [Input(component_id="sat-dropdown", component_property="search_value")])
 def update_search_options(search: str):
     if cond:
-        inputs = utilities.populate_inputs(path)
-        if not search:
-            return inputs
-        else:
+        inputs = utilities.populate_inputs(path) 
+        if search:
             return [i["label"] for i in inputs if i["value"].startswith(search.upper())]
+        else:
+            return inputs       
     else:
         return []
 
@@ -31,7 +30,7 @@ def update_search_options(search: str):
 def populate_data_sources(click: int):
     changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
     if click and 'button-data-pull' in changed_ids:
-        script_fn = "wasp_tool/prepare.py"
+        script_fn = path.joinpath('prepare.py')
         exec(open(script_fn).read())
         return "Data successfully pulled"
     return ''
@@ -42,7 +41,7 @@ def populate_data_sources(click: int):
 def update_celestrak_tles(click: int):
     changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
     if click and 'button-update-celestrak' in changed_ids:
-        script_fn = "wasp_tool/prepare_celestrak.py"
+        script_fn = path.joinpath('prepare_celestrak.py')
         exec(open(script_fn).read())
         return "TLEs successfully pulled"
     return ''
@@ -65,4 +64,4 @@ def render_content(search: str, tab: str):
 
 
 if  __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True)

@@ -3,7 +3,7 @@ from pathlib import Path
 import threading
 from tqdm import tqdm
 import requests
-from pdf2image import convert_from_path
+import fitz
 import os
 
 import wasp_tool.utilities as utilities
@@ -14,9 +14,20 @@ def standardize_satellite(sat_name: str) -> str:
     name_replace = sat_name.replace(")", "")
     # strip leading/following spaces
     name_strip = name_replace.strip()
+
     # cast whole string to upper
     name_upper = name_strip.upper()
+
+    # ALTERVISTA SPECIFIC ONE-OFF CASES
+    # if "TÃ¼RKMENÃLEM" in name_upper():
+    #     name_upper = name_upper.replace("TÃ¼RKMENÃLEM", "TURKMENÄLEM")
+
+    if "TURKSAT" in name_upper:
+        name_upper = name_upper.replace("TURKSAT", "TÜRKSAT")
     
+    if ("INTELSA") in name_upper and ("INTELSAT" not in name_upper):
+        name_upper = name_upper.replace("INTELSA", "INTELSAT")
+
     # CASE 1: replacing sub-strings for consistency
     case_1 = {"G-SAT": "GSAT", 
         "HELLASSAT": "HELLAS SAT", 
@@ -26,8 +37,12 @@ def standardize_satellite(sat_name: str) -> str:
         if substring in name_upper:
             name_upper = name_upper.replace(substring, case_1[substring])
             break
+
+    # CASE 2: hot birds are eutelsats
+    if ("HOT BIRD" in name_upper) and ("EUTELSAT" not in name_upper):
+        name_upper = name_upper.replace("HOT BIRD", "EUTELSAT HOT BIRD")
     
-    # CASE 2: replacing white space with dashes
+    # CASE 3: replacing white space with dashes
     dash_add = ["ABS", "AMC", "AMOS", "ARABSAT", "ATHENA FIDUS", "BADR", "BSAT", "BEIDOU ", 
         "BULGARIASAT", "CIEL", "CMS", "EXPRESS AT", "EXPRESS AM", "GSAT", "HORIZONS", "INSAT", 
         "JCSAT", "KAZSAT", "MEASAT", "NSS", "PAKSAT", "PSN", "SES", "TKSAT", "VIASAT", "VINASAT", 
@@ -35,7 +50,7 @@ def standardize_satellite(sat_name: str) -> str:
     if (any(substring in name_upper for substring in dash_add)) and ("SERIES" not in name_upper):
         name_upper = name_upper.replace(" ", "-", 1)
     
-    # CASE 3: replacing dashes with white space
+    # CASE 4: replacing dashes with white space
     dash_remove = ["EXPRESS AMU", "THURAYA"]
     if any(substring in name_upper for substring in dash_remove):
         name_upper = name_upper.replace("-", " ", 1)
@@ -46,7 +61,7 @@ def standardize_satellite(sat_name: str) -> str:
 
 def save_dict_to_csv(path: Path, dict_: dict, file_name: str):
     df = pd.DataFrame(dict_)
-    df.to_csv(path / file_name, index=False)
+    df.to_csv(path.joinpath(file_name), index=False)
 
 
 def save_footprints(path: Path, sat_names: list, footprints: list):
@@ -95,18 +110,24 @@ def save_pdfs(path: Path, names: list, urls: list):
         file_path = path.joinpath(sat_name)
         try:
             req = requests.get(url)
+            req.close()
             pdf_name = sat_name + ".pdf"
-            print("File", sat_name, "downloading")
             # write to pdf
             pdf = open(file_path / pdf_name, 'wb')
+            # print("Downloading", sat_name)
             pdf.write(req.content)
             pdf.close()
+
             # save pdf as new jpg
-            pages = convert_from_path(file_path / pdf_name)
+            pages = fitz.open(file_path / pdf_name)
             for i, page in enumerate(pages):
                 jpg_name = sat_name + "_" + str(i) + ".jpg"
-                page.save(file_path / jpg_name, 'JPEG', optimize=True, quality=75)
+                pix = page.get_pixmap()
+                pix.save(file_path / jpg_name, 'JPEG')
+            pages.close()
             # delete original pdf
             os.remove(file_path / pdf_name)
-        except Exception as e:
+            print("File", sat_name, "downloaded successfully")
+        except:
+            print("Unable to download", sat_name)
             pass

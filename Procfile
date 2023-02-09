@@ -1,1 +1,1 @@
-web: gunicorn wasp_tool_dash.app:server --workers 4
+web: gunicorn wasp_tool_dash.app:server --workers 1
