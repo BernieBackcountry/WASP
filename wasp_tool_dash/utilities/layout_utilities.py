@@ -11,7 +11,7 @@ def create_layout() -> html.Div:
 def create_information_layout() -> html.Div:
         return html.Div(className='three columns div-user-controls', children=[
             create_title(), create_description(), create_search_dropdown(), create_search_message(),
-            create_button_celestrak(), create_celestrak_output(), create_button(), create_sources_output(), create_logo()])
+            create_button_celestrak(), create_celestrak_output(), create_sources_output(), create_logo()])
 
 
 def create_data_layout() -> html.Div:
@@ -42,13 +42,6 @@ def create_button_celestrak() -> html.Div:
     return html.Div(className='button_celestrak', children=[
         html.Div("Click the button below to obtain up-to-date TLEs.", style={'marginLeft': '5px'}),
         html.Button('Update Celestrak TLEs', id='button-update-celestrak', n_clicks=0, style={'marginLeft': '5px', 'background-color': '#00263A', 'color': '#DBE2E9'})
-    ])
-    
-    
-def create_button() -> html.Div:
-    return html.Div(className='button_data', children=[
-        html.Div("Please DO NOT click the button below unless you are part of the app development team.", style={'marginTop': '20px', 'marginLeft': '5px'}),
-        html.Button('Populate Data Sources', id='button-data-pull', n_clicks=0, style={'marginLeft': '5px', 'background-color': '#00263A', 'color': '#DBE2E9'})
     ])
 
 

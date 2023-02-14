@@ -12,13 +12,17 @@
 
 # Heroku
 
+boto3
 bs4
 dash
 dash_bootstrap_components
+fsspec
 gunicorn
 lxml
 pandas
 pathlib
-PyMuPDF
+Pillow
+pypdfium2
 requests
+s3fs
 tdqm

@@ -1,12 +1,10 @@
 import pandas as pd
-from pathlib import Path
 import threading
 from tqdm import tqdm
 import requests
-import fitz
-import os
-
-import wasp_tool.utilities as utilities
+from io import BytesIO
+import pypdfium2 as pdfium
+import shutil
 
 
 def standardize_satellite(sat_name: str) -> str:
@@ -59,75 +57,78 @@ def standardize_satellite(sat_name: str) -> str:
     return new_name
 
 
-def save_dict_to_csv(path: Path, dict_: dict, file_name: str):
+def save_dict_to_csv(aws_bucket: str, dict_: dict, key: str):
     df = pd.DataFrame(dict_)
-    df.to_csv(path.joinpath(file_name), index=False)
+    # write csv to s3 bucket
+    df.to_csv(f"s3://{aws_bucket}/data/{key}", index=False)
 
 
-def save_footprints(path: Path, sat_names: list, footprints: list):
+def save_footprints(aws_client, aws_bucket: str, sat_names: list, footprints: list):
     images, titles = map(list, zip(*footprints))
-    threads = [threading.Thread(target=image_download, args=(path, sat, images, titles, k)) for k, sat in enumerate(sat_names)]
+    threads = [threading.Thread(target=image_download, args=(aws_client, aws_bucket, sat, images, titles, k)) for k, sat in enumerate(sat_names)]
     for thread in threads:
         thread.start()
     for thread in threads:
         thread.join()
 
     
-def image_download(path: Path, sat_name: str, image_links: list, image_titles: list, iter: int):
-    utilities.create_directory(path.joinpath(sat_name))
-    path = path.joinpath(sat_name)
+def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list, image_titles: list, iter: int):
     sat_images = image_links[iter]
     sat_titles = image_titles[iter]
+    file_path = 'data/footprints/' + sat_name + '/'
     # download and save images 
     for i, image in tqdm(enumerate(sat_images)):
-        file_name = sat_titles[i] + ".jpg"
+        jpg_name = sat_titles[i] + ".jpg"
         try:
             r = requests.get(image, stream=True, timeout=20)
             if r.status_code == 200:
-                with open(path / file_name, 'wb') as f:
-                    for chunk in r:
-                        f.write(chunk)
-        except Exception as e:
+                r.raw.decode_content = True
+                in_mem_file = BytesIO()
+                shutil.copyfileobj(r.raw, in_mem_file)
+                in_mem_file.seek(0)
+                aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
+                r.close()
+        except:
+            print("Unable to download image", sat_name, jpg_name)
             pass 
 
 
-def save_tables(path: Path, dict_: dict):
+def save_tables(aws_bucket: str, dict_: dict):
     for key, lst in dict_.items():
         # / causes problem with directory name
         if "/" in key:
             key = key.replace("/", "-")
-        utilities.create_directory(path.joinpath(key))
-        file_path = path.joinpath(key)
         for i, ele in enumerate(lst): 
-            file_name = key + "_" + str(i) + ".csv"
-            ele.to_csv(file_path / file_name, index=False)
+            key_final = key + "/" + key + "_" + str(i) + ".csv"
+            ele.to_csv(f"s3://{aws_bucket}/data/channels/{key_final}", index=False)
 
 
-def save_pdfs(path: Path, names: list, urls: list):
+def save_pdfs(aws_client, aws_bucket: str, names: list, urls: list):
     for i, url in enumerate(urls):
         sat_name = names[i]
-        utilities.create_directory(path.joinpath(sat_name))
-        file_path = path.joinpath(sat_name)
+        file_path = 'data/freq_plans/' + sat_name + '/'
         try:
             req = requests.get(url)
             req.close()
             pdf_name = sat_name + ".pdf"
-            # write to pdf
-            pdf = open(file_path / pdf_name, 'wb')
-            # print("Downloading", sat_name)
-            pdf.write(req.content)
-            pdf.close()
+            # write pdf to s3 bucket
+            aws_client.put_object(Body=req.content, Bucket=aws_bucket, Key=file_path + pdf_name)
+            # read pdf from s3 bucket
+            obj = aws_client.get_object(Bucket=aws_bucket, Key=file_path + pdf_name)['Body'].read()
+            pdf = pdfium.PdfDocument(BytesIO(obj))
 
+            n_pages = len(pdf)
             # save pdf as new jpg
-            pages = fitz.open(file_path / pdf_name)
-            for i, page in enumerate(pages):
+            for i in range(n_pages):
                 jpg_name = sat_name + "_" + str(i) + ".jpg"
-                pix = page.get_pixmap()
-                pix.save(file_path / jpg_name, 'JPEG')
-            pages.close()
-            # delete original pdf
-            os.remove(file_path / pdf_name)
+                page = pdf.get_page(i)
+                in_mem_file = BytesIO()
+                pil_image = page.render_topil()
+                pil_image.save(in_mem_file, format="JPEG")
+                in_mem_file.seek(0)
+                aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
+        
             print("File", sat_name, "downloaded successfully")
         except:
-            print("Unable to download", sat_name)
-            pass
+           print("Unable to download", sat_name)
+           pass
