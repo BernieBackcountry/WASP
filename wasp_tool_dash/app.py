@@ -1,14 +1,26 @@
 import dash
-from dash import html
 from dash.dependencies import Input, Output
+import os
+import boto3
 
 import wasp_tool_dash.utilities as utilities 
 
-path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
-# condition for checking if app data is populated 
-cond = path.joinpath('data').exists()
 
-app = dash.Dash(__name__, suppress_callback_exceptions=True, url_base_pathname='/driver-proxy/o/0/0325-170123-pours17/8000/')
+AWS_CLIENT = boto3.client(
+    's3',
+    aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY'))
+
+AWS_BUCKET_NAME = 'bucketeer-40b6657d-c39a-4bb2-b827-f1fe40ec93db' #os.environ.get('S3_BUCKET_NAME') 
+
+path = utilities.get_project_path().joinpath('wasp_tool')
+
+# condition for checking if app data is populated 
+cond = utilities.prefix_exists(AWS_CLIENT, AWS_BUCKET_NAME, 'data/celestrak.csv')
+
+key = "data/"
+
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
 app.layout = utilities.create_layout()
 
@@ -17,24 +29,13 @@ app.layout = utilities.create_layout()
     [Input(component_id="sat-dropdown", component_property="search_value")])
 def update_search_options(search: str):
     if cond:
-        inputs = utilities.populate_inputs(path)
-        if not search:
-            return inputs
-        else:
+        inputs = utilities.populate_inputs(AWS_CLIENT, AWS_BUCKET_NAME, "data/") 
+        if search:
             return [i["label"] for i in inputs if i["value"].startswith(search.upper())]
+        else:
+            return inputs       
     else:
         return []
-
-
-@app.callback(Output(component_id='sources-output', component_property='children'),
-    [Input(component_id="button-data-pull", component_property="n_clicks")])
-def populate_data_sources(click: int):
-    changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
-    if click and 'button-data-pull' in changed_ids:
-        script_fn = "wasp_tool/prepare.py"
-        exec(open(script_fn).read())
-        return "Data successfully pulled"
-    return ''
         
         
 @app.callback(Output(component_id='celestrak-output', component_property='children'),
@@ -42,7 +43,7 @@ def populate_data_sources(click: int):
 def update_celestrak_tles(click: int):
     changed_ids = [property['prop_id'] for property in dash.callback_context.triggered][0]
     if click and 'button-update-celestrak' in changed_ids:
-        script_fn = "wasp_tool/prepare_celestrak.py"
+        script_fn = path.joinpath('prepare_celestrak.py')
         exec(open(script_fn).read())
         return "TLEs successfully pulled"
     return ''
@@ -53,16 +54,16 @@ def update_celestrak_tles(click: int):
      Input(component_id='tabs', component_property='value')])
 def render_content(search: str, tab: str):
     if tab == 'tab-general':
-        return utilities.populate_general_info(search, path) 
+        return utilities.populate_general_info(AWS_CLIENT, AWS_BUCKET_NAME, search, key)
     elif tab == 'tab-telemetry':
-        return utilities.populate_telemetry(search, path)
+        return utilities.populate_telemetry(AWS_CLIENT, AWS_BUCKET_NAME, search, key)
     elif tab == 'tab-footprints':
-        return utilities.populate_footprints(search, path)
+        return utilities.populate_footprints(AWS_CLIENT, AWS_BUCKET_NAME, search, key)
     elif tab == 'tab-freq_plans':
-        return utilities.populate_freq_plans(search, path)
+        return utilities.populate_freq_plans(AWS_CLIENT, AWS_BUCKET_NAME, search, key)
     elif tab == 'tab-channels':
-        return utilities.populate_channels(search, path)
+        return utilities.populate_channels(AWS_CLIENT, AWS_BUCKET_NAME, search, key)
 
 
 if  __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True)

@@ -1,13 +1,16 @@
+import boto3
+import os
 import wasp_tool.utilities as utilities
 
 
-path = utilities.get_project_path().resolve().parent.joinpath('wasp_tool')
+AWS_CLIENT = boto3.client(
+    's3',
+    aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY'))
 
-# create data directory
-utilities.create_directory(path.joinpath('data'))
-path_data = path.joinpath('data')
+AWS_BUCKET_NAME = 'bucketeer-40b6657d-c39a-4bb2-b827-f1fe40ec93db' #os.environ.get('S3_BUCKET_NAME') 
 
 # Scrap Celestrak data
 celestrak_data = utilities.prepare_celestrak('https://celestrak.com/NORAD/elements/geo.txt')
-utilities.save_dict_to_csv(path_data, celestrak_data, "celestrak.csv")
+utilities.save_dict_to_csv(AWS_BUCKET_NAME, celestrak_data, "celestrak.csv")
 print("CELESTRAK COMPLETE")
