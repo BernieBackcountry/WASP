@@ -1,37 +1,43 @@
 from dash import html
 import pandas as pd
 from dash import dash_table
-from pathlib import Path
+from io import StringIO, BytesIO
+import botocore
+from PIL import Image
+
 
 import wasp_tool_dash.utilities as utilities
 
 
-def populate_inputs(path: Path) -> dict:
-    path_data = path.joinpath('data')
+def populate_inputs(aws_client: botocore.client, aws_bucket: str, key: str) -> dict:
     sources = ['celestrak.csv', 'satbeams.csv', 'lyngsat.csv', 'altervista.csv']
     accepted_inputs = []
     for source in sources:
-        source_path = path_data.joinpath(source)
-        if source_path.exists():
-            accepted_inputs.extend(load_sources(source_path))
-    
+        source_path = key + source
+        does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+        if does_exist:
+            accepted_inputs.extend(load_sources(aws_client, aws_bucket, source_path))
+ 
     accepted_inputs = list(set(accepted_inputs))
     accepted_inputs.sort()
     input_options = [{'label': accepted_input, 'value': accepted_input} for accepted_input in accepted_inputs]
     return input_options
     
     
-def load_sources(path: Path) -> list:
-    df_source = pd.read_csv(f'{path}', header=0)
+def load_sources(aws_client: botocore.client, aws_bucket: str, key: str) -> list:
+    obj = aws_client.get_object(Bucket=aws_bucket, Key=key)['Body'].read().decode('utf-8')
+    df_source = pd.read_csv(StringIO(obj), header=0)
     source_inputs = df_source['priSatName'].tolist()
     return source_inputs
 
 
-def populate_general_info(sat: str, path: Path):
+def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str, key: str) -> html.P:
     style = {'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
-    if path.joinpath('data', 'satbeams.csv').exists():
-        source_path = path.joinpath('data', 'satbeams.csv')
-        df = pd.read_csv(f'{source_path}', header=0)
+    source_path = key + 'satbeams.csv'
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+    if does_exist:
+        obj = aws_client.get_object(Bucket=aws_bucket, Key=source_path)['Body'].read().decode('utf-8')
+        df = pd.read_csv(StringIO(obj), header=0)
         if sat in df['priSatName'].values:
             df_subset = df[df['priSatName'] == sat]
             position = str(df_subset['Position'].iloc[0])
@@ -46,11 +52,13 @@ def populate_general_info(sat: str, path: Path):
         return html.P("Populate data sources to obtain requested information.", style=style)
 
 
-def populate_telemetry(sat: str, path: Path):
+def populate_telemetry(aws_client: botocore.client, aws_bucket: str, sat: str, key: str) -> html.P:
     style = {'color': "black", 'left-margin': '20px', 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
-    if path.joinpath('data', 'celestrak.csv').exists():
-        source_path = path.joinpath('data', 'celestrak.csv')
-        df = pd.read_csv(f'{source_path}', header=0)
+    source_path = key + 'celestrak.csv'
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+    if does_exist:
+        obj = aws_client.get_object(Bucket=aws_bucket, Key=source_path)['Body'].read().decode('utf-8')
+        df = pd.read_csv(StringIO(obj), header=0)
         if sat in df['priSatName'].values:
             df_subset = df[df['priSatName'] == sat]
             temp = str(df_subset['TLE'].iloc[0]).split("\n", 1)
@@ -63,59 +71,72 @@ def populate_telemetry(sat: str, path: Path):
         return html.P("Populate data sources to obtain requested information.", style=style)
 
 
-def populate_footprints(sat: str, path: Path):
+def populate_footprints(aws_client: botocore.client, aws_bucket: str, sat: str, key: str):
     style1 = {'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll', 'color': 'black', 'font-size': '25px'}
     style2 = {'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
-    if path.joinpath('data', 'footprints').exists():
-        if path.joinpath('data', 'footprints', sat).exists():
-            source_path = path.joinpath('data', 'footprints', sat)
-            images = source_path.glob('*.jpg')
-            children=[]
-            for image in images:
-                children.append(image.stem)
-                children.append(utilities.encode_image(image))
-            return html.Div(children, style=style1)
-
-        else:
-            return html.P("Information not available.", style=style2)
-    else:
-        return html.P("Populate data sources to obtain requested information.", style=style2)
-
-def populate_freq_plans(sat: str, path: Path):
-    style1 = {'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll', 'color': 'black', 'font-size': '25px'}
-    style2 = {'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
-    if path.joinpath('data', 'freq_plans').exists():
-        if path.joinpath('data', 'freq_plans', sat).exists():
-            source_path = path.joinpath('data', 'freq_plans', sat)
-            images = source_path.glob('*.jpg')
-            children=[]
-            for image in images:
-                children.append(utilities.encode_image_pdf(image))
-            return html.Div(children, style=style1)
-        else:
-            return html.P("Information not available.", style=style2)
+    csv_path = key + 'satbeams.csv'
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
+    if does_exist:
+        try:
+            source_path = key + 'footprints/' + sat + "/"
+            image_keys = utilities.get_file_keys(aws_client, aws_bucket, source_path, ".jpg")
+            children = []
+            for image in image_keys:
+                title = image.rsplit("/", 1)[1]
+                title = title.replace(".jpg", "")
+                file_stream = BytesIO()
+                aws_client.download_fileobj(aws_bucket, image, file_stream)
+                img = Image.open(file_stream)
+                children.append(title)
+                children.append(html.Img(src=img))
+            return html.Div(children, style=style1)     
+        except:
+            return html.P("Information not available.", style=style2)  
     else:
         return html.P("Populate data sources to obtain requested information.", style=style2)
 
 
-
-def populate_channels(sat: str, path: Path):
+def populate_freq_plans(aws_client: botocore.client, aws_bucket: str, sat: str, key: str):
     style1 = {'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll', 'color': 'black', 'font-size': '25px'}
     style2 = {'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
-    if path.joinpath('data', 'channels').exists():
-        if path.joinpath('data', 'channels', sat).exists():
-            dfs = source_path.glob('*.csv')
-            source_path = path.joinpath('data', 'channels', sat)
+    csv_path = key + 'altervista.csv'
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
+    if does_exist:
+        try:
+            source_path = key + 'freq_plans/' + sat + "/"
+            image_keys = utilities.get_file_keys(aws_client, aws_bucket, source_path, ".jpg")
+            children = []
+            for image in image_keys:
+                file_stream = BytesIO()
+                aws_client.download_fileobj(aws_bucket, image, file_stream)
+                img = Image.open(file_stream)
+                children.append(html.Img(src=img))
+            return html.Div(children, style=style1)   
+        except:
+            return html.P("Information not available.", style=style2)     
+    else:
+        return html.P("Populate data sources to obtain requested information.", style=style2)
+
+
+def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, key: str):
+    style1 = {'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll', 'color': 'black', 'font-size': '25px'}
+    style2 = {'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
+    csv_path = key + 'lyngsat.csv'
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
+    if does_exist:
+        try:
+            source_path = key + 'channels/' + sat + "/"
+            table_keys = utilities.get_file_keys(aws_client, aws_bucket, source_path, ".csv")
             tables = []
-            for df in dfs:
-                temp = pd.read_csv(df)
-                temp.drop("Satellite", axis=1, inplace=True)
-                tables.append(temp)
+            for tab in table_keys:
+                obj = aws_client.get_object(Bucket=aws_bucket, Key=tab)['Body'].read().decode('utf-8')
+                df = pd.read_csv(StringIO(obj), header=0)
+                df.drop("Satellite", axis=1, inplace=True)
+                tables.append(df)
             master_table = pd.concat(tables)
             children = dash_table.DataTable(master_table.to_dict('records'), [{"name": i, "id": i} for i in master_table.columns], style_cell ={'fontSize':14})
             return html.Div(children, style=style1)
-        else:
+        except:
             return html.P("Information not available.", style=style2)
     else:
         return html.P("Populate data sources to obtain requested information.", style=style2)
-
