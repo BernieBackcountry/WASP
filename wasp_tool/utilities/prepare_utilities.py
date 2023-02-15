@@ -5,6 +5,7 @@ import requests
 from io import BytesIO
 import pypdfium2 as pdfium
 import shutil
+import time
 
 
 def standardize_satellite(sat_name: str) -> str:
@@ -65,11 +66,19 @@ def save_dict_to_csv(aws_bucket: str, dict_: dict, key: str):
 
 def save_footprints(aws_client, aws_bucket: str, sat_names: list, footprints: list):
     images, titles = map(list, zip(*footprints))
-    threads = [threading.Thread(target=image_download, args=(aws_client, aws_bucket, sat, images, titles, k)) for k, sat in enumerate(sat_names)]
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
+    jobs = []
+    for k, sat in enumerate(sat_names):
+        thread = threading.Thread(target=image_download, args=(aws_client, aws_bucket, sat, images, titles, k))
+        jobs.append(thread)
+
+    for j in jobs:
+        threads = threading.active_count()
+        while threads > 4:
+            time.sleep(5)
+            threads = threading.active_count()
+        j.start()
+    for j in jobs:
+        j.join()
 
     
 def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list, image_titles: list, iter: int):
