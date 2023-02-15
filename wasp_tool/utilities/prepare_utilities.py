@@ -97,6 +97,7 @@ def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list
                 in_mem_file.seek(0)
                 aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
                 r.close()
+                print("Image download successful")
         except:
             print("Unable to download image", sat_name, jpg_name)
             pass 

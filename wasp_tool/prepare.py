@@ -35,7 +35,6 @@ start_time = time.time()
 
 # Scrap Satbeams data
 satbeams_data, satbeams_footprints = utilities.prepare_satbeams('https://satbeams.com/satellites?status=active')
-print(satbeams_data)
 utilities.save_dict_to_csv(AWS_BUCKET_NAME, satbeams_data, "satbeams.csv")
 utilities.save_footprints(AWS_CLIENT, AWS_BUCKET_NAME, satbeams_data["priSatName"], satbeams_footprints)
 print("--- %s seconds ---" % (time.time() - start_time))
