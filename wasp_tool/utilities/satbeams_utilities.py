@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import threading
 import queue
-import time
 
 import wasp_tool.utilities as utilities 
 
@@ -30,27 +29,19 @@ def run_threads(urls: list) -> list:
     q_footprints = queue.Queue()
 
     threads = [threading.Thread(target=fetch_url, args=(url, q_info, q_footprints)) for url in urls]
-    for thread in threads:
-        success = False
-        while not success:  
-            if threading.activeCount() <= 256:      
-                thread.start()
-                # Get satellite info
-                info = q_info.get()
-                sat_info.append(info)
-                # Get satellite footprints
-                footprints = q_footprints.get()
-                if footprints is None:
-                    # append empty nested list for None footprints case
-                    lst = [[] for _ in range(2)]
-                    sat_footprints.append(lst)
-                else:
-                    sat_footprints.append(footprints)
-                
-                success = True
-            else:
-                print("Go to sleep")
-                time.sleep(10)
+    for thread in threads:   
+        thread.start()
+        # Get satellite info
+        info = q_info.get()
+        sat_info.append(info)
+        # Get satellite footprints
+        footprints = q_footprints.get()
+        if footprints is None:
+            # append empty nested list for None footprints case
+            lst = [[] for _ in range(2)]
+            sat_footprints.append(lst)
+        else:
+            sat_footprints.append(footprints)
     for thread in threads:
         thread.join()
         
