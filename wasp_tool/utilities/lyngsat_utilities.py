@@ -27,21 +27,18 @@ def prepare_lyngsat(url: str) -> dict:
                 secSatNames.append("")
             attempts = 10
             for i in range(attempts):
-                #try:
+                try:
                     # send in url 
-                key_tables = get_key_tables(val)
+                    key_tables = get_key_tables(val)
                     # check for empty pages
-                if key_tables:
-                    tables_clean = read_tables(pri_sat, key_tables)
-                    master_dict[pri_sat] = tables_clean
-                print("Attempt", i+1, "successful for", key)
-                
-                if i==3:
-                    exit(0)
-                break
-                #except:
-                #    print("Attempt", i+1, "unsuccessful for", key)
-                #    pass
+                    if key_tables:
+                        tables_clean = read_tables(pri_sat, key_tables)
+                        master_dict[pri_sat] = tables_clean
+                    print("Attempt", i+1, "successful for", key)
+                    break
+                except:
+                    print("Attempt", i+1, "unsuccessful for", key)
+                    pass
 
     dict_ = {'priSatName': priSatNames,
              'secSatName': secSatNames}
