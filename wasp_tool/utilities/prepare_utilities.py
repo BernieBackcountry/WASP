@@ -94,13 +94,12 @@ def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list
 
 
 def save_tables(aws_bucket: str, dict_: dict):
-    for key, lst in dict_.items():
+    for key, val in dict_.items():
         # / causes problem with directory name
         if "/" in key:
             key = key.replace("/", "-")
-        for i, ele in enumerate(lst): 
-            key_final = key + "/" + key + "_" + str(i) + ".csv"
-            ele.to_csv(f"s3://{aws_bucket}/data/channels/{key_final}", index=False)
+        key_final = key + "/" + key + ".csv"
+        ele.to_csv(f"s3://{aws_bucket}/data/channels/{key_final}", index=False)
 
 
 def save_pdfs(aws_client, aws_bucket: str, names: list, urls: list):

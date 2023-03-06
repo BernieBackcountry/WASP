@@ -94,7 +94,7 @@ def get_key_tables(url: str) -> list:
         return key_tables
 
 
-def read_tables(sat_name: str, html_tables: list) -> list:
+def read_tables(sat_name: str, html_tables: list) -> pd.DataFrame:
     tables = []
     # table is in html
     for table in html_tables:
@@ -170,15 +170,21 @@ def read_tables(sat_name: str, html_tables: list) -> list:
     for h, col in enumerate(html_columns):
         table_star = tables_clean[h]
         # loop through channel name values in a given table
-        for m in range(0, len(table_star['Channel Name'].values)):
+        for m in range(0, len(table_star['(Provider) Channel Name'].values)):
             cell = col[m]
             channel_status = cell["style"]
             if (channel_status == green) or (channel_status == yellow):
-                table_star.loc[m, "Channel On"] = "ON"
+                table_star.loc[m, "Channel Status"] = "ON"
             else:
-                table_star.loc[m, "Channel On"] = "OFF"
+                table_star.loc[m, "Channel Status"] = "OFF"
+                
     
-    return tables_clean
+    # combine all tables into one large one        
+    master_table = pd.concat(tables_clean, ignore_index=True)
+    # drop excess rows
+    master_table = clean_rows(master_table)
+    
+    return master_table
 
 
 def get_row_spans(cell) -> int:
@@ -207,11 +213,8 @@ def clean_tables(sat_name: str, df_tables: list) -> list:
             df_clean.reset_index(drop=True, inplace=True)
         
             # instantiate empty clean dataframe with desired columns 
-            df_new = pd.DataFrame(np.ones((len(df_clean), 11))*np.nan, columns=['Satellite', 'Frequency', 'Transponder', 'Beam', 'EIRP (dBW)', 
-                'System', 'SR', 'FEC', 'Provider Name', 'Channel Name', 'Channel On'])
-            
-            # populate Satellite col
-            df_new.loc[df_new.index, "Satellite"] = sat_name
+            df_new = pd.DataFrame(np.ones((len(df_clean), 9))*np.nan, columns=['(Provider) Channel Name', 'Channel Status', 
+                    'Frequency', 'System', 'SR', 'FEC', 'Transponder', 'Beam', 'EIRP (dBW)'])
             
             # iterate through rows with same info for col 0
             rows = df_clean[0].unique()
@@ -249,13 +252,42 @@ def clean_tables(sat_name: str, df_tables: list) -> list:
                             df_new.loc[df_temp.index, "System"] = split
                         else:
                             df_new.loc[df_temp.index, "System"] = df_new.loc[df_temp.index, "System"].astype(str) + " " + split
+                            
+                new_string = ""
                 for i in range(0, len(df_temp)):
                     # split column 2
                     test_string = df_temp.iloc[i, 2]
                     if "*" in test_string:
                         new_string = test_string.replace("*", "")
-                        df_new.loc[df_temp.index, "Provider Name"] = new_string
+                        df_new.loc[df_temp.index, "(Provider) Channel Name"] = "(" + new_string + ")"
                     else:
-                        df_new.loc[df_temp.index[i], "Channel Name"] = test_string
+                        if new_string == "":
+                            df_new.loc[df_temp.index[i], "(Provider) Channel Name"] = test_string
+                        else:
+                            df_new.loc[df_temp.index[i], "(Provider) Channel Name"] = "(" + new_string + ") " + test_string
+                            
             clean_tables.append(df_new)
     return clean_tables, drop_tables
+    
+    
+def clean_rows(table: pd.DataFrame) -> pd.DataFrame:
+    # drop blank/unnecessary rows based on provider/channel condition
+    drop = []
+    for row in range(len(table)):
+        row_val = table['(Provider) Channel Name'].iloc[row]
+        # check for \n rows 
+        if "\n" in str(row_val):
+            drop.append(row)
+        # check for NaN rows
+        if pd.isnull(row_val):
+            drop.append(row)
+        # check for provider only rows 
+        value = row_val.strip()
+        if (value.rfind("(") == 0) and (value.rfind(")") == (len(value)-1)):
+            drop.append(row)   
+        # can add something to check for feeds etc.
+        if value in ['test card', 'info card', 'feeds']:
+            drop.append(row)
+            
+    table.drop(drop, axis=0, inplace=True) 
+    return table
