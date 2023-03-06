@@ -125,16 +125,10 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, ke
     does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
     if does_exist:
         try:
-            source_path = key + 'channels/' + sat + "/"
-            table_keys = utilities.get_file_keys(aws_client, aws_bucket, source_path, ".csv")
-            tables = []
-            for tab in table_keys:
-                obj = aws_client.get_object(Bucket=aws_bucket, Key=tab)['Body'].read().decode('utf-8')
-                df = pd.read_csv(StringIO(obj), header=0)
-                df.drop("Satellite", axis=1, inplace=True)
-                tables.append(df)
-            master_table = pd.concat(tables)
-            children = dash_table.DataTable(master_table.to_dict('records'), [{"name": i, "id": i} for i in master_table.columns], style_cell ={'fontSize':14})
+            source_path = key + 'channels/' + sat + "/" + sat + ".csv"
+            obj = aws_client.get_object(Bucket=aws_bucket, Key=tab)['Body'].read().decode('utf-8')
+            df = pd.read_csv(StringIO(obj), header=0)
+            children = dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns], style_cell ={'fontSize':14})
             return html.Div(children, style=style1)
         except:
             return html.P("Information not available.", style=style2)
