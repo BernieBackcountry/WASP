@@ -115,7 +115,7 @@ def populate_freq_plans(aws_client: botocore.client, aws_bucket: str, sat: str, 
                 file_stream = BytesIO()
                 aws_client.download_fileobj(aws_bucket, image, file_stream)
                 img = Image.open(file_stream)
-                children.append(html.Img(src=img))
+                children.append(html.Img(src=img, style={'width':'95%'}))
             return html.Div(children, style=style1)   
         else:
             return html.P("Information not available.", style=style2)     
