@@ -129,16 +129,17 @@ def save_pdfs(aws_client, aws_bucket: str, names: list, urls: list):
 
         n_pages = len(pdf)
         # save pdf as new jpg
-        for i in range(n_pages):
-            jpg_name = sat_name + "_" + str(i) + ".jpg"
-            page = pdf[i]
-            in_mem_file = BytesIO()
-            pil_image = page.render(scale=2).to_pil()
-            pil_image.save(in_mem_file, format="JPEG")
-            in_mem_file.seek(0)
-            aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
-        
-            print("File", sat_name, "downloaded successfully")
-        #except:
-        #   print("Unable to download", sat_name)
-        #   pass
+        try:
+            for i in range(n_pages):
+                jpg_name = sat_name + "_" + str(i) + ".jpg"
+                page = pdf[i]
+                in_mem_file = BytesIO()
+                pil_image = page.render(scale=2).to_pil()
+                pil_image.save(in_mem_file, format="JPEG")
+                in_mem_file.seek(0)
+                aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
+            
+                print("File", sat_name, "downloaded successfully")
+        except:
+          print("Unable to download", sat_name)
+          pass
