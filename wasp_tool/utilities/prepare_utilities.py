@@ -141,5 +141,5 @@ def save_pdfs(aws_client, aws_bucket: str, names: list, urls: list):
             
                 print("File", sat_name, "downloaded successfully")
         except:
-          print("Unable to download", sat_name)
-          pass
+            print("Unable to download", sat_name)
+            pass
