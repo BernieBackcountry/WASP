@@ -133,8 +133,8 @@ def save_pdfs(aws_client, aws_bucket: str, names: list, urls: list):
             jpg_name = sat_name + "_" + str(i) + ".jpg"
             page = pdf.get_page(i)
             in_mem_file = BytesIO()
-            pil_image = page.render_topil()
-            pil_image.save(in_mem_file, format="JPEG")
+            #pil_image = page.render_topil()
+            page.save(in_mem_file, format="JPEG")
             in_mem_file.seek(0)
             aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
         
