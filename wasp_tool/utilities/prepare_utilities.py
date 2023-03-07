@@ -117,24 +117,23 @@ def save_pdfs(aws_client, aws_bucket: str, names: list, urls: list):
     for i, url in enumerate(urls):
         sat_name = names[i]
         file_path = 'data/freq_plans/' + sat_name + '/'
-        #try:
-        req = requests.get(url)
-        req.close()
-        pdf_name = sat_name + ".pdf"
-        # write pdf to s3 bucket
-        aws_client.put_object(Body=req.content, Bucket=aws_bucket, Key=file_path + pdf_name)
-        # read pdf from s3 bucket
-        obj = aws_client.get_object(Bucket=aws_bucket, Key=file_path + pdf_name)['Body'].read()
-        pdf = pdfium.PdfDocument(BytesIO(obj))
-
-        n_pages = len(pdf)
-        # save pdf as new jpg
         try:
+            req = requests.get(url)
+            req.close()
+            pdf_name = sat_name + ".pdf"
+            # write pdf to s3 bucket
+            aws_client.put_object(Body=req.content, Bucket=aws_bucket, Key=file_path + pdf_name)
+            # read pdf from s3 bucket
+            obj = aws_client.get_object(Bucket=aws_bucket, Key=file_path + pdf_name)['Body'].read()
+            pdf = pdfium.PdfDocument(BytesIO(obj))
+
+            n_pages = len(pdf)
+            # save pdf as new jpg
             for i in range(n_pages):
                 jpg_name = sat_name + "_" + str(i) + ".jpg"
                 page = pdf[i]
                 in_mem_file = BytesIO()
-                pil_image = page.render(scale=2).to_pil()
+                pil_image = page.render().to_pil()
                 pil_image.save(in_mem_file, format="JPEG")
                 in_mem_file.seek(0)
                 aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
