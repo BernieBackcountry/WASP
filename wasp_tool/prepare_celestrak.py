@@ -10,6 +10,8 @@ AWS_CLIENT = boto3.client(
 
 AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME') 
 
+print(AWS_BUCKET_NAME)
+
 # Scrap Celestrak data
 celestrak_data = utilities.prepare_celestrak('https://celestrak.com/NORAD/elements/geo.txt')
 utilities.save_dict_to_csv(AWS_BUCKET_NAME, celestrak_data, "celestrak.csv")
