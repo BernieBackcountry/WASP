@@ -1,4 +1,5 @@
-from dash import dcc, html
+import pandas as pd
+from dash import dash_table, dcc, html
 
 import wasp_tool_dash.utilities as utilities
 
@@ -9,29 +10,29 @@ def create_layout() -> html.Div:
 
 
 def create_information_layout() -> html.Div:
-        return html.Div(className='three columns div-user-controls', children=[
-            create_title(), create_description(), create_search_dropdown(), create_search_message(),
-            create_button_celestrak(), create_celestrak_output(), create_sources_output(), create_logo()])
+    return html.Div(className='three columns div-user-controls', children=[
+        create_title(), create_description(), create_search_dropdown(), create_search_message(),
+        create_button_celestrak(), create_celestrak_output(), create_sources_output(), create_logo()])
 
 
 def create_data_layout() -> html.Div:
     return html.Div(className='nine columns div-for-charts bg-grey', children=[
-                html.Div(id='page_content', className='loader', style={'height': 'auto', 'width': 'auto'}),
-                create_tabs(), create_contact_information()], style={'textAlign': 'center', 'align-items': 'center'})
+        html.Div(id='page_content', className='loader', style={'height': 'auto', 'width': 'auto'}),
+        create_tabs(), create_contact_information()], style={'textAlign': 'center', 'align-items': 'center'})
 
 
 def create_title() -> html.H1:
-    return html.H1("16th EWS W.A.S.P.")
+    return html.H1('16th EWS W.A.S.P.')
 
 
 def create_description() -> html.P:
-    return html.P("The Webscraping Application for Satellite Pairing (WASP) consolidates pertinent information to the satellite pair-building process. Enter a satellite below to obtain its related data.")
+    return html.P('The Webscraping Application for Satellite Pairing (WASP) consolidates pertinent'
+                  'information to the satellite pair-building process. Enter a satellite below to obtain its related data.')
 
 
 def create_search_dropdown() -> html.Div:
     return html.Div(className='search_dropdown', children=[
-        dcc.Dropdown(id="sat-dropdown", placeholder="Input a satellite", style={'marginLeft': '5px'}),
-    ])
+        dcc.Dropdown(id='sat-dropdown', placeholder='Input a satellite', style={'marginLeft': '5px'})])
 
 
 def create_search_message() -> html.Div:
@@ -40,9 +41,9 @@ def create_search_message() -> html.Div:
  
 def create_button_celestrak() -> html.Div:
     return html.Div(className='button_celestrak', children=[
-        html.Div("Click the button below to obtain up-to-date TLEs.", style={'marginLeft': '5px'}),
-        html.Button('Update Celestrak TLEs', id='button-update-celestrak', n_clicks=0, style={'marginLeft': '5px', 'background-color': '#00263A', 'color': '#DBE2E9'})
-    ])
+        html.Div('Click the button below to obtain up-to-date TLEs.', style={'marginLeft': '5px'}),
+        html.Button('Update Celestrak TLEs', id='button-update-celestrak', n_clicks=0, 
+                    style={'marginLeft': '5px', 'background-color': '#00263A', 'color': '#DBE2E9'})])
 
 
 def create_logo() -> html.Div:
@@ -61,19 +62,40 @@ def create_sources_output() -> html.Div:
 def create_tabs() -> html.Div:
     style = {'width': 1100, 'height': 500, 'resize': 'none', 'margin': '32px'}
     return html.Div([
-        dcc.Tabs(id="tabs", value='tab-1', children=[
+        dcc.Tabs(id='tabs', value='tab-1', children=[
             dcc.Tab(label='General Info', value='tab-general'),
             dcc.Tab(label='TLE', value='tab-telemetry'),
             dcc.Tab(label='Footprints', value='tab-footprints'),
             dcc.Tab(label='Frequency Plans', value='tab-freq_plans'),
-            dcc.Tab(label='Channels', value='tab-channels'),
-            ]),
+            dcc.Tab(label='Channels', value='tab-channels')]),
         html.Div(id='tabs-content')], style=style)
 
 
 def create_contact_information() -> html.Footer:
-    return html.Footer(className='footer', children="All information presented on this dashboard is aggregated and compiled from open-source, unclassified websites. \
-        The information is copyrighted and not approved for commercial or public use. The original sources for this information are \
-        https://www.satbeams.com/, https://www.lyngsat.com/, https://celestrak.org/, and http://frequencyplansatellites.altervista.org/. \
-        For more information or questions, please contact michelle.mcgee.2@spaceforce.mil and/or alexis.denhard.ctr@spaceforce.mil", 
-        style={'font-style': 'italic'})
+    return html.Footer(className='footer', children=
+                       'All information presented on this dashboard is aggregated and compiled from open-source, unclassified websites.'
+                       'The information is copyrighted and not approved for commercial or public use. The original sources for this'
+                       'information are https://www.satbeams.com/, https://www.lyngsat.com/, https://celestrak.org/, and'
+                       'http://frequencyplansatellites.altervista.org/. For more information or questions, please contact'
+                       'michelle.mcgee.2@spaceforce.mil and/or alexis.denhard.ctr@spaceforce.mil', 
+                       style={'font-style': 'italic'})
+
+
+def create_column_filter() -> dcc.Dropdown:
+    return dcc.Dropdown(['Channel Status', 'Ku/C-band'], id='column-filter', placeholder='Filter by...', 
+                        style={'marginLeft': '5px', 'maxWidth': '300px'})
+
+
+def create_value_filter() -> dcc.Dropdown:
+    return dcc.Dropdown(id='value-filter', style={'marginLeft': '5px', 'maxWidth': '300px'})
+
+
+def create_data_table(df: pd.DataFrame) -> dash_table.DataTable:
+    return dash_table.DataTable(df.to_dict('records'), [{'name': i, 'id': i} for i in df.columns],
+                                id='data-table',
+                                sort_action='native',
+                                style_cell ={'fontSize':14, 'textAlign': 'left'},
+                                style_header={'backgroundColor': 'grey', 'fontWeight': 'bold'},
+                                style_data_conditional=[{'if': {'column_id': 'Ku/C-band',},'display': 'None',}],
+                                style_header_conditional=[{'if': {'column_id': 'Ku/C-band',},'display': 'None',}])
+    

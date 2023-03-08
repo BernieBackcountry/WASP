@@ -1,7 +1,9 @@
-import wasp_tool.utilities as utilities
-import time
 import os
+import time
+
 import boto3
+
+import wasp_tool.utilities as utilities
 
 
 # get AWS s3 bucket
