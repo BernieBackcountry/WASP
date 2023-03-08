@@ -1,5 +1,7 @@
-import boto3
 import os
+
+import boto3
+
 import wasp_tool.utilities as utilities
 
 

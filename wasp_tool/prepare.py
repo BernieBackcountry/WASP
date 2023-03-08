@@ -1,7 +1,9 @@
-import wasp_tool.utilities as utilities
-import time
 import os
+import time
+
 import boto3
+
+import wasp_tool.utilities as utilities
 
 
 # get AWS s3 bucket
@@ -27,17 +29,17 @@ print("--- %s seconds ---" % (time.time() - start_time))
 print("LYNGSAT COMPLETE")
 
 # Scrap Altervista data
-# altervista_data, altervista_pdfs = utilities.prepare_altervista('http://frequencyplansatellites.altervista.org/')
-# utilities.save_dict_to_csv(AWS_BUCKET_NAME, altervista_data, "altervista.csv")
-# utilities.save_pdfs(AWS_CLIENT, AWS_BUCKET_NAME, altervista_data['priSatName'], altervista_pdfs)
-# print("--- %s seconds ---" % (time.time() - start_time))
-# print("ALTERVISTA COMPLETE") 
+altervista_data, altervista_pdfs = utilities.prepare_altervista('http://frequencyplansatellites.altervista.org/')
+utilities.save_dict_to_csv(AWS_BUCKET_NAME, altervista_data, "altervista.csv")
+utilities.save_pdfs(AWS_CLIENT, AWS_BUCKET_NAME, altervista_data['priSatName'], altervista_pdfs)
+print("--- %s seconds ---" % (time.time() - start_time))
+print("ALTERVISTA COMPLETE") 
 
 # Scrap Satbeams data
-# satbeams_data, satbeams_footprints = utilities.prepare_satbeams('https://satbeams.com/satellites?status=active')
-# utilities.save_dict_to_csv(AWS_BUCKET_NAME, satbeams_data, "satbeams.csv")
-# utilities.save_footprints(AWS_CLIENT, AWS_BUCKET_NAME, satbeams_data["priSatName"], satbeams_footprints)
-# print("--- %s seconds ---" % (time.time() - start_time))
-# print("SATBEAMS COMPLETE")
+satbeams_data, satbeams_footprints = utilities.prepare_satbeams('https://satbeams.com/satellites?status=active')
+utilities.save_dict_to_csv(AWS_BUCKET_NAME, satbeams_data, "satbeams.csv")
+utilities.save_footprints(AWS_CLIENT, AWS_BUCKET_NAME, satbeams_data["priSatName"], satbeams_footprints)
+print("--- %s seconds ---" % (time.time() - start_time))
+print("SATBEAMS COMPLETE")
 
 
