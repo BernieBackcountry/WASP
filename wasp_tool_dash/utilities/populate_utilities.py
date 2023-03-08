@@ -119,17 +119,22 @@ def populate_freq_plans(aws_client: botocore.client, aws_bucket: str, sat: str, 
 
 
 def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, key: str):
-    style1 = {'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1100px', 'overflow': 'scroll', 'color': 'black', 'font-size': '25px'}
+    style1 = {'margin': '50px', 'maxHeight': '550px', 'maxWidth': '1200px', 'overflow': 'scroll', 'color': 'black', 'font-size': '25px'}
     style2 = {'color': "black", 'margin': '75px', 'text-align': 'left', 'text-align-last': 'left', 'font-size': '25px'}
     csv_path = key + 'lyngsat.csv'
     does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
     if does_exist:
         try:
             source_path = key + 'channels/' + sat + "/" + sat + ".csv"
-            obj = aws_client.get_object(Bucket=aws_bucket, Key=tab)['Body'].read().decode('utf-8')
-            df = pd.read_csv(StringIO(obj), header=0)
-            children = dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns], style_cell ={'fontSize':14})
-            return html.Div(children, style=style1)
+            path = f"channels/{sat}.csv"
+            #obj = aws_client.get_object(Bucket=aws_bucket, Key=source_path)['Body'].read().decode('utf-8')
+            #df = pd.read_csv(StringIO(obj), header=0)
+            df = pd.read_csv(path, header=0)
+            children = [utilities.create_table_filter([df.columns]), 
+                dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns],
+                                     style_cell ={'fontSize':14, 'textAlign': 'left'},
+                                     style_header={'backgroundColor': 'grey', 'fontWeight': 'bold'})]
+            return html.Div(children=children, style=style1)
         except:
             return html.P("Information not available.", style=style2)
     else:
