@@ -22,7 +22,7 @@ lxml
 pandas
 pathlib
 Pillow
-pypdfium2
+pypdfium2==4
 requests
 s3fs
 tdqm

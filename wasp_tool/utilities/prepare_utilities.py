@@ -66,11 +66,19 @@ def save_dict_to_csv(aws_bucket: str, dict_: dict, key: str):
 
 def save_footprints(aws_client, aws_bucket: str, sat_names: list, footprints: list):
     images, titles = map(list, zip(*footprints))
-    threads = [threading.Thread(target=image_download, args=(aws_client, aws_bucket, sat, images, titles, k)) for k, sat in enumerate(sat_names)]
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
+    jobs = []
+    for k, sat in enumerate(sat_names):
+        thread = threading.Thread(target=image_download, args=(aws_client, aws_bucket, sat, images, titles, k))
+        jobs.append(thread)
+
+    for j in jobs:
+        threads = threading.active_count()
+        while threads > 4:
+            time.sleep(5)
+            threads = threading.active_count()
+        j.start()
+    for j in jobs:
+        j.join()
 
     
 def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list, image_titles: list, iter: int):
@@ -89,6 +97,7 @@ def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list
                 in_mem_file.seek(0)
                 aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
                 r.close()
+                print("Image download successful")
         except:
             print('Unable to download image', sat_name, jpg_name)
             pass 
@@ -121,14 +130,13 @@ def save_pdfs(aws_client, aws_bucket: str, names: list, urls: list):
             # save pdf as new jpg
             for i in range(n_pages):
                 jpg_name = f'{sat_name}_{str(i)}.jpg'
-                page = pdf.get_page(i)
+                page = pdf[i]
                 in_mem_file = BytesIO()
-                pil_image = page.render_topil()
-                pil_image.save(in_mem_file, format='JPEG')
+                pil_image = page.render().to_pil()
+                pil_image.save(in_mem_file, format="JPEG")
                 in_mem_file.seek(0)
                 aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
         
             print('File', sat_name, 'downloaded successfully')
         except:
-           print('Unable to download', sat_name)
-           pass
+            print ('File', sat_name, 'unable to download')
