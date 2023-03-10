@@ -14,11 +14,6 @@ def encode_image(path: Path) -> html.Img:
     return html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), height='49%')
 
 
-def encode_image_pdf(path: Path) -> html.Img:
-    encoded_image = base64.b64encode(open(path, 'rb').read())
-    return html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), width='90%')
-
-
 def prefix_exists(aws_client: botocore.client, aws_bucket: str, key: str) -> bool:
     try:
         aws_client.head_object(Bucket=aws_bucket, Key=key)
