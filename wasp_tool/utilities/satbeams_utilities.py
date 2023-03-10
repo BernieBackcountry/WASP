@@ -24,26 +24,25 @@ def get_active_sat_urls(soup: BeautifulSoup) -> list:
     
 
 def run_threads(urls: list) -> list:
-    sat_info = []
-    sat_footprints = []
+    sat_info, sat_footprints, jobs = ([] for i in range(3))
     q_info = queue.Queue()
     q_footprints = queue.Queue()
-
-    jobs = []
+    
     for url in urls:
         thread = threading.Thread(target=fetch_url, args=(url, q_info, q_footprints))
         jobs.append(thread)
-
+        
     for j in jobs:
-        threads = threading.active_count()
+        # limit active thread count
+        threads = threading.active_count() 
         while threads > 4:
             time.sleep(5)
             threads = threading.active_count()
         j.start()
-        # Get satellite info
+        # get satellite info
         info = q_info.get()
         sat_info.append(info)
-        # Get satellite footprints
+        # get satellite footprints
         footprints = q_footprints.get()
         if footprints is None:
             # append empty nested list for None footprints case
@@ -128,6 +127,8 @@ def get_satellite_footprints(soup: BeautifulSoup) -> list:
                 image_titles.append(image.find_previous_sibling('h2').text)
                 image_links = [image for image in image_links]      
         tag = 'https://satbeams.com'
+        print('Image Links')
+        print(image_links)
         images = [tag+i for i in image_links]
         return [images, image_titles]
     
@@ -142,9 +143,8 @@ def list_to_dict(results: list) -> dict:
         beac.append(ele[4])
         
     dict_ = {'priSatName': pri_sat,
-            'secSatName': sec_sat,
-            'Position': pos,
-            'NORAD ID': nor, 
-            'Beacons': beac}
-    
+             'secSatName': sec_sat,
+             'Position': pos,
+             'NORAD ID': nor, 
+             'Beacons': beac}
     return dict_
