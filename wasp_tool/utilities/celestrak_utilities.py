@@ -22,7 +22,7 @@ def get_tles(url: str) -> list:
         print("Unsuccessful request at ", url)
 
 
-def prepare_tles(text: list):
+def prepare_tles(text: list) -> list:
     pri_name, sec_name, tles = ([] for i in range(3))
     # iterate through lines to get sat names and corresponding TLEs
     for i, line in enumerate(text):
