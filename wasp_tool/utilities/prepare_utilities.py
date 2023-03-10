@@ -1,10 +1,14 @@
+import pickle
+import queue
 import shutil
 import threading
+import time
 from io import BytesIO
 
 import pandas as pd
 import pypdfium2 as pdfium
 import requests
+from PIL import Image
 from tqdm import tqdm
 
 
@@ -65,10 +69,13 @@ def save_dict_to_csv(aws_bucket: str, dict_: dict, key: str):
 
 
 def save_footprints(aws_client, aws_bucket: str, sat_names: list, footprints: list):
+    encoding_dict = {}
     images, titles = map(list, zip(*footprints))
+    q_encod = queue.Queue()
+    q_title = queue.Queue()
     jobs = []
     for k, sat in enumerate(sat_names):
-        thread = threading.Thread(target=image_download, args=(aws_client, aws_bucket, sat, images, titles, k))
+        thread = threading.Thread(target=image_download, args=(aws_client, aws_bucket, sat, images, titles, k, q_encod, q_title))
         jobs.append(thread)
 
     for j in jobs:
@@ -77,14 +84,22 @@ def save_footprints(aws_client, aws_bucket: str, sat_names: list, footprints: li
             time.sleep(5)
             threads = threading.active_count()
         j.start()
+        encodings = q_encod.get()
+        encod_titles = q_title.get()
+        for i in range(len(encodings)):
+            encoding_dict[encod_titles[i]] = encodings[i]
     for j in jobs:
         j.join()
+    
+    pickle_byte_obj = pickle.dumps(encoding_dict) 
+    aws_client.put_object(Body=pickle_byte_obj, Bucket=aws_bucket, Key='data/footprint_encodings.pkl')
 
     
-def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list, image_titles: list, iter: int):
+def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list, image_titles: list, iter: int, q1: queue.Queue, q2: queue.Queue):
+    encodings = []
+    titles = []
     sat_images = image_links[iter]
     sat_titles = image_titles[iter]
-    file_path = 'data/footprints/' + sat_name + '/'
     # download and save images 
     for i, image in tqdm(enumerate(sat_images)):
         jpg_name = f'{sat_titles[i]}.jpg'
@@ -94,13 +109,19 @@ def image_download(aws_client, aws_bucket: str, sat_name: str, image_links: list
                 r.raw.decode_content = True
                 in_mem_file = BytesIO()
                 shutil.copyfileobj(r.raw, in_mem_file)
-                in_mem_file.seek(0)
-                aws_client.put_object(Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name)
                 r.close()
+                in_mem_file.seek(0)
+                # create image encoding 
+                img = Image.open(in_mem_file)
+                # add encoding to dict 
+                encodings.append(img)
+                titles.append(f'{sat_name}/{sat_titles[i]}')
                 print("Image download successful")
         except:
             print('Unable to download image', sat_name, jpg_name)
             pass 
+    q1.put(encodings)
+    q2.put(titles)
 
 
 def save_tables(aws_bucket: str, dict_: dict):
