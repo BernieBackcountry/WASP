@@ -127,8 +127,6 @@ def get_satellite_footprints(soup: BeautifulSoup) -> list:
                 image_titles.append(image.find_previous_sibling('h2').text)
                 image_links = [image for image in image_links]      
         tag = 'https://satbeams.com'
-        print('Image Links')
-        print(image_links)
         images = [tag+i for i in image_links]
         return [images, image_titles]
     
