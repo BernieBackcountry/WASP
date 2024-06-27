@@ -1,70 +1,191 @@
+"""
+This module pulls satellite frequency plans from frequencyplansatellites.altervista.org
+
+FUNCTIONS
+    def prepare_altervista() -> Tuple[dict, list]:
+        Generates a dictionary containing all satellites primary and secondary names pulled
+        from Altervista.
+        Generates a list of urls linking to each satellite's frequency plan PDF.
+    def get_satellite_constellation_urls() -> list:
+        Generates a list of urls for each satellite constellation subpage.
+    def get_frequency_plans(url: str) -> Tuple[list, list, list]:
+        For each satellite in a given constellation, appends the primary satellite names,
+        secondary satellite name(s), and frequency plan PDF link to separate lists.
+    def get_sats(text: str) -> Tuple[str, str]:
+        Generates primary and secondary satellite names for a given vehicle based on
+        possible text delimiters.
+    def split_text(text: str, split_on: str) -> Tuple[str, str]:
+        Splits text input to get primary and secondary satellite names for a given vehicle.
+"""
+import sys
+from typing import Tuple
+
+import numpy as np
 import requests
 from bs4 import BeautifulSoup
 
-import wasp_tool.utilities as utilities
+from wasp_tool import utilities
+
+ALTERVISTA_HOMEPAGE = "http://frequencyplansatellites.altervista.org/"
+
+# define http response success
+HTTP_SUCCESS = 200
 
 
-def prepare_altervista(url: str):
-    sat_urls = get_urls(url)
-    sat_dict = {}
-    pri_satNames, sec_satNames, pdf_urls = ([] for i in range(3))
-    for sat in sat_urls:
-        pri_sat, sec_sat, url_list = get_pdf_urls(sat)
-        pri_satNames.extend(pri_sat)
-        sec_satNames.extend(sec_sat)
-        pdf_urls.extend(url_list)
+def prepare_altervista() -> Tuple[dict, list]:
+    """
+    Generates a dictionary containing all satellites primary and secondary names pulled
+    from Altervista.
 
-    sat_dict = {"priSatName": pri_satNames,
-                "secSatName": sec_satNames}
-    return sat_dict, pdf_urls
+    Generates a list of urls linking to each satellite's frequency plan PDF.
 
+    Returns
+    -------
+    Tuple[dict, list]
 
-def get_urls(url: str) -> list:
-    req = requests.get(url, timeout=30)
-    soup = BeautifulSoup(req.text, "lxml")
-    req.close()
-    sidebar = soup.find("div", id="sidebar")
-    urls = []
-    for a in sidebar.find_all('a', href=True):
-        urls.append(a['href'])
-    return urls
+    satellite_dict: dict
+        Dictionary containing each satellite's primary and secondary names
+    frequency_plans: list
+        List of urls linking to frequency plan PDFs
+    """
+    constellation_urls = get_constellation_urls()
+    num_constellations = len(constellation_urls)
+    num_satellites, sat_names, freq_plans = get_frequency_plans(constellation_urls)
 
+    print(num_satellites)
+    print(len(sat_names))
+    print(len(freq_plans))
 
-def get_pdf_urls(url: str) -> list:
-    req = requests.get(url, timeout=20)
-    soup = BeautifulSoup(req.text, "lxml")
-    req.close()
-    sidebar = soup.find("div", id="sidebar")
-    priSats, secSats, urls = ([] for i in range(3)) 
-    for a in sidebar.find_all('a', href=True):
-        if ".pdf" in a['href']:
-            urls.append(a['href'])
-            temp = a.text
-            pri_sat, sec_sat = get_sats(temp)
-            pri_satName = utilities.standardize_satellite(pri_sat)
-            sec_satName = utilities.standardize_satellite(sec_sat)
-            priSats.append(pri_satName)
-            secSats.append(sec_satName)
-    return priSats, secSats, urls
+    altervista_data = np.empty((num_satellites, 2, 1), dtype=object)
+
+    for index in range(num_satellites):
+        altervista_data[index, 0, 0] = sat_names[index]
+        altervista_data[index, 1, 0] = freq_plans[index]
+
+    return altervista_data
 
 
-def get_sats(text: str):
+def get_constellation_urls() -> list:
+    """
+    Generates a list of urls for each satellite constellation subpage.
+
+    Returns
+    -------
+    urls: list
+        List of urls for each satellite constellation subpage
+    """
+    http_response = requests.get(ALTERVISTA_HOMEPAGE)  # Heroku has specified timeout
+    if http_response.status_code == HTTP_SUCCESS:
+        soup = BeautifulSoup(http_response.text, "lxml")
+        http_response.close()
+        sidebar = soup.find("div", id="sidebar")
+        urls = []
+        for a in sidebar.find_all("a", href=True):
+            urls.append(a["href"])
+        return urls
+    print("Unsuccessful request at ", ALTERVISTA_HOMEPAGE)
+    print("Exiting script...")
+    sys.exit()
+
+
+def get_frequency_plans(constellation_urls: list) -> Tuple[list, list, list]:
+    """
+    For each satellite in a given constellation, appends the primary satellite names,
+    secondary satellite name(s), and frequency plan PDF link to separate lists.
+
+    Parameters
+    ----------
+    url: str
+        String containing the url of a given satellite constellation subpage
+
+    Returns
+    -------
+    Tuple[list, list, list]
+
+    all_primary_sat_names: list
+        List of all primary satellite names for each vehicle in a given constellation
+    all_secondary_sat_names: list
+        List of all secondary satellite names for each vehicle in a given constellation
+    all_frequency_plans_urls: list
+        List of all frequency plan links for each vehicle in a given constellation
+    """
+    num_satellites = 0
+    sat_names = []
+    freq_plans = []
+
+    for url in constellation_urls:
+        http_response = requests.get(url)  # Heroku has specified timeout
+        if http_response.status_code == HTTP_SUCCESS:
+            soup = BeautifulSoup(http_response.text, "lxml")
+            http_response.close()
+            sidebar = soup.find("div", id="sidebar")
+
+            for a in sidebar.find_all("a", href=True):
+                if ".pdf" in a["href"]:
+                    num_satellites += 1
+                    sat_names.append(a.text)
+                    freq_plans.append(a["href"])
+            continue
+        print("Unsuccessful request at ", url)
+        print("Exiting script...")
+        sys.exit()
+    return num_satellites, sat_names, freq_plans
+
+
+
+def get_sats(text: str) -> Tuple[str, str]:
+    """
+    Generates primary and secondary satellite names for a given vehicle based on
+    possible text delimiters.
+
+    Parameters
+    ----------
+    text: str
+        String containing primary and secondary satellite names
+
+    Returns
+    -------
+    primary_satellite_name: str
+        String containing primary satellite name
+    secondary_satellite_name: str
+        String containing secondary satellite name(s)
+
+    """
     delimiters = ["(", "-->", "-- >", "--", "/"]
     if any(s in text for s in delimiters):
-        min = 1000
+        # set arbitrary initial minimum
+        minimum = 1000
         for delim in delimiters:
-            if (text.find(delim) != -1) and (text.find(delim) < min):
-                min = text.find(delim)
+            if (text.find(delim) != -1) and (text.find(delim) < minimum):
+                # update minimum
+                minimum = text.find(delim)
                 split_by = delim
-        priSatName, secSatName = split_text(text, split_by)
+        primary_satellite_name, secondary_satellite_name = split_text(text, split_by)
     else:
-        priSatName = text
-        secSatName = ""
-    return priSatName, secSatName
+        primary_satellite_name = text
+        secondary_satellite_name = ""
+    return primary_satellite_name, secondary_satellite_name
 
 
-def split_text(text: str, split_on: str):
-    text_split = text.split(split_on, 1)
+def split_text(text: str, split_on: str) -> Tuple[str, str]:
+    """
+    Splits text input to get primary and secondary satellite names for a given vehicle.
+
+    Parameters
+    ----------
+    text: str
+        String containing primary and secondary satellite names
+    split_on: str
+        String containing specified delimiter upon which to split the text
+
+    Returns
+    -------
+    pri: str
+        String containing primary satellite name
+    sec: str
+        String containing secondary satellite name(s)
+    """
+    text_split = text.split(split_on, maxsplit=1)
     pri = text_split[0]
     sec = text_split[1]
     return pri, sec
