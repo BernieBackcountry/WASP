@@ -1,0 +1,14 @@
+boto3
+bs4
+dash
+dash_bootstrap_components
+fsspec
+gunicorn
+lxml
+pandas
+pathlib
+Pillow
+pypdfium2==4
+requests
+s3fs
+tdqm
