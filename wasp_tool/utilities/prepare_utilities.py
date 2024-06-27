@@ -47,6 +47,7 @@ import pypdfium2 as pdfium
 import requests
 from PIL import Image
 from tqdm import tqdm
+import numpy as np
 
 # define http response success
 HTTP_SUCCESS = 200
@@ -196,6 +197,7 @@ def save_df_to_csv(aws_bucket: str, df: pd.DataFrame, filename: str):
     filename: str
         String containing filename to save the csv file to in the bucket
     """
+    # Save the DataFrame to a CSV file
     df.to_csv(f"s3://{aws_bucket}/{filename}.csv")
 
 

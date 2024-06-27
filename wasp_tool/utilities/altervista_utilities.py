@@ -19,12 +19,11 @@ FUNCTIONS
 """
 import sys
 from typing import Tuple
-
 import numpy as np
 import requests
 from bs4 import BeautifulSoup
 
-from wasp_tool import utilities
+#from wasp_tool import utilities
 
 ALTERVISTA_HOMEPAGE = "http://frequencyplansatellites.altervista.org/"
 

@@ -6,19 +6,24 @@ import argparse
 import os
 import sys
 import time
-
 import boto3
-
 from wasp_tool import utilities
 
-AWS_CLIENT = boto3.client(
-    "s3",
-    aws_access_key_id=os.environ.get("BUCKETEER_AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY"),
+secret_key = "5av74jgXu9/JTAlM6QT71heoLU2X26C3q8wN57j8i90"
+key = "DO009ERY4P8RHV3DZMYQ"
+DIGITAL_OCEAN_BUCKET = os.getenv("satbucket")
+url = "https://satbucket.nyc3.digitaloceanspaces.com"
+
+
+session = boto3.session.Session()
+DIGITAL_OCEAN_CLIENT = session.client(
+    's3',
+    region_name='nyc3',  # Specify the correct region
+    endpoint_url=url,
+    aws_access_key_id=key,
+    aws_secret_access_key=secret_key,
+    config=boto3.session.Config(signature_version='s3v4')
 )
-
-AWS_BUCKET_NAME = os.environ.get("BUCKETEER_BUCKET_NAME")
-
 
 def measure_time(f):
     """
@@ -51,8 +56,8 @@ def get_altervista_data():
     to the AWS bucket
     """
     altervista_data, altervista_pdfs = utilities.prepare_altervista()
-    utilities.save_dict_to_csv(AWS_BUCKET_NAME, altervista_data, "altervista.csv")
-    utilities.save_pdfs(AWS_CLIENT, AWS_BUCKET_NAME, altervista_data["priSatName"], altervista_pdfs)
+    utilities.save_df_to_csv(DIGITAL_OCEAN_BUCKET, altervista_data, "altervista.csv")
+    utilities.save_pdfs(DIGITAL_OCEAN_CLIENT, DIGITAL_OCEAN_BUCKET, altervista_data["priSatName"], altervista_pdfs)
 
 
 @measure_time
@@ -61,7 +66,7 @@ def get_celestrak_data():
     Retrieve data obtained from celestrak.com and write to the AWS bucket
     """
     celestrak_data = utilities.prepare_celestrak()
-    utilities.save_dict_to_csv(AWS_BUCKET_NAME, celestrak_data, "celestrak.csv")
+    utilities.save_df_to_csv(DIGITAL_OCEAN_BUCKET, celestrak_data, "celestrak.csv")
 
 
 @measure_time
@@ -71,8 +76,8 @@ def get_lyngsat_data():
     """
     utilities.prepare_lyngsat()
     lyngsat_data, lyngsat_tables = utilities.prepare_lyngsat()
-    utilities.save_dict_to_csv(AWS_BUCKET_NAME, lyngsat_data, "lyngsat.csv")
-    utilities.save_tables(AWS_BUCKET_NAME, lyngsat_tables)
+    utilities.save_df_to_csv(DIGITAL_OCEAN_BUCKET, lyngsat_data, "lyngsat.csv")
+    utilities.save_tables(DIGITAL_OCEAN_BUCKET, lyngsat_tables)
 
 
 @measure_time
@@ -81,10 +86,11 @@ def get_satbeams_data():
     Retrieve data obtained from satbeams.org and write to the AWS bucket
     """
     satbeams_data, satbeams_footprints = utilities.prepare_satbeams()
-    utilities.save_dict_to_csv(AWS_BUCKET_NAME, satbeams_data, "satbeams.csv")
+    utilities.save_df_to_csv(
+        DIGITAL_OCEAN_BUCKET, satbeams_data, "satbeams.csv")
     print("Saved csv")
     utilities.save_footprints(
-        AWS_CLIENT, AWS_BUCKET_NAME, satbeams_data["priSatName"], satbeams_footprints
+        DIGITAL_OCEAN_CLIENT, DIGITAL_OCEAN_BUCKET, satbeams_data["priSatName"], satbeams_footprints
     )
 
 

@@ -37,10 +37,9 @@ import sys
 import threading
 import time
 from typing import Tuple
-
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-
 from wasp_tool import utilities
 
 SATBEAMS_HOMEPAGE = "https://satbeams.com/satellites?status=active"
@@ -71,7 +70,8 @@ def prepare_satbeams() -> Tuple[dict, list]:
         all_satellite_urls = get_active_geostationary_satellite_urls(soup)
         # extract information from all urls
         data_dictionary, footprint_urls = run_threads(all_satellite_urls)
-        return data_dictionary, footprint_urls
+        data_df = pd.DataFrame.from_dict(data_dictionary)
+        return data_df, footprint_urls
     print("Unsuccessful HTTP request at ", SATBEAMS_HOMEPAGE)
     print("Exiting script...")
     sys.exit()
@@ -184,7 +184,7 @@ def fetch_data_from_url(
             response = requests.get(url)  # Heroku has specified timeout
             # Check if the status_code is 200
             if response.status_code == HTTP_SUCCESS:
-                print("Attempt", i + 1, "successful at", url)
+                #print("Attempt", i + 1, "successful at", url) <- UNCOMMENT TO SEE STATUS
                 # Parse the HTML content of the webpage
                 soup = BeautifulSoup(response.content, "html.parser")
                 # Scrap satellite info
