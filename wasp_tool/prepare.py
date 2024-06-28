@@ -8,22 +8,35 @@ import sys
 import time
 import boto3
 from wasp_tool import utilities
-
-secret_key = "5av74jgXu9/JTAlM6QT71heoLU2X26C3q8wN57j8i90"
-key = "DO009ERY4P8RHV3DZMYQ"
-DIGITAL_OCEAN_BUCKET = os.getenv("satbucket")
-url = "https://satbucket.nyc3.digitaloceanspaces.com"
+import pandas as pd
 
 
+os.environ["secret_key"] = "5av74jgXu9/JTAlM6QT71heoLU2X26C3q8wN57j8i90"
+os.environ["key"] = "DO009ERY4P8RHV3DZMYQ"
+DIGITAL_OCEAN_BUCKET = "newsatbucket" 
 session = boto3.session.Session()
+
 DIGITAL_OCEAN_CLIENT = session.client(
     's3',
-    region_name='nyc3',  # Specify the correct region
-    endpoint_url=url,
-    aws_access_key_id=key,
-    aws_secret_access_key=secret_key,
-    config=boto3.session.Config(signature_version='s3v4')
+    region_name='nyc3',
+    endpoint_url="https://newsatbucket.nyc3.digitaloceanspaces.com",
+    aws_access_key_id=os.getenv("key"),
+    aws_secret_access_key=os.getenv("secret_key"),
 )
+
+def create_s3_bucket(bucket_name,client):
+    """
+    Creates an Amazon S3 bucket.
+
+    :param bucket_name: The unique name for your bucket.
+    """
+    
+    try:
+        client.create_bucket(Bucket=bucket_name)
+        print(f"Bucket '{bucket_name}' created successfully!")
+    except Exception as e:
+        print(f"Error creating bucket: {e}")
+
 
 def measure_time(f):
     """
@@ -66,7 +79,17 @@ def get_celestrak_data():
     Retrieve data obtained from celestrak.com and write to the AWS bucket
     """
     celestrak_data = utilities.prepare_celestrak()
-    utilities.save_df_to_csv(DIGITAL_OCEAN_BUCKET, celestrak_data, "celestrak.csv")
+
+    """
+    Turn dict into df by indexing then flattening
+    """
+    names = ['x', 'y', 'z']
+    index = pd.MultiIndex.from_product(
+    [range(s) for s in celestrak_data.shape], names=names)
+    celestrak_data_df = pd.DataFrame({'A': celestrak_data.flatten()}, index=index)['A']
+
+    print(celestrak_data_df)
+    utilities.save_df_to_csv(DIGITAL_OCEAN_BUCKET,DIGITAL_OCEAN_CLIENT, celestrak_data_df, "celestrak.csv")
 
 
 @measure_time
@@ -94,6 +117,14 @@ def get_satbeams_data():
     )
 
 
+# def get_blank_data():
+#      """
+#     Retrieve data obtained from empty df
+#     """
+#      data = pd.DataFrame(columns = ["Did", "This", "Work"])
+#      utilities.save_df_to_csv(DIGITAL_OCEAN_BUCKET,DIGITAL_OCEAN_CLIENT, data, "data.csv")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -102,6 +133,12 @@ if __name__ == "__main__":
         help="Options: altervista, celestrak, lyngsat, satbeams and/or all",
         required=True,
     )
+
+    try: 
+        DIGITAL_OCEAN_CLIENT.head_bucket(Bucket=DIGITAL_OCEAN_BUCKET)
+    except Exception as e:
+        create_s3_bucket(DIGITAL_OCEAN_BUCKET,DIGITAL_OCEAN_CLIENT)
+        print("bucket created")
 
     parser_args = parser.parse_args()
 
@@ -119,3 +156,7 @@ if __name__ == "__main__":
         get_lyngsat_data()
     if "satbeams" in parser_args.site:
         get_satbeams_data()
+    # if "data" in parser_args.site:
+    #     get_blank_data()
+
+    

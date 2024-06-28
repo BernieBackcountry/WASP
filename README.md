@@ -4,4 +4,4 @@
 
 #Run frontend: python -m wasp_tool_dash.app
 
-#Run backend:  python -m wasp_tool.prepare
+#Run backend:  python -m wasp_tool.prepare --site "example"

@@ -48,6 +48,7 @@ import requests
 from PIL import Image
 from tqdm import tqdm
 import numpy as np
+import boto3
 
 # define http response success
 HTTP_SUCCESS = 200
@@ -184,7 +185,7 @@ def save_dict_to_pkl(aws_bucket: str, dictionary: dict, filename: str):
         pickle.dump(dictionary, handle)
 
 
-def save_df_to_csv(aws_bucket: str, df: pd.DataFrame, filename: str):
+def save_df_to_csv(bucket: str, client: boto3.client, df: pd.DataFrame, filename: str):
     """
     Saves dataframe to a csv file in the AWS bucket.
 
@@ -198,7 +199,9 @@ def save_df_to_csv(aws_bucket: str, df: pd.DataFrame, filename: str):
         String containing filename to save the csv file to in the bucket
     """
     # Save the DataFrame to a CSV file
-    df.to_csv(f"s3://{aws_bucket}/{filename}.csv")
+
+    client.put_object(Bucket=bucket,Key=filename,Body= df.to_csv(index=False))
+    
 
 
 def save_footprints(
