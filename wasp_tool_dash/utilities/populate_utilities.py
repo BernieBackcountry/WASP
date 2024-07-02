@@ -29,6 +29,7 @@ from dash import html
 from PIL import Image
 
 from wasp_tool_dash import utilities
+from config import KEY, SECRET_KEY
 
 STYLE_TEXT = {
     "color": "black",
@@ -75,11 +76,13 @@ def populate_inputs(aws_client: botocore.client, aws_bucket: str, key: str) -> l
     input_options
         List of possible search options
     """
-    sources = ["celestrak.csv", "satbeams.csv", "lyngsat.csv", "altervista.csv"]
+    sources = ["celestrak.csv"]
+    #, "satbeams.csv", "lyngsat.csv", "altervista.csv"]
     accepted_inputs = []
     for source in sources:
         source_path = key + source
         does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+
         if does_exist:
             accepted_inputs.extend(load_sources(aws_client, aws_bucket, source_path))
 
@@ -111,11 +114,11 @@ def load_sources(aws_client: botocore.client, aws_bucket: str, key: str) -> list
     source_inputs: lsit
         List of all primary satellite names
     """
-    obj = (
-        aws_client.get_object(Bucket=aws_bucket, Key=key)["Body"].read().decode("utf-8")
-    )
+
+    obj = aws_client.get_object(Bucket=aws_bucket, Key= key)["Body"].read().decode("utf-8")
     df_source = pd.read_csv(StringIO(obj), header=0)
     source_inputs = df_source["Primary Satellite Name"].tolist()
+
     return source_inputs
 
 

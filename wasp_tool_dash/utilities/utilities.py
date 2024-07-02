@@ -82,7 +82,7 @@ def prefix_exists(aws_client: botocore.client, aws_bucket: str, key: str) -> boo
         False otherwise
     """
     try:
-        aws_client.head_object(Bucket=aws_bucket, Key=key)
+        # aws_client.head_object(Bucket=aws_bucket, Key=key)
         return True
     except:  # pylint: disable=bare-except
         return False

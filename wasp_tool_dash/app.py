@@ -15,22 +15,27 @@ CALLBACKS
         Callback to update datatable dependent on filter values.
 """
 import os
-
 import boto3
 import dash
 import pandas as pd
 from dash.dependencies import Input, Output
 
 from wasp_tool_dash import utilities
+from wasp_tool_dash.utilities import populate_utilities
 from wasp_tool_dash.components import LayoutCreator
+from config import BUCKET_NAME,KEY,SECRET_KEY
 
-AWS_CLIENT = boto3.client(
-    "s3",
-    aws_access_key_id=os.environ.get("BUCKETEER_AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY"),
+session = boto3.session.Session()
+
+AWS_CLIENT= session.client(
+    's3',
+    region_name='nyc3',
+    endpoint_url="https://newsatbucket.nyc3.digitaloceanspaces.com/data",
+    aws_access_key_id=KEY,
+    aws_secret_access_key=SECRET_KEY,
 )
 
-AWS_BUCKET_NAME = os.environ.get("BUCKETEER_BUCKET_NAME")
+AWS_BUCKET_NAME = BUCKET_NAME
 
 PATH_KEY = "data/"
 
@@ -52,22 +57,6 @@ app.layout = layout_creator.create_layout()
     Output(component_id="sat-dropdown", component_property="options"),
     [Input(component_id="sat-dropdown", component_property="search_value")],
 )
-def update_search_options(search: str):
-    """
-    Callback to update search bar/dropdown valid options.
-
-    Parameters
-    ----------
-    searh: str
-        String containing valid search option chosen in search bar/dropdown.
-    """
-    if HAS_APP_DATA:
-        inputs = utilities.populate_inputs(AWS_CLIENT, AWS_BUCKET_NAME, "data/")
-        if search:
-            return [i["label"] for i in inputs if i["value"].startswith(search.upper())]
-        else:
-            return inputs
-    return []
 
 
 @app.callback(
@@ -79,6 +68,9 @@ def update_search_options(search: str):
         )
     ],
 )
+
+
+
 def update_celestrak_tles(click: int):
     """
     Callback to run file to pull and write CelesTrak TLEs to the AWS bucket.
@@ -187,6 +179,8 @@ def update_rows(column: str, value: str, sat: str):
         df_subset = df[df[column] == value]
         return df_subset.to_dict("records")
     return df.to_dict("records")
+
+
 
 
 if __name__ == "__main__":

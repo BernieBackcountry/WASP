@@ -224,7 +224,8 @@ def save_footprints(
         List of footprint image hrefs
     """
     image_encoding_dict = {}
-    images, titles = map(list, zip(*footprints))
+
+    images, titles = footprints
 
     q_image_encod = queue.Queue()
     q_image_title = queue.Queue()

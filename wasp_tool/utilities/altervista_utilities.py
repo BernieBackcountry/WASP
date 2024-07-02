@@ -73,7 +73,7 @@ def get_constellation_urls() -> list:
     urls: list
         List of urls for each satellite constellation subpage
     """
-    http_response = requests.get(ALTERVISTA_HOMEPAGE)  # Heroku has specified timeout
+    http_response = requests.get(ALTERVISTA_HOMEPAGE)  
     if http_response.status_code == HTTP_SUCCESS:
         soup = BeautifulSoup(http_response.text, "lxml")
         http_response.close()
