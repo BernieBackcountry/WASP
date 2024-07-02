@@ -330,7 +330,7 @@ def save_tables(aws_client: botocore.client, aws_bucket: str, dict_: dict):
         if "/" in key:
             key = key.replace("/", "-")
         key_final = f"{key}/{key}.csv"
-        filename = f"data/channels/{key_final}"
+        filename = f"channels/{key_final}"
         aws_client.put_object(Bucket=aws_bucket, Key=filename,Body= val.to_csv(index=False))
 
 
