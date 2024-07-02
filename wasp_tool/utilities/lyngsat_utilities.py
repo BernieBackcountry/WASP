@@ -311,7 +311,7 @@ def get_satellite_html_tables(
                                 html_tables.append(table)
                     entry = satellite_primary_names[count]
                     html_tables_dict[entry] = html_tables
-                    print("Attempt", i + 1, "successful for", key)
+                    # print("Attempt", i + 1, "successful for", key)
                     break
             except:
                 print("Attempt", i + 1, "unsuccessful for", key)
@@ -484,13 +484,13 @@ def denote_italicized_table_entries_with_asterik(
                 index : index + rows_per_cell,
                 column_index : column_index + column_width,
             ] = (
-                table_cell.getText() + "*"
+                str(table_cell.getText() + "*")
             )
             break
         table_df.iloc[
             index : index + rows_per_cell,
             column_index : column_index + column_width,
-        ] = table_cell.getText()
+        ] = str(table_cell.getText())
     return table_df
 
 
@@ -589,17 +589,17 @@ def split_frequency_beam_and_eirp_values(
     split0_value = col0_value.split("\n")
     for split in split0_value:
         if "tp" in split:
-            df_new.loc[df_subset.index, "Transponder"] = split
+            df_new.loc[df_subset.index, "Transponder"] = str(split)
             continue
         if any(s.isdigit() for s in split) is False:
-            df_new.loc[df_subset.index, "Beam"] = split
+            df_new.loc[df_subset.index, "Beam"] = str(split)
             continue
         if ("L" in split) or ("R" in split) or ("H" in split) or ("V" in split):
-            df_new.loc[df_subset.index, "Frequency"] = split
+            df_new.loc[df_subset.index, "Frequency"] = str(split)
             continue
         if "*" in split:
             split = split.replace("*", "")
-            df_new.loc[df_subset.index, "EIRP (dBW)"] = split
+            df_new.loc[df_subset.index, "EIRP (dBW)"] = str(split)
     return df_new
 
 
@@ -744,12 +744,16 @@ def determine_channel_status(
                 table_star = df_tables[h]
                 # loop through channel name values in a given table
                 for m in range(0, len(table_star["(Provider) Channel Name"].values)):
-                    cell = col[m]
+                    if 0 <= m < len(col):
+                        cell = col[m]
+                    else:
+                    # Handle the out-of-range case
+                     print("Index out of range.")
                     channel_status = cell["style"]
                     if (channel_status == green) or (channel_status == yellow):
-                        table_star.loc[m, "Channel Status"] = "ON"
+                        table_star.loc[m, "Channel Status"] = str("ON")
                     else:
-                        table_star.loc[m, "Channel Status"] = "OFF"
+                        table_star.loc[m, "Channel Status"] = str("OFF")
 
             # combine all tables into one large one
             master_table = pd.concat(df_tables, ignore_index=True)
@@ -847,7 +851,7 @@ def create_bands_column(df_org: pd.DataFrame) -> pd.DataFrame:
         if not pd.isnull(entry):
             res = "".join([ele for ele in entry if ele.isdigit()])
             if int(res) > 9999:
-                df_org["Ku/C-band"].iloc[k] = "Ku-band"
+                df_org.loc[k, "Ku/C-band"] = str("Ku-band")
             else:
-                df_org["Ku/C-band"].iloc[k] = "C-band"
+                df_org.loc[k, "Ku/C-band"] = str("C-band")
     return df_org

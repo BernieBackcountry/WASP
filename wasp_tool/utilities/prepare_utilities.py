@@ -225,7 +225,7 @@ def save_footprints(
     """
     image_encoding_dict = {}
 
-    images, titles = footprints
+    images, titles = footprints[1][0], footprints[1][1]
 
     q_image_encod = queue.Queue()
     q_image_title = queue.Queue()
@@ -289,13 +289,17 @@ def image_download(
     sat_titles = image_titles[iter_]
     # download and save images
     for i, image in tqdm(enumerate(sat_images)):
-        jpg_name = f"{sat_titles[i]}.jpg"
+        try:
+            jpg_name = f"{sat_titles[i]}.jpg"
+        except:
+            print("Unable to download image")
+
         try:
             response = requests.get(image, stream=True)  # Heroku has specified timeout
             if response.status_code == HTTP_SUCCESS:
                 response.raw.decode_content = True
                 in_mem_file = BytesIO()
-                shutil.copyfileobj(r.raw, in_mem_file)
+                shutil.copyfileobj(response.raw, in_mem_file)
                 response.close()
                 in_mem_file.seek(0)
                 # create image encoding
@@ -310,7 +314,7 @@ def image_download(
     queue_for_image_titles.put(titles)
 
 
-def save_tables(aws_bucket: str, dict_: dict):
+def save_tables(aws_client: botocore.client, aws_bucket: str, dict_: dict):
     """
     Saves lyngsat channels tables to the AWS bucket.
 
@@ -326,7 +330,8 @@ def save_tables(aws_bucket: str, dict_: dict):
         if "/" in key:
             key = key.replace("/", "-")
         key_final = f"{key}/{key}.csv"
-        val.to_csv(f"s3://{aws_bucket}/data/channels/{key_final}", index=False)
+        filename = f"data/channels/{key_final}"
+        aws_client.put_object(Bucket=aws_bucket, Key=filename,Body= val.to_csv(index=False))
 
 
 def save_pdfs(aws_client: botocore.client, aws_bucket: str, names: list, urls: list):

@@ -11,7 +11,9 @@ from wasp_tool import utilities
 import pandas as pd
 from config import KEY,SECRET_KEY,BUCKET_NAME
 import numpy as np
+import warnings
 
+warnings.simplefilter("ignore")
 
 
 session = boto3.session.Session()
@@ -107,9 +109,10 @@ def get_lyngsat_data():
     """
     utilities.prepare_lyngsat()
     lyngsat_data, lyngsat_tables = utilities.prepare_lyngsat()
+    lyngsat_data_df = pd.DataFrame(lyngsat_data)
     utilities.save_df_to_csv(
-        BUCKET_NAME, DIGITAL_OCEAN_CLIENT, lyngsat_data, "lyngsat.csv")
-    utilities.save_tables(BUCKET_NAME, lyngsat_tables)
+        BUCKET_NAME, DIGITAL_OCEAN_CLIENT, lyngsat_data_df, "lyngsat.csv")
+    utilities.save_tables(DIGITAL_OCEAN_CLIENT,BUCKET_NAME, lyngsat_tables)
 
 
 @measure_time
