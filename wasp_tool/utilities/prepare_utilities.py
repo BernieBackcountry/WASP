@@ -285,33 +285,36 @@ def image_download(
     """
     encodings = []
     titles = []
-    sat_images = image_links[iter_]
-    sat_titles = image_titles[iter_]
-    # download and save images
-    for i, image in tqdm(enumerate(sat_images)):
-        try:
-            jpg_name = f"{sat_titles[i]}.jpg"
-        except:
-            print("Unable to download image")
+    try:
+        sat_images = image_links[iter_]
+        sat_titles = image_titles[iter_]
+        # download and save images
+        for i, image in tqdm(enumerate(sat_images)):
+            try:
+                jpg_name = f"{sat_titles[i]}.jpg"
+            except:
+                print("Unable to download image")
 
-        try:
-            response = requests.get(image, stream=True)  # Heroku has specified timeout
-            if response.status_code == HTTP_SUCCESS:
-                response.raw.decode_content = True
-                in_mem_file = BytesIO()
-                shutil.copyfileobj(response.raw, in_mem_file)
-                response.close()
-                in_mem_file.seek(0)
-                # create image encoding
-                img = Image.open(in_mem_file)
-                # add encoding to dict
-                encodings.append(img)
-                titles.append(f"{sat_name}/{sat_titles[i]}")
-                print("Image download successful")
-        except:
-            print("Unable to download image", sat_name, jpg_name)
-    queue_for_image_encodings.put(encodings)
-    queue_for_image_titles.put(titles)
+            try:
+                response = requests.get(image, stream=True)  # Heroku has specified timeout
+                if response.status_code == HTTP_SUCCESS:
+                    response.raw.decode_content = True
+                    in_mem_file = BytesIO()
+                    shutil.copyfileobj(response.raw, in_mem_file)
+                    response.close()
+                    in_mem_file.seek(0)
+                    # create image encoding
+                    img = Image.open(in_mem_file)
+                    # add encoding to dict
+                    encodings.append(img)
+                    titles.append(f"{sat_name}/{sat_titles[i]}")
+                    print("Image download successful")
+            except:
+                print("Unable to download image", sat_name, jpg_name)
+        queue_for_image_encodings.put(encodings)
+        queue_for_image_titles.put(titles)
+    except:
+        print("Unable to download images")
 
 
 def save_tables(aws_client: botocore.client, aws_bucket: str, dict_: dict):
