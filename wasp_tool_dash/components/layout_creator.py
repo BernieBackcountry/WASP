@@ -89,6 +89,7 @@ class LayoutCreator:
                 self._create_celestrak_output(),
                 self._create_logo(),
             ],
+            style={"textAlign": "center", "align-items": "center", "padding": "10px 20px 10px 20px"},
         )
 
     def _create_data_layout(self) -> html.Div:
@@ -109,7 +110,7 @@ class LayoutCreator:
                 html.Div(
                     id="page_content",
                     className="loader",
-                    style={"height": "auto", "width": "auto"},
+                    style={"height": "auto", "width": "auto","marginLeft": "5px", "marginRight": "5px"},
                 ),
                 self._create_tabs(),
                 self._create_contact_information(),
@@ -158,7 +159,7 @@ class LayoutCreator:
                 dcc.Dropdown(
                     id="sat-dropdown",
                     placeholder="Input a satellite",
-                    style={"marginLeft": "5px"},
+                    style={"marginLeft": "5px" ,},
                 )
             ],
         )
@@ -188,7 +189,7 @@ class LayoutCreator:
             children=[
                 html.Div(
                     "Click the button below to obtain up-to-date TLEs.",
-                    style={"marginLeft": "5px"},
+                    style={"marginLeft": "5px" ,"marginRight": "5px", "height": "25px", "width": "auto"},
                 ),
                 html.Button(
                     "Update Celestrak TLEs",
@@ -196,8 +197,11 @@ class LayoutCreator:
                     n_clicks=0,
                     style={
                         "marginLeft": "5px",
+                        "marginRight": "5px",
                         "background-color": "#00263A",
                         "color": "#DBE2E9",
+                        "width": "auto", "height": "auto", "align-items": "center",
+                        "textAlign": "center", "padding": "10px 20px 10px 20px", "display": "inline-block",
                     },
                 ),
             ],
@@ -232,7 +236,7 @@ class LayoutCreator:
         -------
         html.Div
         """
-        return html.Div(id="celestrak-output", style={"marginLeft": "5px"})
+        return html.Div(id="celestrak-output", style={"marginLeft": "5px", "height": "25px", "width": "auto"})
 
     @staticmethod
     def _create_tabs() -> html.Div:
@@ -243,7 +247,7 @@ class LayoutCreator:
         -------
         html.Div
         """
-        style = {"width": 1100, "height": 500, "resize": "none", "margin": "32px"}
+        style = {"width": "auto", "height": 500, "resize": "none", "margin": "32px"}
         return html.Div(
             [
                 dcc.Tabs(
@@ -278,7 +282,6 @@ class LayoutCreator:
             approved for commercial or public use. The original sources for this information are
             https://www.satbeams.com/, https://www.lyngsat.com/, https://celestrak.org/, and
             http://frequencyplansatellites.altervista.org/. For more information or questions,
-            please contact michelle.mcgee.2@spaceforce.mil and/or
-            alexis.denhard.ctr@spaceforce.mil""",
+            please contact jason.tilley.3@spaceforce.mil.""",
             style={"font-style": "italic"},
         )

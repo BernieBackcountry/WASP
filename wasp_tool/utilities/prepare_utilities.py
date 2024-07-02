@@ -315,6 +315,7 @@ def image_download(
         queue_for_image_titles.put(titles)
     except:
         print("Unable to download images")
+        pass
 
 
 def save_tables(aws_client: botocore.client, aws_bucket: str, dict_: dict):

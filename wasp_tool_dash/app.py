@@ -37,11 +37,11 @@ AWS_CLIENT= session.client(
 
 AWS_BUCKET_NAME = BUCKET_NAME
 
-PATH_KEY = "data/"
+PATH_KEY = "newsatbucket/"
 
 # condition for checking if data is populated in AWS bucket
 HAS_APP_DATA = utilities.prefix_exists(
-    AWS_CLIENT, AWS_BUCKET_NAME, "data/celestrak.csv"
+    AWS_CLIENT, AWS_BUCKET_NAME, "newsatbucket/celestrak.csv"
 )
 
 path = utilities.get_project_path().joinpath("wasp_tool")

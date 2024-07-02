@@ -13,7 +13,7 @@ from config import KEY,SECRET_KEY,BUCKET_NAME
 import numpy as np
 import warnings
 
-warnings.simplefilter("ignore")
+#warnings.simplefilter("ignore")
 
 
 session = boto3.session.Session()

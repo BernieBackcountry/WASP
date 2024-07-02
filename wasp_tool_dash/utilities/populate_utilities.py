@@ -76,8 +76,7 @@ def populate_inputs(aws_client: botocore.client, aws_bucket: str, key: str) -> l
     input_options
         List of possible search options
     """
-    sources = ["celestrak.csv"]
-    #, "satbeams.csv", "lyngsat.csv", "altervista.csv"]
+    sources = ["celestrak.csv", "satbeams.csv", "lyngsat.csv", "altervista.csv"]
     accepted_inputs = []
     for source in sources:
         source_path = key + source
