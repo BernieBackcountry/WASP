@@ -88,6 +88,7 @@ class LayoutCreator:
                 self._create_button_celestrak(),
                 self._create_celestrak_output(),
                 self._create_logo(),
+                
             ],
             style={"textAlign": "center", "align-items": "center", "padding": "10px 20px 10px 20px"},
         )
@@ -160,6 +161,7 @@ class LayoutCreator:
                     id="sat-dropdown",
                     placeholder="INPUT A SATELLITE",
                     style={"marginLeft": "5px" ,},
+                    options= utilities.populate_inputs(),
                 )
             ],
         )

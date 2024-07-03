@@ -40,23 +40,25 @@ AWS_CLIENT = session.client(
 
 AWS_BUCKET_NAME = BUCKET_NAME
 
-PATH_KEY = "newsatbucket/"
+PATH_KEY = ""
 
 
 path = utilities.get_project_path().joinpath("wasp_tool")
 
 layout_creator = LayoutCreator()
 
-app = dash.Dash(__name__, suppress_callback_exceptions=False)
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
 app.layout = layout_creator.create_layout()
 
 
 @app.callback(
-    Output(component_id="sat-dropdown", component_property="options"),
-    [Input(component_id="sat-dropdown", component_property="search_value")],
+    Output(component_id="sat-dropdown", component_property="value"),
+    [Input(component_id="sat-dropdown", component_property="options")], suppress_callback_exceptions=True
 )
 
+def update_output(value):
+    return value
 
 @app.callback(
     Output(component_id="celestrak-output", component_property="children"),
@@ -65,7 +67,7 @@ app.layout = layout_creator.create_layout()
             component_id="button-update-celestrak",
             component_property="n_clicks",
         )
-    ],
+    ], suppress_callback_exceptions=True
 )
 
 
@@ -91,11 +93,11 @@ def update_celestrak_tles(click: int):
 @app.callback(
     Output(component_id="tabs-content", component_property="children"),
     [
-        Input(component_id="sat-dropdown", component_property="value"),
         Input(component_id="tabs", component_property="value"),
-    ],
+        Input(component_id="sat-dropdown", component_property="value"),
+    ], suppress_callback_exceptions=True
 )
-def render_content(search: str, tab: str):
+def render_content(tab: str, value: str):
     """
     Callback to render tab content.
 
@@ -108,28 +110,29 @@ def render_content(search: str, tab: str):
     """
     if tab == "tab-general":
         return populate_utilities.populate_general_info(
-            AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
+            AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY
         )
     if tab == "tab-telemetry":
-        return populate_utilities.populate_tles(AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY)
+        return populate_utilities.populate_tles(AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY)
     if tab == "tab-footprints":
         return populate_utilities.populate_footprints(
-            AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
+            AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY
         )
     if tab == "tab-freq_plans":
         return populate_utilities.populate_freq_plans(
-            AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
+            AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY
         )
     if tab == "tab-channels":
         return populate_utilities.populate_channels(
-            AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
+            AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY
         )
     return
 
 
 @app.callback(
-    Output(component_id="value-filter", component_property="options"),
+    Output(component_id="value-filter", component_property="value"),
     [Input(component_id="column-filter", component_property="value")],
+    suppress_callback_exceptions=True
 )
 def render_filter_values(column: str):
     """
@@ -156,7 +159,7 @@ def render_filter_values(column: str):
         Input(component_id="column-filter", component_property="value"),
         Input(component_id="value-filter", component_property="value"),
         Input(component_id="sat-dropdown", component_property="value"),
-    ],
+    ],suppress_callback_exceptions=True,
 )
 def update_rows(column: str, value: str, sat: str):
     """

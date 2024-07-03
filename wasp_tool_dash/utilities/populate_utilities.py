@@ -49,16 +49,16 @@ STYLE_IMAGES = {
 }
 
 STYLE_DATA_TABLE = {
-    "margin": "50px",
-    "maxHeight": "500px",
-    "maxWidth": "1200px",
+    "margin": "100px",
+    "maxHeight": "auto",
+    "maxWidth": "auto",
     "overflow": "scroll",
     "color": "black",
     "font-size": "25px",
 }
 
 
-def populate_inputs(aws_client: botocore.client, aws_bucket: str, key: str) -> list:
+def populate_inputs() -> list:
     """
     Populate the search dropdown with all valid satellites.
 
@@ -74,57 +74,15 @@ def populate_inputs(aws_client: botocore.client, aws_bucket: str, key: str) -> l
     Returns
     -------
     input_options
+
         List of possible search options
     """
-    sources = ["celestrak.csv", "satbeams.csv", "lyngsat.csv", "altervista.csv"]
-    accepted_inputs = []
-    for source in sources:
-        source_path = key + source
-        does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
-
-        if does_exist:
-            accepted_inputs.extend(load_sources(aws_client, aws_bucket, source_path))
-            print("it exists")
-
-    accepted_inputs = list(set(accepted_inputs))
-    accepted_inputs.sort()
-    input_options = [
-        {"label": accepted_input, "value": accepted_input}
-        for accepted_input in accepted_inputs
-    ]
-    return input_options
+    accepted_inputs = ["H2SAT", "ABS-2"]
+    accepted_inputs.sort() 
+    return accepted_inputs
 
 
-def load_sources(aws_client: botocore.client, aws_bucket: str, key: str) -> list:
-    """
-    Loads csv files from the AWS bucket to create a master list of all primary satellite
-    names.
-
-    Parameters
-    ----------
-    aws_client: botocore.client
-        AWS boto3 client object
-    aws_bucket: str
-        AWS bucket name
-    key: str
-        String containing prefix determing objects to grab
-
-    Returns
-    -------
-    source_inputs: lsit
-        List of all primary satellite names
-    """
-
-    obj = aws_client.get_object(Bucket=aws_bucket, Key= key)["Body"].read().decode("utf-8")
-    df_source = pd.read_csv(StringIO(obj), header=0)
-    source_inputs = df_source["Primary Satellite Name"].tolist()
-
-    return source_inputs
-
-
-def populate_general_info(
-    aws_client: botocore.client, aws_bucket: str, sat: str, key: str
-) -> html.P:
+def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str, key: str) -> html.P:
     """
     Populates the General Info tab by pulling information from the satbeams.csv file.
 
@@ -151,11 +109,11 @@ def populate_general_info(
     if does_exist:
         obj = (
             aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
-            .read()
-            .decode("utf-8")
+            
         )
-        df = pd.read_csv(StringIO(obj), header=0)
-        if sat in df["Primary Satellite Name"].values:
+        df = pd.read_csv(obj, header=0)
+        
+        if sat in df["Primary Satellite Name"].values or sat in df["Secondary Satellite Name(s)"].values:
             df_subset = df[df["Primary Satellite Name"] == sat]
             position = str(df_subset["Position"].iloc[0])
             norad = str(df_subset["NORAD ID"].iloc[0])
@@ -207,11 +165,11 @@ def populate_tles(
     if does_exist:
         obj = (
             aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
-            .read()
-            .decode("utf-8")
+
         )
-        df = pd.read_csv(StringIO(obj), header=0)
-        if sat in df["Primary Satellite Name"].values:
+        df = pd.read_csv(obj, header=0)
+        print(df)
+        if sat in df["Primary Satellite Name"].values :
             df_subset = df[df["Primary Satellite Name"] == sat]
             temp = str(df_subset["TLES"].iloc[0]).split("\n", maxsplit=1)
             tle_1 = temp[0]
@@ -253,10 +211,9 @@ def populate_footprints(
     if does_exist:
         obj = (
             aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
-            .read()
-            .decode("utf-8")
+
         )
-        df = pd.read_csv(StringIO(obj), header=0)
+        df = pd.read_csv(obj, header=0)
         if sat in df["Primary Satellite Name"].values:
             source_path = f"{key}footprints/{sat}/"
             image_keys = utilities.get_file_keys(
@@ -308,10 +265,9 @@ def populate_freq_plans(
     if does_exist:
         obj = (
             aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
-            .read()
-            .decode("utf-8")
+
         )
-        df = pd.read_csv(StringIO(obj), header=0)
+        df = pd.read_csv(obj, header=0)
         if sat in df["Primary Satellite Name"].values:
             source_path = key + "freq_plans/" + sat + "/"
             image_keys = utilities.get_file_keys(
@@ -359,18 +315,15 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, ke
     if does_exist:
         obj = (
             aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
-            .read()
-            .decode("utf-8")
+    
         )
-        df = pd.read_csv(StringIO(obj), header=0)
+        df = pd.read_csv(obj, header=0)
         if sat in df["Primary Satellite Name"].values:
             source_path = f"{key}channels/{sat}/{sat}.csv"
             obj = (
                 aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
-                .read()
-                .decode("utf-8")
             )
-            df = pd.read_csv(StringIO(obj), header=0)
+            df = pd.read_csv(obj, header=0)
             children = [
                 html.Div(
                     children=[
