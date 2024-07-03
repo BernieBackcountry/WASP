@@ -158,7 +158,7 @@ class LayoutCreator:
             children=[
                 dcc.Dropdown(
                     id="sat-dropdown",
-                    placeholder="Input a satellite",
+                    placeholder="INPUT A SATELLITE",
                     style={"marginLeft": "5px" ,},
                 )
             ],

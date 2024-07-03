@@ -84,6 +84,7 @@ def populate_inputs(aws_client: botocore.client, aws_bucket: str, key: str) -> l
 
         if does_exist:
             accepted_inputs.extend(load_sources(aws_client, aws_bucket, source_path))
+            print("it exists")
 
     accepted_inputs = list(set(accepted_inputs))
     accepted_inputs.sort()

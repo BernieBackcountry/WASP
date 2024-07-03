@@ -34,7 +34,7 @@ def prepare_celestrak() -> dict:
     data_dictionary: dict
         Dictionary of lists containing all satellites primary names, secondary names, and TLEs.
     """
-    response = requests.get(CELESTRAK_HOMEPAGE)  # Heroku has specified timeout
+    response = requests.get(CELESTRAK_HOMEPAGE) 
 
     if response.status_code == HTTP_SUCCESS:
         html_text = response.text.split("\n")

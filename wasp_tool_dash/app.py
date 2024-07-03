@@ -23,14 +23,17 @@ from dash.dependencies import Input, Output
 from wasp_tool_dash import utilities
 from wasp_tool_dash.utilities import populate_utilities
 from wasp_tool_dash.components import LayoutCreator
+from wasp_tool.prepare import get_celestrak_data
 from config import BUCKET_NAME,KEY,SECRET_KEY
 
 session = boto3.session.Session()
 
-AWS_CLIENT= session.client(
+session = boto3.session.Session()
+
+AWS_CLIENT = session.client(
     's3',
     region_name='nyc3',
-    endpoint_url="https://newsatbucket.nyc3.digitaloceanspaces.com/data",
+    endpoint_url="https://newsatbucket.nyc3.digitaloceanspaces.com",
     aws_access_key_id=KEY,
     aws_secret_access_key=SECRET_KEY,
 )
@@ -39,16 +42,12 @@ AWS_BUCKET_NAME = BUCKET_NAME
 
 PATH_KEY = "newsatbucket/"
 
-# condition for checking if data is populated in AWS bucket
-HAS_APP_DATA = utilities.prefix_exists(
-    AWS_CLIENT, AWS_BUCKET_NAME, "newsatbucket/celestrak.csv"
-)
 
 path = utilities.get_project_path().joinpath("wasp_tool")
 
 layout_creator = LayoutCreator()
 
-app = dash.Dash(__name__, suppress_callback_exceptions=True)
+app = dash.Dash(__name__, suppress_callback_exceptions=False)
 server = app.server  # expose server variable for Procfile
 app.layout = layout_creator.create_layout()
 
@@ -84,8 +83,7 @@ def update_celestrak_tles(click: int):
         0
     ]
     if click and "button-update-celestrak" in changed_ids:
-        script_fn = path.joinpath("prepare_celestrak.py")
-        exec(open(script_fn).read())
+        get_celestrak_data()
         return "TLEs successfully pulled"
     return ""
 
@@ -109,21 +107,21 @@ def render_content(search: str, tab: str):
         String containing chosen tab.
     """
     if tab == "tab-general":
-        return utilities.populate_general_info(
+        return populate_utilities.populate_general_info(
             AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
         )
     if tab == "tab-telemetry":
-        return utilities.populate_tles(AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY)
+        return populate_utilities.populate_tles(AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY)
     if tab == "tab-footprints":
-        return utilities.populate_footprints(
+        return populate_utilities.populate_footprints(
             AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
         )
     if tab == "tab-freq_plans":
-        return utilities.populate_freq_plans(
+        return populate_utilities.populate_freq_plans(
             AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
         )
     if tab == "tab-channels":
-        return utilities.populate_channels(
+        return populate_utilities.populate_channels(
             AWS_CLIENT, AWS_BUCKET_NAME, search, PATH_KEY
         )
     return
