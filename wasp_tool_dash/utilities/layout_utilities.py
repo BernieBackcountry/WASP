@@ -28,7 +28,7 @@ def create_column_filter() -> dcc.Dropdown:
         ["Channel Status", "Ku/C-band"],
         id="column-filter",
         placeholder="Filter by...",
-        style={"marginLeft": "5px", "maxWidth": "300px"},
+        style={"marginLeft": "20px", "maxWidth": "300px"},
     )
 
 
@@ -43,7 +43,7 @@ def create_value_filter() -> dcc.Dropdown:
 
     """
     return dcc.Dropdown(
-        id="value-filter", style={"marginLeft": "5px", "maxWidth": "300px"}
+        id="value-filter", style={"marginLeft": "20px", "maxWidth": "300px"}
     )
 
 
@@ -62,7 +62,7 @@ def create_data_table(df: pd.DataFrame) -> dash_table.DataTable:
         id="data-table",
         sort_action="native",
         style_cell={"fontSize": 14, "textAlign": "left"},
-        style_header={"backgroundColor": "grey", "fontWeight": "bold"},
+        style_header={"backgroundColor": "grey", "fontWeight": "bold", "textAlign": "center"},
         style_data_conditional=[
             {
                 "if": {

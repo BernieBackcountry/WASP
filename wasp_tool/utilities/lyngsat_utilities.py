@@ -120,6 +120,9 @@ def prepare_lyngsat() -> Tuple[dict, dict]:
     satellite_df_tables_dict = convert_html_tables_to_dataframes(
         satellite_html_tables_dict
     )
+
+    
+    
     # clean each df table
     satellite_df_tables_clean_dict = clean_all_dataframes(satellite_df_tables_dict)
     # determine channel status for each channel in all tables
@@ -475,6 +478,7 @@ def denote_italicized_table_entries_with_asterik(
         Populated dataframe
     """
     # check if <i> is a child of cell
+    table_df = table_df.astype(str)
     children = table_cell.findChildren()
     for child in children:
         # add asterik to signal text was originally in italics; this is key
@@ -548,6 +552,7 @@ def clean_all_dataframes(satellite_df_tables_dict: dict) -> dict:
                     "Transponder",
                     "Beam",
                     "EIRP (dBW)",
+
                 ],
             )
 
@@ -565,6 +570,9 @@ def clean_all_dataframes(satellite_df_tables_dict: dict) -> dict:
         satellite_df_tables_dict_clean[key] = list_of_dataframes_clean
     return satellite_df_tables_dict_clean
 
+
+
+    
 
 def split_frequency_beam_and_eirp_values(
     df_subset: pd.DataFrame, df_new: pd.DataFrame
@@ -751,16 +759,16 @@ def determine_channel_status(
                      print("Index out of range.")
                     channel_status = cell["style"]
                     if (channel_status == green) or (channel_status == yellow):
-                        table_star.loc[m, "Channel Status"] = str("ON")
+                        table_star.loc[m, "Channel Status"] = "ON"
                     else:
-                        table_star.loc[m, "Channel Status"] = str("OFF")
+                        table_star.loc[m, "Channel Status"] = "OFF"
 
             # combine all tables into one large one
             master_table = pd.concat(df_tables, ignore_index=True)
             # drop excess rows
             master_table_clean = clean_provider_channel_name_rows(master_table)
             # create ku/c-band column
-            master_table_new = create_bands_column(master_table_clean)
+            master_table_new = create_bands_column_and_Pol_Column(master_table_clean)
             # add final table to new dict
             satellite_df_tables_new_dict[key] = master_table_new
     return satellite_df_tables_new_dict
@@ -832,7 +840,7 @@ def clean_provider_channel_name_rows(table: pd.DataFrame) -> pd.DataFrame:
     return table
 
 
-def create_bands_column(df_org: pd.DataFrame) -> pd.DataFrame:
+def create_bands_column_and_Pol_Column(df_org: pd.DataFrame) -> pd.DataFrame:
     """
     Creates the Ku/C-band column.
 
@@ -845,13 +853,8 @@ def create_bands_column(df_org: pd.DataFrame) -> pd.DataFrame:
     df_org: pd.DataFrame
         Editted dataframe.
     """
-    df_org["Ku/C-band"] = np.nan
-    for k, entry in enumerate(df_org["Frequency"]):
-        # check for empty entry
-        if not pd.isnull(entry):
-            res = "".join([ele for ele in entry if ele.isdigit()])
-            if int(res) > 9999:
-                df_org.loc[k, "Ku/C-band"] = str("Ku-band")
-            else:
-                df_org.loc[k, "Ku/C-band"] = str("C-band")
+    # create a polarity columns
+    df_org[['Frequency', 'Polarization']
+                             ] = df_org['Frequency'].str.split(expand=True)
+    df_org["Ku/C-band"] = df_org["Ku/C-band"].apply(lambda x: "Ku-band" if x > 10700 else "C-band")
     return df_org

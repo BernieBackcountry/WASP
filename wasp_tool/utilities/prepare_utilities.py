@@ -204,124 +204,124 @@ def save_df_to_csv(bucket: str, client: boto3.client, df: pd.DataFrame, filename
     
 
 
-def save_footprints(
-    aws_client: botocore.client, aws_bucket: str, sat_names: list, footprints: list
-):
-    """
-    Saves satbeams footprints to the AWS bucket.
+# def save_footprints(
+#     aws_client: botocore.client, aws_bucket: str, sat_names: list, footprints: list
+# ):
+#     """
+#     Saves satbeams footprints to the AWS bucket.
 
-    Runs threads to download images before saving to bucket.
+#     Runs threads to download images before saving to bucket.
 
-    Parameters
-    ----------
-    aws_client: botocore.client
-        AWS boto3 client object
-    aws_bucket: str
-        AWS bucket name
-    sat_names: list
-        List of satellite names
-    footprints: list
-        List of footprint image hrefs
-    """
-    image_encoding_dict = {}
+#     Parameters
+#     ----------
+#     aws_client: botocore.client
+#         AWS boto3 client object
+#     aws_bucket: str
+#         AWS bucket name
+#     sat_names: list
+#         List of satellite names
+#     footprints: list
+#         List of footprint image hrefs
+#     """
+#     image_encoding_dict = {}
 
-    images, titles = footprints[1][0], footprints[1][1]
+#     images, titles = footprints[1][0], footprints[1][1]
 
-    q_image_encod = queue.Queue()
-    q_image_title = queue.Queue()
-    jobs = []
+#     q_image_encod = queue.Queue()
+#     q_image_title = queue.Queue()
+#     jobs = []
 
-    for k, sat in enumerate(sat_names):
-        thread = threading.Thread(
-            target=image_download,
-            args=(sat, images, titles, k, q_image_encod, q_image_title),
-        )
-        jobs.append(thread)
+#     for k, sat in enumerate(sat_names):
+#         thread = threading.Thread(
+#             target=image_download,
+#             args=(sat, images, titles, k, q_image_encod, q_image_title),
+#         )
+#         jobs.append(thread)
 
-    for j in jobs:
-        threads = threading.active_count()
-        while threads > 4:
-            time.sleep(5)
-            threads = threading.active_count()
-        j.start()
-        encodings = q_image_encod.get()
-        encod_titles = q_image_title.get()
-        for i in range(len(encodings)):
-            image_encoding_dict[encod_titles[i]] = encodings[i]
-    for j in jobs:
-        j.join()
+#     for j in jobs:
+#         threads = threading.active_count()
+#         while threads > 4:
+#             time.sleep(5)
+#             threads = threading.active_count()
+#         j.start()
+#         encodings = q_image_encod.get()
+#         encod_titles = q_image_title.get()
+#         for i in range(len(encodings)):
+#             image_encoding_dict[encod_titles[i]] = encodings[i]
+#     for j in jobs:
+#         j.join()
 
-    pickle_byte_obj = pickle.dumps(image_encoding_dict)
-    # / causes problem with directory name
-    if "/" in key:
-        key = key.replace("/", "-")
-    key_final = f"{key}/{key}.pkl"
-    filename = f"footprints/{key_final}"
-    aws_client.put_object(Bucket=aws_bucket, Key=filename,
-                            Body=pickle_byte_obj)
+#     pickle_byte_obj = pickle.dumps(image_encoding_dict)
+#     # / causes problem with directory name
+#     if "/" in key:
+#         key = key.replace("/", "-")
+#     key_final = f"{key}/{key}.pkl"
+#     filename = f"footprints/{key_final}"
+#     aws_client.put_object(Bucket=aws_bucket, Key=filename,
+#                             Body=pickle_byte_obj)
 
 
 
-def image_download(
-    sat_name: str,
-    image_links: list,
-    image_titles: list,
-    iter_: int,
-    queue_for_image_encodings: queue.Queue,
-    queue_for_image_titles: queue.Queue,
-):
-    """
-    Download footprint images.
+# def image_download(
+#     sat_name: str,
+#     image_links: list,
+#     image_titles: list,
+#     iter_: int,
+#     queue_for_image_encodings: queue.Queue,
+#     queue_for_image_titles: queue.Queue,
+# ):
+#     """
+#     Download footprint images.
 
-    Parameters
-    ----------
-    sat_name: str
-        String containing satellite name
-    image_links: list
-        List of footprint image hrefs
-    image_titles: list
-        List of footprint image titles
-    iter_: int
-        Iterator to keep track of list elements needed for a given satellite
-    queue_for_image_encodings: queue.Queue
-        Queue to put satellite footprint image encodings onto.
-    queue_for_image_titles: queue.Queue
-        Queue to put satellite footprint image titles onto.
-    """
-    encodings = []
-    titles = []
-    try:
-        sat_images = image_links[iter_]
-        sat_titles = image_titles[iter_]
-        # download and save images
-        print("Downloading images for", sat_images)
-        for i, image in tqdm(enumerate(sat_images)):
-            try:
-                jpg_name = f"{sat_titles[i]}.jpg"
-            except:
-                print("Unable to download image")
+#     Parameters
+#     ----------
+#     sat_name: str
+#         String containing satellite name
+#     image_links: list
+#         List of footprint image hrefs
+#     image_titles: list
+#         List of footprint image titles
+#     iter_: int
+#         Iterator to keep track of list elements needed for a given satellite
+#     queue_for_image_encodings: queue.Queue
+#         Queue to put satellite footprint image encodings onto.
+#     queue_for_image_titles: queue.Queue
+#         Queue to put satellite footprint image titles onto.
+#     """
+#     encodings = []
+#     titles = []
+#     try:
+#         sat_images = image_links[iter_]
+#         sat_titles = image_titles[iter_]
+#         # download and save images
+#         print("Downloading images for", sat_images)
+#         for i, image in tqdm(enumerate(sat_images)):
+#             try:
+#                 jpg_name = f"{sat_titles[i]}.jpg"
+#             except:
+#                 print("Unable to download image")
 
-            try:
-                response = requests.get(image, stream=True)  # Heroku has specified timeout
-                if response.status_code == HTTP_SUCCESS:
-                    response.raw.decode_content = True
-                    in_mem_file = BytesIO()
-                    shutil.copyfileobj(response.raw, in_mem_file)
-                    response.close()
-                    in_mem_file.seek(0)
-                    # create image encoding
-                    img = Image.open(in_mem_file)
-                    # add encoding to dict
-                    encodings.append(img)
-                    titles.append(f"{sat_name}/{sat_titles[i]}")
-                    print("Image download successful")
-            except:
-                print("Unable to download image", sat_name, jpg_name)
-        queue_for_image_encodings.put(encodings)
-        queue_for_image_titles.put(titles)
-    except:
-        print("Unable to download images")
-        pass
+#             try:
+#                 response = requests.get(image, stream=True)  # Heroku has specified timeout
+#                 if response.status_code == HTTP_SUCCESS:
+#                     response.raw.decode_content = True
+#                     in_mem_file = BytesIO()
+#                     shutil.copyfileobj(response.raw, in_mem_file)
+#                     response.close()
+#                     in_mem_file.seek(0)
+#                     # create image encoding
+#                     img = Image.open(in_mem_file)
+#                     # add encoding to dict
+#                     encodings.append(img)
+#                     titles.append(f"{sat_name}/{sat_titles[i]}")
+#                     print("Image download successful")
+#             except:
+#                 print("Unable to download image", sat_name, jpg_name)
+#         queue_for_image_encodings.put(encodings)
+#         queue_for_image_titles.put(titles)
+#     except:
+#         print("Unable to download images")
+#         pass
 
 
 def save_tables(aws_client: botocore.client, aws_bucket: str, dict_: dict):

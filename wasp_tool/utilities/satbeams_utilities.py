@@ -69,9 +69,8 @@ def prepare_satbeams() -> Tuple[dict, list]:
         # get all urls
         all_satellite_urls = get_active_geostationary_satellite_urls(soup)
         # extract information from all urls
-        data_dictionary, footprint_urls = run_threads(all_satellite_urls)
-        data_df = pd.DataFrame.from_dict(data_dictionary)
-        return data_df, footprint_urls
+        data_df= run_threads(all_satellite_urls)
+        return data_df
     print("Unsuccessful HTTP request at ", SATBEAMS_HOMEPAGE)
     print("Exiting script...")
     sys.exit()
@@ -157,8 +156,11 @@ def run_threads(satellite_urls: list) -> Tuple[dict, list]:
     for job in jobs:
         job.join()
 
-    satellite_information_dict = list_to_dict(satellite_information)
-    return satellite_information_dict, satellite_footprints
+    satellite_information_df = pd.DataFrame(satellite_information)
+    satellite_footprints_df = pd.DataFrame(satellite_footprints)
+    satellite_information = pd.concat([satellite_information_df, satellite_footprints_df], axis=1)
+
+    return satellite_information
 
 
 def fetch_data_from_url(

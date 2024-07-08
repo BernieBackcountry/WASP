@@ -89,6 +89,7 @@ class LayoutCreator:
                 self._create_celestrak_output(),
                 self._create_logo(),
                 
+                
             ],
             style={"textAlign": "center", "align-items": "center", "padding": "10px 20px 10px 20px"},
         )
@@ -111,7 +112,7 @@ class LayoutCreator:
                 html.Div(
                     id="page_content",
                     className="loader",
-                    style={"height": "auto", "width": "auto","marginLeft": "5px", "marginRight": "5px"},
+                    style={"height": "auto", "width": "100%","marginLeft": "20px", "marginRight": "20px"},
                 ),
                 self._create_tabs(),
                 self._create_contact_information(),
@@ -249,7 +250,7 @@ class LayoutCreator:
         -------
         html.Div
         """
-        style = {"width": "auto", "height": 500, "resize": "none", "margin": "32px"}
+        style = {"width": "100%", "height": 500, "resize": "none", "margin": "32px"}
         return html.Div(
             [
                 dcc.Tabs(

@@ -27,16 +27,20 @@ import botocore
 import pandas as pd
 from dash import html
 from PIL import Image
-
+import re
 from wasp_tool_dash import utilities
+from urllib.parse import urlparse
 from config import KEY, SECRET_KEY
 
 STYLE_TEXT = {
     "color": "black",
-    "margin": "75px",
+    "marginLeft": "50px",
+    "marginRight": "50px",
+    "marginTop": "50px",
+    "marginBottom": "50px",
     "text-align": "left",
     "text-align-last": "left",
-    "font-size": "25px",
+    "font-size": "auto",
 }
 
 STYLE_IMAGES = {
@@ -49,9 +53,9 @@ STYLE_IMAGES = {
 }
 
 STYLE_DATA_TABLE = {
-    "margin": "100px",
-    "maxHeight": "auto",
-    "maxWidth": "auto",
+    "margin": "200px",
+    "maxHeight": "500px",
+    "maxWidth": "500px",
     "overflow": "scroll",
     "color": "black",
     "font-size": "25px",
@@ -113,22 +117,22 @@ def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str
         )
         df = pd.read_csv(obj, header=0)
         
-        if sat in df["Primary Satellite Name"].values or sat in df["Secondary Satellite Name(s)"].values:
-            df_subset = df[df["Primary Satellite Name"] == sat]
-            position = str(df_subset["Position"].iloc[0])
-            norad = str(df_subset["NORAD ID"].iloc[0])
-            beacon = str(df_subset["Beacons"].iloc[0])
+        if sat in df.iloc[:, 0].values:
+            df_subset = df[df.iloc[:, 0] == sat]
+            position = str(df_subset.iloc[0,2])
+            norad = str(df_subset.iloc[0,3])
+            beacon = str(df_subset.iloc[0,4])
             return html.P(
-                [
-                    "Satellite: " + sat,
-                    html.Br(),
-                    "Position: " + position,
-                    html.Br(),
-                    "NORAD: " + norad,
-                    html.Br(),
-                    "Beacon(s): " + beacon,
-                ],
-                style=STYLE_TEXT,
+            [
+                "Satellite: " + sat,
+                html.Br(),
+                "Position: " + position,
+                html.Br(),
+                "NORAD: " + norad,
+                html.Br(),
+                "Beacon(s): " + beacon,
+            ],
+            style=STYLE_TEXT,
             )
         return html.P("Information not available.", style=STYLE_TEXT)
     return html.P(
@@ -212,25 +216,35 @@ def populate_footprints(
 
         )
         df = pd.read_csv(obj, header=0)
-        if sat in df["Primary Satellite"].values:
-            source_path = f"{key}footprints/{sat}/"
-            image_keys = utilities.get_file_keys(
-                aws_client, aws_bucket, source_path, ".jpg"
-            )
+    
+        if sat in df.iloc[:, 0].values:
+            df_subset = df[df.iloc[:, 0] == sat]
+            image_keys = df_subset.iloc[0,5].split(",")
+            urls = extract_jpg_urls(image_keys)
+            print(urls)
             children = []
-            for image in image_keys:
-                title = image.rsplit("/", maxsplit=1)[1]
-                title = title.replace(".jpg", "")
-                file_stream = BytesIO()
-                aws_client.download_fileobj(aws_bucket, image, file_stream)
-                img = Image.open(file_stream)
-                children.append(title)
-                children.append(html.Img(src=img))
-            return html.Div(children, style=STYLE_IMAGES)
+            for url in urls:
+                children.append(html.Iframe(src=url), )
+            return html.Div(children, style={"width": "100%", "height": "700px"})
         return html.P("Information not available.", style=STYLE_TEXT)
     return html.P(
         "Populate data sources to obtain requested information.", style=STYLE_TEXT
     )
+
+
+def extract_jpg_urls(string_list):
+    # Define the regex pattern for URLs ending with ".jpg"
+    pattern = r"https?://.*\.(?:jpg|jpeg)"
+
+    # Initialize an empty list to store the extracted URLs
+    jpg_urls = []
+
+    for s in string_list:
+        # Find all matches in the string
+        matches = re.findall(pattern, s)
+        jpg_urls.extend(matches)
+
+    return jpg_urls
 
 
 def populate_freq_plans(

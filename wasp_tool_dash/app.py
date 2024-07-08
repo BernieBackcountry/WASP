@@ -173,7 +173,7 @@ def update_rows(column: str, value: str, sat: str):
     sat: str
         String containing valid search option chosen in search bar/dropdown.
     """
-    channels_path = f"channels/{sat}.csv"
+    channels_path = f"{sat}.csv"
     df = pd.read_csv(channels_path, header=0)
     if column and value and sat:
         df_subset = df[df[column] == value]

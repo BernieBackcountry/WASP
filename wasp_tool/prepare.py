@@ -111,12 +111,9 @@ def get_satbeams_data():
     """
     Retrieve data obtained from satbeams.org and write to the AWS bucket
     """
-    satbeams_data, satbeams_footprints = utilities.prepare_satbeams()
+    satbeams_data = utilities.prepare_satbeams()
     utilities.save_df_to_csv(
         BUCKET_NAME, DIGITAL_OCEAN_CLIENT, satbeams_data, "satbeams.csv")
-
-    utilities.save_footprints(
-        DIGITAL_OCEAN_CLIENT, BUCKET_NAME, satbeams_data["Primary Satellite"].tolist(), satbeams_footprints)
 
 
 
@@ -146,7 +143,7 @@ if __name__ == "__main__":
         get_lyngsat_data()
     if "satbeams" in parser_args.site:
         get_satbeams_data()
+        
     # if "data" in parser_args.site:
     #     get_blank_data()
 
-    
