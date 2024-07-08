@@ -15,6 +15,7 @@ import sys
 
 import numpy as np
 import requests
+import pandas as pd
 
 from wasp_tool import utilities
 
@@ -69,25 +70,25 @@ def get_tles(html_text: list) -> np.array:
     # iterate through lines to get sat names and corresponding TLEs
     index = 0
 
+    df = pd.DataFrame(columns=['Primary Satellite', 'TLE-1', 'TLE-2'])
+
     for i, line in enumerate(html_text):
         if (i % line_count == 0) and (i <= (len(html_text) - line_count)):
             # separate out TLEs
             tle_line_1 = html_text[i + 1].strip().replace(" ", "*")
             tle_line_2 = html_text[i + 2].strip().replace(" ", "*")
 
-            # separate out satellite names
+           
             sat_names = line.strip()
 
-            # pre-process sat names
-            # sat_names = sat_names.replace(")", "")
-            # sat_names = sat_names.split("(")
-            # sat_names = [elem for elem in sat_names if elem.strip()]
-
-            # TODO Fix doc strings
-            celestrak_data[index, 0, 0] = sat_names
-            celestrak_data[index, 1, 0] = tle_line_1
-            celestrak_data[index, 2, 0] = tle_line_2
+            data = {
+                "Primary Satellite": [sat_names],
+                "TLE-1": [tle_line_1],
+                "TLE-2": [tle_line_2]
+            }
+            
+            newdf = pd.DataFrame(data)
+            df = pd.concat([df,newdf])
 
             index += 1
-
-    return celestrak_data
+    return df

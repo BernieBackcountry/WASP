@@ -22,6 +22,7 @@ from typing import Tuple
 import numpy as np
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
 
 #from wasp_tool import utilities
 
@@ -48,20 +49,25 @@ def prepare_altervista() -> Tuple[dict, list]:
         List of urls linking to frequency plan PDFs
     """
     constellation_urls = get_constellation_urls()
-    num_constellations = len(constellation_urls)
     num_satellites, sat_names, freq_plans = get_frequency_plans(constellation_urls)
 
     print(num_satellites)
     print(len(sat_names))
     print(len(freq_plans))
 
-    altervista_data = np.empty((num_satellites, 2, 1), dtype=object)
-
+    df = pd.DataFrame(columns=["Primary Satellite",  "Frequency Plan URL"])
+   
     for index in range(num_satellites):
-        altervista_data[index, 0, 0] = sat_names[index]
-        altervista_data[index, 1, 0] = freq_plans[index]
+        data = {
+            "Primary Satellite": [sat_names[index]],
+            "Frequency Plan URL": [freq_plans[index]]
 
-    return altervista_data
+        }
+
+        newdf = pd.DataFrame(data)
+        df = pd.concat([df, newdf])
+
+    return df
 
 
 def get_constellation_urls() -> list:

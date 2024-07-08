@@ -77,7 +77,7 @@ def populate_inputs() -> list:
 
         List of possible search options
     """
-    accepted_inputs = ["H2SAT", "ABS-2"]
+    accepted_inputs = ["H2SAT", "ABS-2", "GALAXY 16", "Bsat 3B"]
     accepted_inputs.sort() 
     return accepted_inputs
 
@@ -168,12 +168,10 @@ def populate_tles(
 
         )
         df = pd.read_csv(obj, header=0)
-        print(df)
-        if sat in df["Primary Satellite Name"].values :
-            df_subset = df[df["Primary Satellite Name"] == sat]
-            temp = str(df_subset["TLES"].iloc[0]).split("\n", maxsplit=1)
-            tle_1 = temp[0]
-            tle_2 = temp[1]
+        if sat in df["Primary Satellite"].values :
+            df_subset = df[df["Primary Satellite"] == sat]
+            tle_1 = df_subset["TLE-1"].tolist()[0]
+            tle_2 = df_subset["TLE-2"].tolist()[0]
             return html.P([tle_1, html.Br(), tle_2], style=STYLE_TEXT)
         return html.P("Information not available.", style=STYLE_TEXT)
     return html.P(
@@ -214,7 +212,7 @@ def populate_footprints(
 
         )
         df = pd.read_csv(obj, header=0)
-        if sat in df["Primary Satellite Name"].values:
+        if sat in df["Primary Satellite"].values:
             source_path = f"{key}footprints/{sat}/"
             image_keys = utilities.get_file_keys(
                 aws_client, aws_bucket, source_path, ".jpg"
@@ -267,23 +265,18 @@ def populate_freq_plans(
             aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
 
         )
-        df = pd.read_csv(obj, header=0)
-        if sat in df["Primary Satellite Name"].values:
-            source_path = key + "freq_plans/" + sat + "/"
-            image_keys = utilities.get_file_keys(
-                aws_client, aws_bucket, source_path, ".jpg"
-            )
-            children = []
-            for image in image_keys:
-                file_stream = BytesIO()
-                aws_client.download_fileobj(aws_bucket, image, file_stream)
-                img = Image.open(file_stream)
-                children.append(html.Img(src=img, style={"width": "95%"}))
-            return html.Div(children, style=STYLE_IMAGES)
+    df = pd.read_csv(obj, header=0)
+    if sat in df["Primary Satellite"].values:
+        df_subset = df[df["Primary Satellite"] == sat]
+        image_url = df_subset["Frequency Plan URL"].values[0]
+
+        return html.Div([
+            html.Iframe(src=image_url, style={
+                        'width': '100%', 'height': '700px'}),
+        ])
+    else:
         return html.P("Information not available.", style=STYLE_TEXT)
-    return html.P(
-        "Populate data sources to obtain requested information.", style=STYLE_TEXT
-    )
+
 
 
 def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, key: str):

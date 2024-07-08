@@ -71,15 +71,11 @@ def get_altervista_data():
     Retrieve data obtained from frequencyplansatellites.altervista.org and write
     to the AWS bucket
     """
-    *altervista_data, altervista_pdfs = utilities.prepare_altervista()
-
-    satellite_names = [item[0][0] for item in altervista_data]
-    urls = [item[1][0] for item in altervista_data]
-    altervista_data_df = pd.DataFrame({'Satellite Name': satellite_names, 'URL': urls})
+    altervista_data = utilities.prepare_altervista()
     utilities.save_df_to_csv(
-        BUCKET_NAME, DIGITAL_OCEAN_CLIENT, altervista_data_df, "altervista.csv")
+        BUCKET_NAME, DIGITAL_OCEAN_CLIENT, altervista_data, "altervista.csv")
     utilities.save_pdfs(DIGITAL_OCEAN_CLIENT, BUCKET_NAME,
-                        altervista_data_df["Satellite Name"].to_list(), altervista_pdfs)
+                        altervista_data["Primary Satellite"].to_list(), altervista_data)
 
 
 @measure_time
@@ -92,14 +88,9 @@ def get_celestrak_data():
     """
     Turn dict into df by indexing then flattening
     """
-    names = ['x', 'y', 'z']
-    index = pd.MultiIndex.from_product(
-    [range(s) for s in celestrak_data.shape], names=names)
-    celestrak_data_df = pd.DataFrame({'A': celestrak_data.flatten()}, index=index)['A']
-
-    print(celestrak_data_df)
+    celestrak_data.to_csv("celestrak.csv", index=False)
     utilities.save_df_to_csv(
-        BUCKET_NAME, DIGITAL_OCEAN_CLIENT, celestrak_data_df, "celestrak.csv")
+        BUCKET_NAME, DIGITAL_OCEAN_CLIENT, celestrak_data, "celestrak.csv")
 
 
 @measure_time
@@ -125,7 +116,7 @@ def get_satbeams_data():
         BUCKET_NAME, DIGITAL_OCEAN_CLIENT, satbeams_data, "satbeams.csv")
 
     utilities.save_footprints(
-        DIGITAL_OCEAN_CLIENT, BUCKET_NAME, satbeams_data["Primary Satellite Name"], satbeams_footprints)
+        DIGITAL_OCEAN_CLIENT, BUCKET_NAME, satbeams_data["Primary Satellite"].tolist(), satbeams_footprints)
 
 
 

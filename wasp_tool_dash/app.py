@@ -42,7 +42,6 @@ AWS_BUCKET_NAME = BUCKET_NAME
 
 PATH_KEY = ""
 
-
 path = utilities.get_project_path().joinpath("wasp_tool")
 
 layout_creator = LayoutCreator()

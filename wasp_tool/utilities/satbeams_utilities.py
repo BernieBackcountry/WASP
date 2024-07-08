@@ -352,7 +352,7 @@ def list_to_dict(information: list) -> dict:
         satellite_beacons.append(entry[4])
 
     information_dict = {
-        "Primary Satellite Name": primary_satellite_names,
+        "Primary Satellite": primary_satellite_names,
         "Secondary Satellite Name(s)": secondary_satellite_names,
         "Position": satellite_positions,
         "NORAD ID": satellite_norads,

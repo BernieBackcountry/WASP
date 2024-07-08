@@ -252,9 +252,14 @@ def save_footprints(
         j.join()
 
     pickle_byte_obj = pickle.dumps(image_encoding_dict)
-    aws_client.put_object(
-        Body=pickle_byte_obj, Bucket=aws_bucket, Key="data/footprint_encodings.pkl"
-    )
+    # / causes problem with directory name
+    if "/" in key:
+        key = key.replace("/", "-")
+    key_final = f"{key}/{key}.pkl"
+    filename = f"footprints/{key_final}"
+    aws_client.put_object(Bucket=aws_bucket, Key=filename,
+                            Body=pickle_byte_obj)
+
 
 
 def image_download(
@@ -289,6 +294,7 @@ def image_download(
         sat_images = image_links[iter_]
         sat_titles = image_titles[iter_]
         # download and save images
+        print("Downloading images for", sat_images)
         for i, image in tqdm(enumerate(sat_images)):
             try:
                 jpg_name = f"{sat_titles[i]}.jpg"
@@ -354,36 +360,36 @@ def save_pdfs(aws_client: botocore.client, aws_bucket: str, names: list, urls: l
         List of satellite frequency plan urls
     Returns
     """
-    for i, url in enumerate(urls):
-        sat_name = names[i]
-        file_path = f"data/freq_plans/{sat_name}/"
-        try:
-            req = requests.get(url)
-            req.close()
-            pdf_name = f"{sat_name}.pdf"
-            # write pdf to s3 bucket
-            aws_client.put_object(
-                Body=req.content, Bucket=aws_bucket, Key=file_path + pdf_name
-            )
-            # read pdf from s3 bucket
-            obj = aws_client.get_object(Bucket=aws_bucket, Key=file_path + pdf_name)[
-                "Body"
-            ].read()
-            pdf = pdfium.PdfDocument(BytesIO(obj))
+    # for i, url in enumerate(urls):
+    #     sat_name = names[i]
+    #     file_path = f"data/freq_plans/{sat_name}/"
+    #     try:
+    #         req = requests.get(url)
+    #         req.close()
+    #         pdf_name = f"{sat_name}.pdf"
+    #         # write pdf to s3 bucket
+    #         aws_client.put_object(
+    #             Body=req.content, Bucket=aws_bucket, Key=file_path + pdf_name
+    #         )
+    #         # read pdf from s3 bucket
+    #         obj = aws_client.get_object(Bucket=aws_bucket, Key=file_path + pdf_name)[
+    #             "Body"
+    #         ].read()
+    #         pdf = pdfium.PdfDocument(BytesIO(obj))
 
-            n_pages = len(pdf)
-            # save pdf as new jpg
-            for i in range(n_pages):
-                jpg_name = f"{sat_name}_{str(i)}.jpg"
-                page = pdf[i]
-                in_mem_file = BytesIO()
-                pil_image = page.render().to_pil()
-                pil_image.save(in_mem_file, format="JPEG")
-                in_mem_file.seek(0)
-                aws_client.put_object(
-                    Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name
-                )
+    #         n_pages = len(pdf)
+    #         # save pdf as new jpg
+    #         for i in range(n_pages):
+    #             jpg_name = f"{sat_name}_{str(i)}.jpg"
+    #             page = pdf[i]
+    #             in_mem_file = BytesIO()
+    #             pil_image = page.render().to_pil()
+    #             pil_image.save(in_mem_file, format="JPEG")
+    #             in_mem_file.seek(0)
+    #             aws_client.put_object(
+    #                 Body=in_mem_file, Bucket=aws_bucket, Key=file_path + jpg_name
+    #             )
 
-            print("File", sat_name, "downloaded successfully")
-        except:
-            print("File", sat_name, "unable to download")
+    #         print("File", sat_name, "downloaded successfully")
+    #     except:
+    #         print("File", sat_name, "unable to download")
