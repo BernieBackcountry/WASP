@@ -25,6 +25,7 @@ from wasp_tool_dash.utilities import populate_utilities
 from wasp_tool_dash.components import LayoutCreator
 from wasp_tool.prepare import get_celestrak_data
 from config import BUCKET_NAME,KEY,SECRET_KEY
+import datetime
 
 session = boto3.session.Session()
 
@@ -48,7 +49,9 @@ layout_creator = LayoutCreator()
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # expose server variable for Procfile
-app.layout = layout_creator.create_layout()
+app.layout = layout_creator.create_layout(
+    AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY
+)
 
 
 @app.callback(
@@ -85,7 +88,8 @@ def update_celestrak_tles(click: int):
     ]
     if click and "button-update-celestrak" in changed_ids:
         get_celestrak_data()
-        return "TLEs successfully pulled"
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return "TLEs successfully pulled: " + str(now)
     return ""
 
 
@@ -128,39 +132,14 @@ def render_content(tab: str, value: str):
     return
 
 
-@app.callback(
-    Output(component_id="value-filter", component_property="value"),
-    [Input(component_id="column-filter", component_property="value")],
-    suppress_callback_exceptions=True
-)
-def render_filter_values(column: str):
-    """
-    Callback to render column filter and filter by values.
-
-    Parameters
-    ----------
-    column: str
-        String containing chosen column filter.
-    """
-    table_filters = {
-        "Channel Status": ["ON", "OFF"],
-        "Ku/C-band": ["Ku-band", "C-band"],
-    }
-    for filter_options, filter_type in table_filters.items():
-        if column == filter_type:
-            return filter_options
-    return []
-
 
 @app.callback(
     Output(component_id="data-table", component_property="data"),
     [
-        Input(component_id="column-filter", component_property="value"),
-        Input(component_id="value-filter", component_property="value"),
         Input(component_id="sat-dropdown", component_property="value"),
     ],suppress_callback_exceptions=True,
 )
-def update_rows(column: str, value: str, sat: str):
+def update_rows( sat: str):
     """
     Callback to update datatable dependent on filter values.
 
@@ -173,11 +152,13 @@ def update_rows(column: str, value: str, sat: str):
     sat: str
         String containing valid search option chosen in search bar/dropdown.
     """
-    channels_path = f"{sat}.csv"
-    df = pd.read_csv(channels_path, header=0)
-    if column and value and sat:
-        df_subset = df[df[column] == value]
-        return df_subset.to_dict("records")
+  
+    file_name = f"channels/{sat}/{sat}.csv"
+
+    obj = AWS_CLIENT.get_object(Bucket=AWS_BUCKET_NAME, Key=file_name)
+    df = pd.read_csv(obj['Body'])
+
+
     return df.to_dict("records")
 
 

@@ -26,6 +26,7 @@ from io import BytesIO, StringIO
 import botocore
 import pandas as pd
 from dash import html
+from dash import dcc
 from PIL import Image
 import re
 from wasp_tool_dash import utilities
@@ -43,6 +44,21 @@ STYLE_TEXT = {
     "font-size": "auto",
 }
 
+STYLE_INFO = {
+    "color": "white",
+    "marginLeft": "50px",
+    "marginRight": "50px",
+    "marginTop": "50px",
+    "marginBottom": "50px",
+    "text-align": "left",
+    "text-align-last": "left",
+    "font-size": "auto",
+    "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)",
+    "background-color": "#00263A",
+    "bevel": "true",
+    "width": "auto",
+}
+
 STYLE_IMAGES = {
     "margin": "50px",
     "maxHeight": "550px",
@@ -53,16 +69,16 @@ STYLE_IMAGES = {
 }
 
 STYLE_DATA_TABLE = {
-    "margin": "200px",
+    "margin": "50px, 50px, 50px, 50px",
     "maxHeight": "500px",
-    "maxWidth": "500px",
+    "maxWidth": "100%",
     "overflow": "scroll",
     "color": "black",
     "font-size": "25px",
 }
 
 
-def populate_inputs() -> list:
+def populate_inputs(aws_client: botocore.client, aws_bucket: str,  key: str) -> list:
     """
     Populate the search dropdown with all valid satellites.
 
@@ -81,7 +97,17 @@ def populate_inputs() -> list:
 
         List of possible search options
     """
-    accepted_inputs = ["H2SAT", "ABS-2", "GALAXY 16", "Bsat 3B"]
+
+   
+    source_path = f"{key}satbeams.csv"
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+    if does_exist:
+        obj = (
+            aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
+
+        )
+        df = pd.read_csv(obj, header=0)
+    accepted_inputs = df.iloc[:, 0].tolist()
     accepted_inputs.sort() 
     return accepted_inputs
 
@@ -132,11 +158,11 @@ def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str
                 html.Br(),
                 "Beacon(s): " + beacon,
             ],
-            style=STYLE_TEXT,
+                style=STYLE_INFO,
             )
-        return html.P("Information not available.", style=STYLE_TEXT)
+        return html.P("Information not available.", style=STYLE_INFO)
     return html.P(
-        "Populate data sources to obtain requested information.", style=STYLE_TEXT
+        "Populate data sources to obtain requested information.", style=STYLE_INFO
     )
 
 
@@ -176,8 +202,8 @@ def populate_tles(
             df_subset = df[df["Primary Satellite"] == sat]
             tle_1 = df_subset["TLE-1"].tolist()[0]
             tle_2 = df_subset["TLE-2"].tolist()[0]
-            return html.P([tle_1, html.Br(), tle_2], style=STYLE_TEXT)
-        return html.P("Information not available.", style=STYLE_TEXT)
+            return html.P([tle_1, html.Br(), tle_2], style=STYLE_INFO)
+        return html.P("Information not available.", style=STYLE_INFO)
     return html.P(
         "Populate data sources to obtain requested information.", style=STYLE_TEXT
     )
@@ -211,26 +237,33 @@ def populate_footprints(
     csv_path = f"{key}satbeams.csv"
     does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
     if does_exist:
-        obj = (
-            aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
-
-        )
+        obj = aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
         df = pd.read_csv(obj, header=0)
-    
+
         if sat in df.iloc[:, 0].values:
             df_subset = df[df.iloc[:, 0] == sat]
-            image_keys = df_subset.iloc[0,5].split(",")
+            image_keys = df_subset.iloc[0, 5].split(",")
+            
+            titles = eval(df_subset.iloc[0, 6])
             urls = extract_jpg_urls(image_keys)
-            print(urls)
+
+            # Create clickable buttons and preview windows for each URL
             children = []
-            for url in urls:
-                children.append(html.Iframe(src=url), )
-            return html.Div(children, style={"width": "100%", "height": "700px"})
+            for title, url in zip(titles, urls):
+                children.append(
+                        html.A(
+                            html.Button(title),  # Display title as button text
+                            href=url,
+                            target="_blank",  # Open in a new tab
+                            style={"width": "100%", "margin": "10px", "text-align": "center","font-size": "20px"},
+                        )
+                )
+
+            return html.Div(children,  style={"margin-right": "10px", "display": "grid", "grid-template-columns": "repeat(3,1fr)", "margin": "10px,10px,10px,10px", "width": "100%"})
         return html.P("Information not available.", style=STYLE_TEXT)
     return html.P(
         "Populate data sources to obtain requested information.", style=STYLE_TEXT
     )
-
 
 def extract_jpg_urls(string_list):
     # Define the regex pattern for URLs ending with ".jpg"
@@ -332,13 +365,6 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, ke
             )
             df = pd.read_csv(obj, header=0)
             children = [
-                html.Div(
-                    children=[
-                        utilities.create_column_filter(),
-                        utilities.create_value_filter(),
-                    ],
-                    style={"margin": "40px"},
-                ),
                 html.Div(utilities.create_data_table(df), style=STYLE_DATA_TABLE),
             ]
             return html.Div(children=children)

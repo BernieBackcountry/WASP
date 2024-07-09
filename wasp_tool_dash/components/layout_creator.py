@@ -42,7 +42,7 @@ class LayoutCreator:
     Defines a Dash application layout.
     """
 
-    def create_layout(self) -> html.Div:
+    def create_layout(self, AWS_CLIENT, AWS_BUCKET_NAME,  PATH_KEY) -> html.Div:
         """
         Wrapper function to create entire layout.
 
@@ -59,14 +59,18 @@ class LayoutCreator:
                 html.Div(
                     className="row",
                     children=[
-                        self._create_information_layout(),
+                        self._create_information_layout(
+                            AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY
+                        ),
                         self._create_data_layout(),
                     ],
                 )
             ]
         )
 
-    def _create_information_layout(self) -> html.Div:
+    def _create_information_layout(self,
+        AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY
+    )-> html.Div:
         """
         Wrapper function to create information layout portion.
 
@@ -83,7 +87,9 @@ class LayoutCreator:
             children=[
                 self._create_title(),
                 self._create_description(),
-                self._create_search_dropdown(),
+                self._create_search_dropdown(
+                    AWS_CLIENT, AWS_BUCKET_NAME,PATH_KEY
+                ),
                 self._create_search_message(),
                 self._create_button_celestrak(),
                 self._create_celestrak_output(),
@@ -147,7 +153,7 @@ class LayoutCreator:
         )
 
     @staticmethod
-    def _create_search_dropdown() -> html.Div:
+    def _create_search_dropdown(AWS_CLIENT, AWS_BUCKET_NAME,  PATH_KEY) -> html.Div:
         """
         Creates satellite search bar/dropdown.
 
@@ -161,8 +167,9 @@ class LayoutCreator:
                 dcc.Dropdown(
                     id="sat-dropdown",
                     placeholder="INPUT A SATELLITE",
-                    style={"marginLeft": "5px" ,},
-                    options= utilities.populate_inputs(),
+                    options=utilities.populate_inputs(
+                        AWS_CLIENT, AWS_BUCKET_NAME,  PATH_KEY
+                    ),
                 )
             ],
         )

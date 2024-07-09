@@ -14,69 +14,33 @@ import pandas as pd
 from dash import dash_table, dcc
 
 
-def create_column_filter() -> dcc.Dropdown:
-    """
-    Create column filter dropdown for the channels tab.
-
-    Returns
-    -------
-    dcc.Dropdown
-        Unpopulated dropdown for column filter options
-
-    """
-    return dcc.Dropdown(
-        ["Channel Status", "Ku/C-band"],
-        id="column-filter",
-        placeholder="Filter by...",
-        style={"marginLeft": "20px", "maxWidth": "300px"},
-    )
-
-
-def create_value_filter() -> dcc.Dropdown:
-    """
-    Create dropdown containing filter by options for the channels tab.
-
-    Returns
-    -------
-    dcc.Dropdown
-        Unpopulated dropdown for filter by options
-
-    """
-    return dcc.Dropdown(
-        id="value-filter", style={"marginLeft": "20px", "maxWidth": "300px"}
-    )
-
 
 def create_data_table(df: pd.DataFrame) -> dash_table.DataTable:
     """
     Create Dash datatable for the channels tab.
 
+    Parameters
+    ----------
+    df: pd.DataFrame
+        DataFrame containing your data
+
     Returns
     -------
     dash_table.DataTable
-        Unpopulated datatable.
+        Unpopulated datatable with filtering options.
     """
     return dash_table.DataTable(
-        df.to_dict("records"),
-        [{"name": i, "id": i} for i in df.columns],
+        data=df.to_dict("records"),
+        columns=[{"name": i, "id": i} for i in df.columns],
         id="data-table",
         sort_action="native",
+        filter_action="native",  
         style_cell={"fontSize": 14, "textAlign": "left"},
-        style_header={"backgroundColor": "grey", "fontWeight": "bold", "textAlign": "center"},
-        style_data_conditional=[
-            {
-                "if": {
-                    "column_id": "Ku/C-band",
-                },
-                "display": "None",
-            }
-        ],
-        style_header_conditional=[
-            {
-                "if": {
-                    "column_id": "Ku/C-band",
-                },
-                "display": "None",
-            }
-        ],
+        style_header={"backgroundColor": "grey",
+                      "fontWeight": "bold", "textAlign": "center"},
+        style_filter={'fontWeight': 'bold', 'height': '60px',},
+        style_data={'width': '150px', 'minWidth': '150px', 'maxWidth': '150px',
+                    'overflow': 'hidden', 'textOverflow': 'ellipsis'},
+        filter_options={'case': 'sensitive', 'operator': 'and', 'trim': True, 'ignoreAccent': False, 'placeholder': 'Filter...'},
+    
     )
