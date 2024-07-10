@@ -100,7 +100,7 @@ def update_celestrak_tles(click: int):
         Input(component_id="sat-dropdown", component_property="value"),
     ], suppress_callback_exceptions=True
 )
-def render_content(tab: str, value: str):
+def render_content(tab: str, value: str, aws_client=AWS_CLIENT, aws_bucket=AWS_BUCKET_NAME):
     """
     Callback to render tab content.
 
@@ -111,15 +111,29 @@ def render_content(tab: str, value: str):
     tab: str
         String containing chosen tab.
     """
+
+    source_path = f"satbeams.csv"
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+    if does_exist:
+        obj = (
+            aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
+
+        )
+        df = pd.read_csv(obj, header=0)
+
+        if value in df.iloc[:, 0].values:
+            df_subset = df[df.iloc[:, 0] == value]
+            norad = df_subset.iloc[0, 3]
+
     if tab == "tab-general":
         return populate_utilities.populate_general_info(
-            AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY
+            AWS_CLIENT, AWS_BUCKET_NAME, value, norad, PATH_KEY
         )
     if tab == "tab-telemetry":
-        return populate_utilities.populate_tles(AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY)
+        return populate_utilities.populate_tles(AWS_CLIENT, AWS_BUCKET_NAME, norad, PATH_KEY)
     if tab == "tab-footprints":
         return populate_utilities.populate_footprints(
-            AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY
+            AWS_CLIENT, AWS_BUCKET_NAME, value,norad, PATH_KEY
         )
     if tab == "tab-freq_plans":
         return populate_utilities.populate_freq_plans(

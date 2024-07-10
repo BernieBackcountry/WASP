@@ -11,9 +11,7 @@ from wasp_tool import utilities
 import pandas as pd
 from config import KEY,SECRET_KEY,BUCKET_NAME
 import numpy as np
-import warnings
-
-#warnings.simplefilter("ignore")
+import time
 
 
 session = boto3.session.Session()
@@ -71,6 +69,7 @@ def get_altervista_data():
     Retrieve data obtained from frequencyplansatellites.altervista.org and write
     to the AWS bucket
     """
+    print("Getting altervista data")
     altervista_data = utilities.prepare_altervista()
     utilities.save_df_to_csv(
         BUCKET_NAME, DIGITAL_OCEAN_CLIENT, altervista_data, "altervista.csv")
@@ -88,6 +87,7 @@ def get_celestrak_data():
     """
     Turn dict into df by indexing then flattening
     """
+    print("Getting celestrak data")
     celestrak_data.to_csv("celestrak.csv", index=False)
     utilities.save_df_to_csv(
         BUCKET_NAME, DIGITAL_OCEAN_CLIENT, celestrak_data, "celestrak.csv")
@@ -95,9 +95,11 @@ def get_celestrak_data():
 
 @measure_time
 def get_lyngsat_data():
+    
     """
     Retrieve data obtained from lyngsat.com and write to the AWS bucket
     """
+    print("Getting lyngsat data")
     utilities.prepare_lyngsat()
     lyngsat_data, lyngsat_tables = utilities.prepare_lyngsat()
     lyngsat_data_df = pd.DataFrame(lyngsat_data)
@@ -108,9 +110,11 @@ def get_lyngsat_data():
 
 @measure_time
 def get_satbeams_data():
+    
     """
     Retrieve data obtained from satbeams.org and write to the AWS bucket
     """
+    print("Getting satbeams data")
     satbeams_data = utilities.prepare_satbeams()
     utilities.save_df_to_csv(
         BUCKET_NAME, DIGITAL_OCEAN_CLIENT, satbeams_data, "satbeams.csv")
@@ -130,10 +134,10 @@ if __name__ == "__main__":
     parser_args = parser.parse_args()
 
     if "all" in parser_args.site:
-        get_altervista_data()
         get_celestrak_data()
         get_lyngsat_data()
         get_satbeams_data()
+        get_altervista_data()
         sys.exit()
     if "altervista" in parser_args.site:
         get_altervista_data()
@@ -143,7 +147,12 @@ if __name__ == "__main__":
         get_lyngsat_data()
     if "satbeams" in parser_args.site:
         get_satbeams_data()
-        
-    # if "data" in parser_args.site:
-    #     get_blank_data()
+    if "runbackend" in parser_args.site:
+        while True:
+            get_satbeams_data()
+            get_altervista_data()
+            get_lyngsat_data()
+            get_celestrak_data()
+            time.sleep(1800)
+ 
 

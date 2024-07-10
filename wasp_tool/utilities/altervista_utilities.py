@@ -59,7 +59,7 @@ def prepare_altervista() -> Tuple[dict, list]:
    
     for index in range(num_satellites):
         data = {
-            "Primary Satellite": [sat_names[index]],
+            "Primary Satellite": [sat_names[index].split("-")[0].split("(")[0].rstrip()],
             "Frequency Plan URL": [freq_plans[index]]
 
         }

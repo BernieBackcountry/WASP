@@ -43,7 +43,6 @@ from io import BytesIO
 
 import botocore
 import pandas as pd
-import pypdfium2 as pdfium
 import requests
 from PIL import Image
 from tqdm import tqdm
@@ -54,7 +53,7 @@ import boto3
 HTTP_SUCCESS = 200
 
 
-def standardize_satellite(sat_name: str) -> str:
+def standardize_satellite(sat_name: str) -> str: #FIX ME
     """
     Standardizes a satellite name according to pre-defined rules.
 

@@ -120,8 +120,6 @@ def prepare_lyngsat() -> Tuple[dict, dict]:
     satellite_df_tables_dict = convert_html_tables_to_dataframes(
         satellite_html_tables_dict
     )
-
-    
     
     # clean each df table
     satellite_df_tables_clean_dict = clean_all_dataframes(satellite_df_tables_dict)
@@ -260,10 +258,12 @@ def get_satellite_names(satellite_urls_dict: dict) -> dict:
             primary_satellite_name = utilities.standardize_satellite(key)
             primary_satellite_names.append(primary_satellite_name)
             secondary_satellite_names.append("")
+            df = pd.read_csv("../WASP/wasp_tool/utilities/sats.csv", header=0)
 
     satellite_names_dict = {
         "Primary Satellite Name": primary_satellite_names,
         "Secondary Satellite Name(s)": secondary_satellite_names,
+        "Norad ID": int(df[df["Name"].str.contains(primary_satellite_names, na=False)]["NORAD ID"][0]),
     }
 
     return satellite_names_dict
@@ -407,6 +407,7 @@ def read_multirow_table_into_standard_format(
             column_index = df.iloc[index, :][df.iloc[index, :].isnull()].index[0]
         except IndexError:
             print(index, row)
+            print("yup")
 
         for cell in row.find_all(["td", "th"]):
             rows_per_cell = get_row_spans(cell)
@@ -768,7 +769,7 @@ def determine_channel_status(
             # drop excess rows
             master_table_clean = clean_provider_channel_name_rows(master_table)
             # create ku/c-band column
-            master_table_new = create_bands_column_and_Pol_Column(master_table_clean)
+            master_table_new = create_bands_column(master_table_clean)
             # add final table to new dict
             satellite_df_tables_new_dict[key] = master_table_new
     return satellite_df_tables_new_dict
@@ -840,7 +841,7 @@ def clean_provider_channel_name_rows(table: pd.DataFrame) -> pd.DataFrame:
     return table
 
 
-def create_bands_column_and_Pol_Column(df_org: pd.DataFrame) -> pd.DataFrame:
+def create_bands_column(df_org: pd.DataFrame) -> pd.DataFrame:
     """
     Creates the Ku/C-band column.
 
@@ -853,8 +854,6 @@ def create_bands_column_and_Pol_Column(df_org: pd.DataFrame) -> pd.DataFrame:
     df_org: pd.DataFrame
         Editted dataframe.
     """
-    # create a polarity columns
-    df_org[['Frequency', 'Polarization']
-                             ] = df_org['Frequency'].str.split(expand=True)
+  
     df_org["Ku/C-band"] = df_org["Ku/C-band"].apply(lambda x: "Ku-band" if x > 10700 else "C-band")
     return df_org

@@ -112,7 +112,7 @@ def populate_inputs(aws_client: botocore.client, aws_bucket: str,  key: str) -> 
     return accepted_inputs
 
 
-def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str, key: str) -> html.P:
+def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str,norad: str, key: str) -> html.P:
     """
     Populates the General Info tab by pulling information from the satbeams.csv file.
 
@@ -143,8 +143,8 @@ def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str
         )
         df = pd.read_csv(obj, header=0)
         
-        if sat in df.iloc[:, 0].values:
-            df_subset = df[df.iloc[:, 0] == sat]
+        if norad in df.iloc[:, 3].values:
+            df_subset = df[df.iloc[:, 3] == norad]
             position = str(df_subset.iloc[0,2])
             norad = str(df_subset.iloc[0,3])
             beacon = str(df_subset.iloc[0,4])
@@ -167,7 +167,7 @@ def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str
 
 
 def populate_tles(
-    aws_client: botocore.client, aws_bucket: str, sat: str, key: str
+    aws_client: botocore.client, aws_bucket: str, norad: str, key: str
 ) -> html.P:
     """
     Populates the 'TLE' tab by pulling information from the celestrak.csv file.
@@ -198,8 +198,8 @@ def populate_tles(
 
         )
         df = pd.read_csv(obj, header=0)
-        if sat in df["Primary Satellite"].values :
-            df_subset = df[df["Primary Satellite"] == sat]
+        if norad in df["Norad"].values :
+            df_subset = df[df["Norad"] == norad]
             tle_1 = df_subset["TLE-1"].tolist()[0]
             tle_2 = df_subset["TLE-2"].tolist()[0]
             return html.P([tle_1, html.Br(), tle_2], style=STYLE_INFO)
@@ -210,7 +210,7 @@ def populate_tles(
 
 
 def populate_footprints(
-    aws_client: botocore.client, aws_bucket: str, sat: str, key: str
+    aws_client: botocore.client, aws_bucket: str, sat: str,norad:str, key: str
 ):
     """
     Populates the 'Footprints' tab with footprints images and image titles.
@@ -240,8 +240,8 @@ def populate_footprints(
         obj = aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
         df = pd.read_csv(obj, header=0)
 
-        if sat in df.iloc[:, 0].values:
-            df_subset = df[df.iloc[:, 0] == sat]
+        if norad in df.iloc[:, 3].values:
+            df_subset = df[df.iloc[:, 3] == norad]
             image_keys = df_subset.iloc[0, 5].split(",")
             
             titles = eval(df_subset.iloc[0, 6])
@@ -350,22 +350,26 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, ke
         is data is not available, returns "information not available" message
         if data does not exist, returns "populate data sources" message
     """
-    csv_path = f"{key}lyngsat.csv"
-    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
+    csv_path_lyngsat = f"{key}lyngsat.csv"
+
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path_lyngsat)
     if does_exist:
-        obj = (
-            aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
+        obj_lyngsat = (
+            aws_client.get_object(Bucket=aws_bucket, Key=csv_path_lyngsat)["Body"]
     
         )
-        df = pd.read_csv(obj, header=0)
-        if sat in df["Primary Satellite Name"].values:
+    
+        df_lyngsat = pd.read_csv(obj_lyngsat, header=0)
+        # df_lyngsat = df_lyngsat["Primary Satellite Name"].replace("-", " ")
+       
+        if sat in df_lyngsat["Primary Satellite Name"].values :
             source_path = f"{key}channels/{sat}/{sat}.csv"
             obj = (
                 aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
             )
-            df = pd.read_csv(obj, header=0)
+            df_lyngsat = pd.read_csv(obj, header=0)
             children = [
-                html.Div(utilities.create_data_table(df), style=STYLE_DATA_TABLE),
+                html.Div(utilities.create_data_table(df_lyngsat), style=STYLE_DATA_TABLE),
             ]
             return html.Div(children=children)
         return html.P("Information not available.", style=STYLE_TEXT)

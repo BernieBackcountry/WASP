@@ -232,7 +232,7 @@ def get_satellite_information(soup: BeautifulSoup) -> list:
     norad_id = str(find_by_next(soup, "NORAD:", "a").contents[0])
     beacons = str(find_by_label(soup, "Beacon(s):"))
     satellite_information = [
-        primary_satellite_name,
+        primary_satellite_name.replace('-', ' '),
         secondary_satellite_name,
         position,
         norad_id,

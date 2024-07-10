@@ -16,6 +16,7 @@ import sys
 import numpy as np
 import requests
 import pandas as pd
+import re
 
 from wasp_tool import utilities
 
@@ -78,13 +79,15 @@ def get_tles(html_text: list) -> np.array:
             tle_line_1 = html_text[i + 1].strip().replace(" ", "*")
             tle_line_2 = html_text[i + 2].strip().replace(" ", "*")
 
+
            
             sat_names = line.strip()
-
+            norad_number = tle_line_2[2:7]
             data = {
                 "Primary Satellite": [sat_names],
                 "TLE-1": [tle_line_1],
-                "TLE-2": [tle_line_2]
+                "TLE-2": [tle_line_2],
+                "Norad" :[norad_number]
             }
             
             newdf = pd.DataFrame(data)
