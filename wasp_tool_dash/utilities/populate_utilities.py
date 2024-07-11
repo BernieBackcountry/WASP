@@ -266,7 +266,8 @@ def populate_footprints(
                             "white-space": "nowrap",
                             "text-overflow": "ellipsis",
                             "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)",
-                            "background-color": "#00263A",
+                            "background-color": "#FFFFFF",
+                            "font-color" : "white",
                         }
                     )
                 )
@@ -275,7 +276,7 @@ def populate_footprints(
                                               "padding": "10px",
                                               "display": "grid",
                                               "grid-template-columns": "repeat(auto-fit, minmax(min(260px, 50%), max(600px, 50%)))",
-                                              "align-items": "center", })
+                                              "align-items": "right", })
         return html.P("Information not available.", style=STYLE_INFO)
     return html.P(
         "Populate data sources to obtain requested information.", style=STYLE_INFO
