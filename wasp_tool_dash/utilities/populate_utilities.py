@@ -205,7 +205,7 @@ def populate_tles(
             return html.P([tle_1, html.Br(), tle_2], style=STYLE_INFO)
         return html.P("Information not available.", style=STYLE_INFO)
     return html.P(
-        "Populate data sources to obtain requested information.", style=STYLE_TEXT
+        "Populate data sources to obtain requested information.",  style=STYLE_INFO
     )
 
 
@@ -250,19 +250,35 @@ def populate_footprints(
             # Create clickable buttons and preview windows for each URL
             children = []
             for title, url in zip(titles, urls):
+                
                 children.append(
-                        html.A(
-                            html.Button(title),  # Display title as button text
-                            href=url,
-                            target="_blank",  # Open in a new tab
-                            style={"width": "100%", "margin": "10px", "text-align": "center","font-size": "20px"},
-                        )
+                    html.A(
+                        html.Button(title),  # Display title as button text
+                        href=url,
+                        target="_blank",  # Open in a new tab
+                        style={
+                            "width": "100%",
+                            "display": "block",
+                            "margin": "10px",
+                            "padding": "10px",
+                            "text-align": "center",
+                            "font-size": "auto",
+                            "white-space": "nowrap",
+                            "text-overflow": "ellipsis",
+                            "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)",
+                            "background-color": "#00263A",
+                        }
+                    )
                 )
 
-            return html.Div(children,  style={"margin-right": "10px", "display": "grid", "grid-template-columns": "repeat(3,1fr)", "margin": "10px,10px,10px,10px", "width": "100%"})
-        return html.P("Information not available.", style=STYLE_TEXT)
+            return html.Div(children,  style={"margin": "10px",
+                                              "padding": "10px",
+                                              "display": "grid",
+                                              "grid-template-columns": "repeat(auto-fit, minmax(min(260px, 50%), max(600px, 50%)))",
+                                              "align-items": "center", })
+        return html.P("Information not available.", style=STYLE_INFO)
     return html.P(
-        "Populate data sources to obtain requested information.", style=STYLE_TEXT
+        "Populate data sources to obtain requested information.", style=STYLE_INFO
     )
 
 def extract_jpg_urls(string_list):
@@ -322,11 +338,10 @@ def populate_freq_plans(
                         'width': '100%', 'height': '700px'}),
         ])
     else:
-        return html.P("Information not available.", style=STYLE_TEXT)
+        return html.P("Information not available.", style=STYLE_INFO)
 
 
-
-def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, key: str):
+def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, norad: str, key: str):
     """
     Populates the 'Channels' tab including the column filter and filter by values as well as
     the Dash datatable.
@@ -350,19 +365,18 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, ke
         is data is not available, returns "information not available" message
         if data does not exist, returns "populate data sources" message
     """
-    csv_path_lyngsat = f"{key}lyngsat.csv"
+    csv_path = f"{key}lyngsat.csv"
 
-    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path_lyngsat)
+    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
     if does_exist:
         obj_lyngsat = (
-            aws_client.get_object(Bucket=aws_bucket, Key=csv_path_lyngsat)["Body"]
+            aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
     
         )
     
-        df_lyngsat = pd.read_csv(obj_lyngsat, header=0)
-        # df_lyngsat = df_lyngsat["Primary Satellite Name"].replace("-", " ")
-       
-        if sat in df_lyngsat["Primary Satellite Name"].values :
+        df = pd.read_csv(obj_lyngsat, header=0)
+
+        if norad in df.iloc["Norad ID"].values or sat in df["Primary Satellite Name"].values:
             source_path = f"{key}channels/{sat}/{sat}.csv"
             obj = (
                 aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
@@ -372,8 +386,8 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, ke
                 html.Div(utilities.create_data_table(df_lyngsat), style=STYLE_DATA_TABLE),
             ]
             return html.Div(children=children)
-        return html.P("Information not available.", style=STYLE_TEXT)
+        return html.P("Information not available.", style=STYLE_INFO)
     return html.P(
-        "Populate data sources to obtain requested information.",
-        style=STYLE_TEXT,
+        "Populate data sources to obtain requested information."
+        , style=STYLE_INFO,
     )

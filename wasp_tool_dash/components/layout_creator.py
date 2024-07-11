@@ -36,6 +36,20 @@ from dash import dcc, html
 
 from wasp_tool_dash import utilities
 
+STYLE_LEFT = {"margin": "10px 10px 10px 10px", 
+              "width": "100%", "height": "auto", 
+              "textAlign": "center",
+                "align-items": "center",
+                
+
+}
+STYLE_TAB = {"margin": "10px 10px 10px 10px",
+             "width": "100%", "height": "100%",
+             "textAlign": "center",
+             "align-items": "right",
+             "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)"
+
+             }
 
 class LayoutCreator:
     """
@@ -64,6 +78,7 @@ class LayoutCreator:
                         ),
                         self._create_data_layout(),
                     ],
+                    style={"textAlign": "center", "align-items": "right"},
                 )
             ]
         )
@@ -97,7 +112,9 @@ class LayoutCreator:
                 
                 
             ],
-            style={"textAlign": "center", "align-items": "center", "padding": "10px 20px 10px 20px"},
+            style={
+                   "textAlign": "center",
+                   "align-items": "left","width": " 20%"},
         )
 
     def _create_data_layout(self) -> html.Div:
@@ -118,7 +135,7 @@ class LayoutCreator:
                 html.Div(
                     id="page_content",
                     className="loader",
-                    style={"height": "auto", "width": "100%","marginLeft": "20px", "marginRight": "20px"},
+                    style=STYLE_LEFT,
                 ),
                 self._create_tabs(),
                 self._create_contact_information(),
@@ -135,7 +152,8 @@ class LayoutCreator:
         -------
         html.H1
         """
-        return html.H1("16th EWS W.A.S.P.")
+        return html.H1("16th EWS W.A.S.P."
+                    ,style=STYLE_LEFT)
 
     @staticmethod
     def _create_description() -> html.P:
@@ -149,7 +167,7 @@ class LayoutCreator:
         return html.P(
             """The Web Application for Satellite Pairing (WASP) consolidates pertinent
                     information to the satellite pair-building process. Enter a satellite below
-                    to obtain its related data."""
+                    to obtain its related data.""", style=STYLE_LEFT
         )
 
     @staticmethod
@@ -163,6 +181,10 @@ class LayoutCreator:
         """
         return html.Div(
             className="search_dropdown",
+            style={ "width": "180px",
+                   "text-align": "center",
+                   "margin": "10px,10px,10px,10px",
+                   "font-size": "auto"},
             children=[
                 dcc.Dropdown(
                     id="sat-dropdown",
@@ -170,6 +192,8 @@ class LayoutCreator:
                     options=utilities.populate_inputs(
                         AWS_CLIENT, AWS_BUCKET_NAME,  PATH_KEY
                     ),
+                   
+              
                 )
             ],
         )
@@ -183,7 +207,7 @@ class LayoutCreator:
         -------
         html.Div
         """
-        return html.Div(id="search-message", style={"height": "25px"})
+        return html.Div(id="search-message", style=STYLE_LEFT)
 
     @staticmethod
     def _create_button_celestrak() -> html.Div:
@@ -198,24 +222,26 @@ class LayoutCreator:
             className="button_celestrak",
             children=[
                 html.Div(
-                    "Click the button below to obtain up-to-date TLEs.",
-                    style={"marginLeft": "5px" ,"marginRight": "5px", "height": "25px", "width": "auto"},
+                    "Click to Update TLE's",
+                    style=STYLE_LEFT,
                 ),
                 html.Button(
-                    "Update Celestrak TLEs",
+                    "Update TLE's",
                     id="button-update-celestrak",
                     n_clicks=0,
                     style={
-                        "marginLeft": "5px",
-                        "marginRight": "5px",
+                        
+                        "width": "180px",
                         "background-color": "#00263A",
                         "color": "#DBE2E9",
-                        "width": "auto", "height": "auto", "align-items": "center",
-                        "textAlign": "center", "padding": "10px 20px 10px 20px", "display": "inline-block",
+                        "text-align": "center",
+                        "margin": "10px,10px,10px,10px",
+                        "font-size": "15px"
                     },
                 ),
             ],
         )
+
 
     @staticmethod
     def _create_logo() -> html.Div:
@@ -228,13 +254,16 @@ class LayoutCreator:
         """
         return html.Div(
             className="logo",
+            style={"padding": "20px", "margin": "20px"},
             children=[
                 utilities.encode_image(
                     path=utilities.get_project_path().joinpath(
                         "wasp_tool_dash", "assets", "spoc_logo.png"
                     )
-                )
+                ), 
             ],
+           
+    
         )
 
     @staticmethod
@@ -273,7 +302,7 @@ class LayoutCreator:
                 ),
                 html.Div(id="tabs-content"),
             ],
-            style=style,
+            style=STYLE_TAB,
         )
 
     @staticmethod

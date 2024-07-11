@@ -93,6 +93,7 @@ def update_celestrak_tles(click: int):
     return ""
 
 
+
 @app.callback(
     Output(component_id="tabs-content", component_property="children"),
     [
@@ -124,6 +125,8 @@ def render_content(tab: str, value: str, aws_client=AWS_CLIENT, aws_bucket=AWS_B
         if value in df.iloc[:, 0].values:
             df_subset = df[df.iloc[:, 0] == value]
             norad = df_subset.iloc[0, 3]
+        else:
+            norad = "none"
 
     if tab == "tab-general":
         return populate_utilities.populate_general_info(
@@ -141,7 +144,7 @@ def render_content(tab: str, value: str, aws_client=AWS_CLIENT, aws_bucket=AWS_B
         )
     if tab == "tab-channels":
         return populate_utilities.populate_channels(
-            AWS_CLIENT, AWS_BUCKET_NAME, value, PATH_KEY
+            AWS_CLIENT, AWS_BUCKET_NAME, value,norad, PATH_KEY
         )
     return
 

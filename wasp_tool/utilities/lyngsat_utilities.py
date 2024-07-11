@@ -66,7 +66,7 @@ FUNCTIONS
 
 import sys
 from typing import Tuple
-
+import re
 import numpy as np
 import pandas as pd
 import requests
@@ -243,8 +243,11 @@ def get_satellite_names(satellite_urls_dict: dict) -> dict:
     satellite_names_dict: dict
         Dictionary containing all primary and secondary satellite names
     """
+
+    df = pd.read_csv("../WASP/wasp_tool/utilities/sats.csv", header=0)
     primary_satellite_names = []
     secondary_satellite_names = []
+    norad_ids =[]
     # loop through each satellite href
     for key in satellite_urls_dict.keys():
         delimiter = "("
@@ -254,31 +257,58 @@ def get_satellite_names(satellite_urls_dict: dict) -> dict:
             primary_satellite_names.append(primary_satellite_name)
             secondary_satellite_name = utilities.standardize_satellite(temp[1])
             secondary_satellite_names.append(secondary_satellite_name)
+            
+            
         else:
             primary_satellite_name = utilities.standardize_satellite(key)
             primary_satellite_names.append(primary_satellite_name)
             secondary_satellite_names.append("")
-            df = pd.read_csv("../WASP/wasp_tool/utilities/sats.csv", header=0)
+            norad_ids.append("")
+        
+        # Find the match for the names so we have a Norad primary key
 
-    satellite_names_dict = {
-        "Primary Satellite Name": primary_satellite_names,
-        "Secondary Satellite Name(s)": secondary_satellite_names,
-        "Norad ID": int(df[df["Name"].str.contains(primary_satellite_names, na=False)]["NORAD ID"][0]),
-    }
+        # Remove special characters from satellite names
+        primary_satellite_name_clean = re.sub(
+            r'[^a-zA-Z0-9]', ' ', primary_satellite_name)
+        # Create a regex pattern with cleaned names
+        pattern = re.compile(f"({primary_satellite_name_clean})", flags=re.IGNORECASE)
+        matching_rows_1 = df[df["Name"].str.extract(
+            pattern, expand=False).notna()]
+        matching_rows_2 = df[df["Additional names"].str.extract(
+            pattern, expand=False).notna()]
 
+        
+        # Get the NORAD ID from the first matching row (if any)
+        norad_id = matching_rows_1["NORAD ID"]
+        if norad_id != None:
+            norad_id = matching_rows_2["NORAD ID"]
+        else:
+            norad_id = 0
+
+        if norad_id != 0:
+                norad_ids.append(norad_id)
+        else:
+                print(f"No matching satellite found for {
+                    primary_satellite_name}")
+
+                    
+        satellite_names_dict = {
+                "Primary Satellite Name": primary_satellite_names,
+                "Secondary Satellite Name(s)": secondary_satellite_names,
+                "Norad ID": norad_ids,
+            }
+   
     return satellite_names_dict
 
 
-def get_satellite_html_tables(
-    satellite_url_dict: dict, satellite_names_dict: dict
-) -> dict:
+def get_satellite_html_tables(satellite_url_dict: dict, satellite_names_dict: dict) -> dict:
     """
-    Generates a dictionary of all html tables for each satellite.
+    Generates a dictionary of all HTML tables for each satellite.
 
     Parameters
     ----------
     satellite_url_dict: dict
-        Dictionary containing satellite names and corresponding urls
+        Dictionary containing satellite names and corresponding URLs
 
     satellite_names_dict: dict
         Dictionary containing all primary and secondary satellite names
@@ -286,41 +316,29 @@ def get_satellite_html_tables(
     Returns
     -------
     html_tables_dict: dict
-        Dictionary containing all html tables for each satellite
+        Dictionary containing all HTML tables for each satellite
         key: satellite's primary name
-        value: list of html tables
+        value: list of HTML tables
     """
     html_tables_dict = {}
-    satellite_primary_names = satellite_names_dict["Primary Satellite Name"]
-    count = 0
-    for key, value in satellite_url_dict.items():
-        # Define max attempts for each requests.get
-        maximum_attempts = 10
-        for i in range(maximum_attempts):
-            try:
-                http_response = requests.get(value)  # Heroku has specified timeout
-                # Check if the status_code is 200
-                if http_response.status_code == 200:
-                    # Parse the HTML content of the webpage
-                    soup = BeautifulSoup(http_response.content, "lxml")
-                    html_tables = []
-                    for table in soup.find_all("table"):
-                        text = table.text
-                        # smart search for table of interest, no class or tags to search by
-                        string_check = "https://www.lyngsat.com/"
-                        if string_check in text:
-                            # only the bigtable has a class
-                            if not table.has_attr("class"):
-                                html_tables.append(table)
-                    entry = satellite_primary_names[count]
-                    html_tables_dict[entry] = html_tables
-                    # print("Attempt", i + 1, "successful for", key)
-                    break
-            except:
-                print("Attempt", i + 1, "unsuccessful for", key)
-        count += 1
-    return html_tables_dict
+    satellite_primary_names = satellite_names_dict.get(
+        "Primary Satellite Name", [])
 
+    for count, (key, value) in enumerate(satellite_url_dict.items()):
+        try:
+            http_response = requests.get(
+                value, timeout=10)  # Specify a timeout
+            http_response.raise_for_status()  # Raise an exception if status_code is not 200
+            soup = BeautifulSoup(http_response.content, "lxml")
+            html_tables = [table for table in soup.find_all(
+                "table") if "https://www.lyngsat.com/" in table.text]
+            entry = satellite_primary_names[count] if count < len(
+                satellite_primary_names) else key
+            html_tables_dict[entry] = html_tables
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching data for {key}: {e}")
+
+    return html_tables_dict
 
 def convert_html_tables_to_dataframes(html_tables: dict) -> dict:
     """
@@ -401,13 +419,15 @@ def read_multirow_table_into_standard_format(
     df = pd.DataFrame(np.ones((num_rows, NUM_COLS)) * np.nan)
 
     column_width = 1
+    error = 0
     # handle multi-row columns
     for index, row in enumerate(table_rows):
         try:
             column_index = df.iloc[index, :][df.iloc[index, :].isnull()].index[0]
         except IndexError:
-            print(index, row)
-            print("yup")
+            #print(index, row)
+            error +=1
+           
 
         for cell in row.find_all(["td", "th"]):
             rows_per_cell = get_row_spans(cell)
@@ -751,6 +771,7 @@ def determine_channel_status(
             # loop through html columns
             for h, col in enumerate(html_columns):
                 table_star = df_tables[h]
+                print(table_star)
                 # loop through channel name values in a given table
                 for m in range(0, len(table_star["(Provider) Channel Name"].values)):
                     if 0 <= m < len(col):
@@ -759,6 +780,8 @@ def determine_channel_status(
                     # Handle the out-of-range case
                      print("Index out of range.")
                     channel_status = cell["style"]
+                    table_star.loc[m, "Channel Status"] = str(table_star.loc[m,
+                                                                         "Channel Status"])
                     if (channel_status == green) or (channel_status == yellow):
                         table_star.loc[m, "Channel Status"] = "ON"
                     else:
@@ -822,7 +845,7 @@ def clean_provider_channel_name_rows(table: pd.DataFrame) -> pd.DataFrame:
     # drop blank/unnecessary rows based on provider/channel condition
     drop = []
     for row in range(len(table)):
-        row_val = table["(Provider) Channel Name"].iloc[row]
+        row_val = table["(Provider) Channel Name"].iloc[row].astype(str)
         # check for \n rows
         if "\n" in str(row_val):
             drop.append(row)
@@ -854,6 +877,7 @@ def create_bands_column(df_org: pd.DataFrame) -> pd.DataFrame:
     df_org: pd.DataFrame
         Editted dataframe.
     """
-  
-    df_org["Ku/C-band"] = df_org["Ku/C-band"].apply(lambda x: "Ku-band" if x > 10700 else "C-band")
+   
+    df_org["Frequency"] = df_org["Frequency"].astype(int)
+    df_org["Ku/C-band"] = df_org["Frequency"].apply(lambda x: "Ku-band" if x > 10700 else "C-band")
     return df_org
