@@ -280,12 +280,12 @@ def get_satellite_names(satellite_urls_dict: dict) -> dict:
         
         # Get the NORAD ID from the first matching row (if any)
         norad_id = matching_rows_1["NORAD ID"]
-        if norad_id != None:
+        if norad_id is not None:
             norad_id = matching_rows_2["NORAD ID"]
         else:
             norad_id = 0
 
-        if norad_id != 0:
+        if norad_id is not 0:
                 norad_ids.append(norad_id)
         else:
                 print(f"No matching satellite found for {
