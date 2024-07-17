@@ -24,12 +24,13 @@ from wasp_tool_dash import utilities
 from wasp_tool_dash.utilities import populate_utilities
 from wasp_tool_dash.components import LayoutCreator
 from wasp_tool.prepare import get_celestrak_data
-from config import BUCKET_NAME,KEY,SECRET_KEY
+from wasp_tool_dash.utilities import dish_pointer
+from config import BUCKET_NAME,KEY,SECRET_KEY,API_KEY,access_token
 import datetime
+import ipinfo
 
 session = boto3.session.Session()
-
-session = boto3.session.Session()
+CURRENT_LOCATION = 1
 
 AWS_CLIENT = session.client(
     's3',
@@ -83,9 +84,7 @@ def update_celestrak_tles(click: int):
     click: int
         Integer representing if the button is clicked.
     """
-    changed_ids = [property["prop_id"] for property in dash.callback_context.triggered][
-        0
-    ]
+    changed_ids = [property["prop_id"] for property in dash.callback_context.triggered][0]
     if click and "button-update-celestrak" in changed_ids:
         get_celestrak_data()
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -146,7 +145,9 @@ def render_content(tab: str, value: str, aws_client=AWS_CLIENT, aws_bucket=AWS_B
         return populate_utilities.populate_channels(
             AWS_CLIENT, AWS_BUCKET_NAME, value,norad, PATH_KEY
         )
-    return
+    if tab == "tab-dishpointer":
+        return populate_utilities.update_lat_long_and_calculate(1,latitude=0, longitude=0, aws_client=AWS_CLIENT, aws_bucket=AWS_BUCKET_NAME, norad=norad, key=PATH_KEY)
+    return ""
 
 
 
@@ -171,15 +172,107 @@ def update_rows( sat: str):
     """
   
     file_name = f"channels/{sat}/{sat}.csv"
-
     obj = AWS_CLIENT.get_object(Bucket=AWS_BUCKET_NAME, Key=file_name)
     df = pd.read_csv(obj['Body'])
-
-
     return df.to_dict("records")
 
 
+@app.callback(
+    [
+        Output("latitude-input", "value"),
+        Output("longitude-input", "value"),
+        Output("azimuth-text", "children"),
+        Output("elevation-text", "children"),
+        Output("map-frame", "src")
+    ],
+    [
+        Input("button-update-latlong", "n_clicks"),
+        Input("tabs", "value"),
+    ],
+    [
+        dash.State("latitude-input", "value"),
+        dash.State("longitude-input", "value"),
+        dash.State("sat-dropdown", "value"),
+    ],
+    suppress_callback_exceptions=True,
+)
+def update_map(n_clicks,value,latitude, longitude, satellite):
+    """
+    Callback to update the map, azimuth, and elevation when the button is clicked or tab is switched.
+    
+    Parameters
+    ----------
+    n_clicks: int
+        Number of times the button has been clicked.
+    active_tab: str
+        ID of the active tab.
+    latitude: float
+        Latitude for the dish pointer.
+    longitude: float
+        Longitude for the dish pointer.
+    satellite: str
+        Satellite selected from the dropdown.
+    """
+    
+    global CURRENT_LOCATION
 
+    if n_clicks or value == "tab-dishpointer" or satellite or CURRENT_LOCATION:
+        if satellite:
+            source_path = "satbeams.csv"  # Adjust as per your setup
+            does_exist = utilities.prefix_exists(
+                AWS_CLIENT, AWS_BUCKET_NAME, source_path)
+
+            if does_exist:
+                obj = AWS_CLIENT.get_object(
+                    Bucket=AWS_BUCKET_NAME, Key=source_path)["Body"]
+                df = pd.read_csv(obj, header=0)
+
+                if satellite in df.iloc[:, 0].values:
+                    df_subset = df[df.iloc[:, 0] == satellite]
+                    norad = df_subset.iloc[0, 3]
+
+                    azimuth, elevation = dish_pointer(
+                        aws_client=AWS_CLIENT,  # Replace with actual AWS client
+                        aws_bucket=AWS_BUCKET_NAME,  # Replace with your AWS bucket name
+                        norad=norad,  # Replace with the NORAD ID
+                        latitude=latitude,
+                        longitude=longitude,
+                    )
+                    
+                    if CURRENT_LOCATION == 1:
+                        ipinfo_handler = ipinfo.getHandler(access_token)
+                        details = ipinfo_handler.getDetails()
+                        latitude = details.latitude
+                        longitude = details.longitude
+                        CURRENT_LOCATION = 0
+
+                    map_src = f"https://www.google.com/maps/embed/v1/place?key={
+                        API_KEY}&q={latitude},{longitude}"
+
+                    return latitude, longitude, f"{azimuth:.2f}°", f"{elevation:.2f}°", map_src
+
+    return latitude, longitude, "", "", ""
+
+
+# @app.callback(
+#     Output(component_id="current-output", component_property="children"),
+#     [Input(component_id="button-update-current", component_property="n_clicks")],
+#     suppress_callback_exceptions=True
+# )
+# def update_current_location(click: int):
+#     """
+#     Callback to update the current location.
+
+#     Parameters
+#     ----------
+#     click: int
+#         Integer representing if the button is clicked.
+#     """
+#     global CURRENT_LOCATION
+#     if click:
+#         CURRENT_LOCATION = 1
+#         return "Current location updated successfully!"
+#     return ""
 
 if __name__ == "__main__":
     app.run_server(debug=True)

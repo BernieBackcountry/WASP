@@ -36,13 +36,13 @@ from dash import dcc, html
 
 from wasp_tool_dash import utilities
 
-STYLE_LEFT = {"margin": "10px 10px 10px 10px", 
-              "width": "100%", "height": "auto", 
+STYLE_LEFT = {"margin": "10px 10px 10px 10px",
+              "width": "100%", "height": "auto",
               "textAlign": "center",
-                "align-items": "center",
-                
+              "align-items": "center",
 
-}
+
+              }
 STYLE_TAB = {"margin": "10px 10px 10px 10px",
              "width": "100%", "height": "100%",
              "textAlign": "center",
@@ -50,6 +50,7 @@ STYLE_TAB = {"margin": "10px 10px 10px 10px",
              "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)"
 
              }
+
 
 class LayoutCreator:
     """
@@ -84,8 +85,8 @@ class LayoutCreator:
         )
 
     def _create_information_layout(self,
-        AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY
-    )-> html.Div:
+                                   AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY
+                                   ) -> html.Div:
         """
         Wrapper function to create information layout portion.
 
@@ -103,18 +104,18 @@ class LayoutCreator:
                 self._create_title(),
                 self._create_description(),
                 self._create_search_dropdown(
-                    AWS_CLIENT, AWS_BUCKET_NAME,PATH_KEY
+                    AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY
                 ),
                 self._create_search_message(),
                 self._create_button_celestrak(),
                 self._create_celestrak_output(),
                 self._create_logo(),
-                
-                
+
+
             ],
             style={
-                   "textAlign": "center",
-                   "align-items": "left","width": " 20%"},
+                "textAlign": "center",
+                "align-items": "left", "width": " 20%"},
         )
 
     def _create_data_layout(self) -> html.Div:
@@ -152,8 +153,7 @@ class LayoutCreator:
         -------
         html.H1
         """
-        return html.H1("16th EWS W.A.S.P."
-                    ,style=STYLE_LEFT)
+        return html.H1("16th EWS W.A.S.P.", style=STYLE_LEFT)
 
     @staticmethod
     def _create_description() -> html.P:
@@ -171,7 +171,7 @@ class LayoutCreator:
         )
 
     @staticmethod
-    def _create_search_dropdown(AWS_CLIENT, AWS_BUCKET_NAME,  PATH_KEY) -> html.Div:
+    def _create_search_dropdown(AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY) -> html.Div:
         """
         Creates satellite search bar/dropdown.
 
@@ -181,33 +181,24 @@ class LayoutCreator:
         """
         return html.Div(
             className="search_dropdown",
-            style={ "width": "180px",
-                   "text-align": "center",
-                   "margin": "10px,10px,10px,10px",
-                   "font-size": "auto"},
             children=[
+                html.Div("Satellite Search",
+                         style=STYLE_LEFT),
                 dcc.Dropdown(
                     id="sat-dropdown",
                     placeholder="INPUT A SATELLITE",
                     options=utilities.populate_inputs(
                         AWS_CLIENT, AWS_BUCKET_NAME,  PATH_KEY
                     ),
-                   
-              
+                    style={"width": "100%",
+                           "text-align": "center",
+                           "margin": "10px,10px,10px,10px",
+                           "font-size": "auto",
+                           "align-items": "center", },
+
                 )
             ],
         )
-
-    @staticmethod
-    def _create_search_message() -> html.Div:
-        """
-        Create empty html.Div for spacing purposes.
-
-        Returns
-        -------
-        html.Div
-        """
-        return html.Div(id="search-message", style=STYLE_LEFT)
 
     @staticmethod
     def _create_button_celestrak() -> html.Div:
@@ -230,18 +221,29 @@ class LayoutCreator:
                     id="button-update-celestrak",
                     n_clicks=0,
                     style={
-                        
-                        "width": "180px",
+
+                        "width": "100%",
                         "background-color": "#00263A",
                         "color": "#DBE2E9",
                         "text-align": "center",
                         "margin": "10px,10px,10px,10px",
-                        "font-size": "15px"
+                        "font-size": "auto",
+                        "align-items": "center",
                     },
                 ),
             ],
         )
 
+    @staticmethod
+    def _create_search_message() -> html.Div:
+        """
+        Create empty html.Div for spacing purposes.
+
+        Returns
+        -------
+        html.Div
+        """
+        return html.Div(id="search-message", style=STYLE_LEFT)
 
     @staticmethod
     def _create_logo() -> html.Div:
@@ -260,10 +262,10 @@ class LayoutCreator:
                     path=utilities.get_project_path().joinpath(
                         "wasp_tool_dash", "assets", "spoc_logo.png"
                     )
-                ), 
+                ),
             ],
-           
-    
+
+
         )
 
     @staticmethod
@@ -278,6 +280,17 @@ class LayoutCreator:
         return html.Div(id="celestrak-output", style={"marginLeft": "5px", "height": "25px", "width": "auto"})
 
     @staticmethod
+    def _create_current_output() -> html.Div:
+        """
+        Create output message for succesful current update.
+
+        Returns
+        -------
+        html.Div
+        """
+        return html.Div(id="current-output", style={"marginLeft": "5px", "height": "25px", "width": "auto"})
+
+    @staticmethod
     def _create_tabs() -> html.Div:
         """
         Create right-side tabs for displaying information.
@@ -286,7 +299,7 @@ class LayoutCreator:
         -------
         html.Div
         """
-        style = {"width": "100%", "height": 500, "resize": "none", "margin": "32px"}
+
         return html.Div(
             [
                 dcc.Tabs(
@@ -296,11 +309,13 @@ class LayoutCreator:
                         dcc.Tab(label="General Info", value="tab-general"),
                         dcc.Tab(label="TLE", value="tab-telemetry"),
                         dcc.Tab(label="Footprints", value="tab-footprints"),
-                        dcc.Tab(label="Frequency Plans", value="tab-freq_plans"),
+                        dcc.Tab(label="Frequency Plans",
+                                value="tab-freq_plans"),
                         dcc.Tab(label="Channels", value="tab-channels"),
+                        LayoutCreator._create_dish_pointer(),
                     ],
                 ),
-                html.Div(id="tabs-content"),
+                html.Div(id="tabs-content",),
             ],
             style=STYLE_TAB,
         )
@@ -323,4 +338,95 @@ class LayoutCreator:
             http://frequencyplansatellites.altervista.org/. For more information or questions,
             please contact jason.tilley.3@spaceforce.mil.""",
             style={"font-style": "italic"},
+        )
+
+    @staticmethod
+    def _create_dish_pointer() -> html.Div:
+        """
+        Create dish pointer tab.
+
+        Returns
+        -------
+        html.Div
+        """
+        return dcc.Tab(
+            label="Dish Pointer", value="tab-dishpointer" ,children=[
+
+
+                    html.Div(
+                        children=[
+                            html.P("Azimuth: "), html.P(id="azimuth-text"),
+                            html.P("Elevation: "), html.P(id="elevation-text"),
+                         
+                        ],
+                        style={"margin": "10px",
+                               "padding": "10px", "color": "#00263A"},
+                    ),
+                    html.Iframe(
+                        id="map-frame",
+                        width="100%",
+                        height="500px",
+                    ),
+                    html.Div(
+                        className="latlong",
+                        children=[
+                            html.Div(
+                                children=[
+                                    html.P(" Latitude: "),
+                                    dcc.Input(
+                                        id="latitude-input",
+                                        type="number",
+                                        value=0,
+                                        step=0.0001
+                                    ),
+                                    html.P(" Longitude: "),
+                                    dcc.Input(
+                                        id="longitude-input",
+                                        type="number",
+                                        value=0,
+                                        step=0.0001
+                                    ),
+                                ],
+                                style={"margin": "10px",
+                                       "padding": "10px", "color": "#00263A"},
+                            ),
+                            html.Div(
+                                className="button_latlong",
+                                children=[
+                                    html.Button(
+                                        "Update Lat/Long",
+                                        id="button-update-latlong",
+                                        n_clicks=0,
+                                        style={
+                                            "width": "auto",
+                                            "background-color": "#00263A",
+                                            "color": "white",
+                                            "text-align": "center",
+                                            "margin": "10px",
+                                            "font-size": "auto",
+                                        },
+                                    )
+                                ],
+                            ),
+                            # html.Div(
+                            #     className="button_current",
+                            #     children=[
+                            #         html.Button(
+                            #             "Update Current Location",
+                            #             id="button-update-current",
+                            #             n_clicks=0,
+                            #             style={
+                            #                 "width": "auto",
+                            #                 "background-color": "#00263A",
+                            #                 "color": "white",
+                            #                 "text-align": "center",
+                            #                 "margin": "10px",
+                            #                 "font-size": "auto",
+                            #             },
+                            #         )
+                            #     ],
+                            # ),
+                        ],
+                    ),
+                ],
         )

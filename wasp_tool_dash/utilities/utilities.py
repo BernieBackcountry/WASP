@@ -28,6 +28,7 @@ from pathlib import Path
 import botocore
 import boto3
 from dash import html
+from flask import request
 
 
 def get_project_path() -> Path:
@@ -123,5 +124,3 @@ def get_file_keys(
                 if file_extension in key_string:
                     file_keys.append(key_string)
     return file_keys
-
-

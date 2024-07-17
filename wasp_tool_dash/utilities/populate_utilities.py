@@ -21,6 +21,8 @@ FUNCTIONS
         Populates the 'Channels' tab including the column filter and filter by values as well as
         the Dash datatable.
 """
+import boto3
+import numpy as np
 from io import BytesIO, StringIO
 
 import botocore
@@ -32,6 +34,13 @@ import re
 from wasp_tool_dash import utilities
 from urllib.parse import urlparse
 from config import KEY, SECRET_KEY
+import math
+import dash
+from config import BUCKET_NAME, KEY, SECRET_KEY, API_KEY, access_token
+
+
+
+
 
 STYLE_TEXT = {
     "color": "black",
@@ -77,6 +86,9 @@ STYLE_DATA_TABLE = {
     "font-size": "25px",
 }
 
+LATITUDE = None
+LONGITUDE = None
+
 
 def populate_inputs(aws_client: botocore.client, aws_bucket: str,  key: str) -> list:
     """
@@ -98,7 +110,6 @@ def populate_inputs(aws_client: botocore.client, aws_bucket: str,  key: str) -> 
         List of possible search options
     """
 
-   
     source_path = f"{key}satbeams.csv"
     does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
     if does_exist:
@@ -108,11 +119,11 @@ def populate_inputs(aws_client: botocore.client, aws_bucket: str,  key: str) -> 
         )
         df = pd.read_csv(obj, header=0)
     accepted_inputs = df.iloc[:, 0].tolist()
-    accepted_inputs.sort() 
+    accepted_inputs.sort()
     return accepted_inputs
 
 
-def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str,norad: str, key: str) -> html.P:
+def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str, norad: str, key: str) -> html.P:
     """
     Populates the General Info tab by pulling information from the satbeams.csv file.
 
@@ -139,25 +150,25 @@ def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str
     if does_exist:
         obj = (
             aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
-            
+
         )
         df = pd.read_csv(obj, header=0)
-        
+
         if norad in df.iloc[:, 3].values:
             df_subset = df[df.iloc[:, 3] == norad]
-            position = str(df_subset.iloc[0,2])
-            norad = str(df_subset.iloc[0,3])
-            beacon = str(df_subset.iloc[0,4])
+            position = str(df_subset.iloc[0, 2])
+            norad = str(df_subset.iloc[0, 3])
+            beacon = str(df_subset.iloc[0, 4])
             return html.P(
-            [
-                "Satellite: " + sat,
-                html.Br(),
-                "Position: " + position,
-                html.Br(),
-                "NORAD: " + norad,
-                html.Br(),
-                "Beacon(s): " + beacon,
-            ],
+                [
+                    "Satellite: " + sat,
+                    html.Br(),
+                    "Position: " + position,
+                    html.Br(),
+                    "NORAD: " + norad,
+                    html.Br(),
+                    "Beacon(s): " + beacon,
+                ],
                 style=STYLE_INFO,
             )
         return html.P("Information not available.", style=STYLE_INFO)
@@ -198,7 +209,7 @@ def populate_tles(
 
         )
         df = pd.read_csv(obj, header=0)
-        if norad in df["Norad"].values :
+        if norad in df["Norad"].values:
             df_subset = df[df["Norad"] == norad]
             tle_1 = df_subset["TLE-1"].tolist()[0]
             tle_2 = df_subset["TLE-2"].tolist()[0]
@@ -210,7 +221,7 @@ def populate_tles(
 
 
 def populate_footprints(
-    aws_client: botocore.client, aws_bucket: str, sat: str,norad:str, key: str
+    aws_client: botocore.client, aws_bucket: str, sat: str, norad: str, key: str
 ):
     """
     Populates the 'Footprints' tab with footprints images and image titles.
@@ -243,14 +254,14 @@ def populate_footprints(
         if norad in df.iloc[:, 3].values:
             df_subset = df[df.iloc[:, 3] == norad]
             image_keys = df_subset.iloc[0, 5].split(",")
-            
+
             titles = eval(df_subset.iloc[0, 6])
             urls = extract_jpg_urls(image_keys)
 
             # Create clickable buttons and preview windows for each URL
             children = []
             for title, url in zip(titles, urls):
-                
+
                 children.append(
                     html.A(
                         html.Button(title),  # Display title as button text
@@ -267,7 +278,7 @@ def populate_footprints(
                             "text-overflow": "ellipsis",
                             "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)",
                             "background-color": "#FFFFFF",
-                            "font-color" : "white",
+                            "font-color": "white",
                         }
                     )
                 )
@@ -281,6 +292,7 @@ def populate_footprints(
     return html.P(
         "Populate data sources to obtain requested information.", style=STYLE_INFO
     )
+
 
 def extract_jpg_urls(string_list):
     # Define the regex pattern for URLs ending with ".jpg"
@@ -355,6 +367,8 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, no
         AWS bucket name
     sat: str
         String containing satellite chosen in the search dropdown
+    norad: str
+        String containing Norad ID
     key: str
         String containing prefix check condition
 
@@ -370,25 +384,139 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, no
 
     does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
     if does_exist:
-        obj_lyngsat = (
-            aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
-    
-        )
-    
+        obj_lyngsat = aws_client.get_object(
+            Bucket=aws_bucket, Key=csv_path)["Body"]
+
         df = pd.read_csv(obj_lyngsat, header=0)
 
-        if norad in df.iloc["Norad ID"].values or sat in df["Primary Satellite Name"].values:
+        # Apply the function to the entire column
+        # df["Primary Satellite Name"] = df["Primary Satellite Name"].apply(lambda x: sat if x == 'Satellite' else x)
+
+        if (sat in df["Primary Satellite Name"].values) or (norad in df["Norad ID"].values):
             source_path = f"{key}channels/{sat}/{sat}.csv"
-            obj = (
-                aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
-            )
+            obj = aws_client.get_object(
+                Bucket=aws_bucket, Key=source_path)["Body"]
             df_lyngsat = pd.read_csv(obj, header=0)
-            children = [
-                html.Div(utilities.create_data_table(df_lyngsat), style=STYLE_DATA_TABLE),
-            ]
+            children = [html.Div(utilities.create_data_table(
+                df_lyngsat), style=STYLE_DATA_TABLE)]
             return html.Div(children=children)
         return html.P("Information not available.", style=STYLE_INFO)
-    return html.P(
-        "Populate data sources to obtain requested information."
-        , style=STYLE_INFO,
-    )
+    return html.P("Populate data sources to obtain requested information.", style=STYLE_INFO)
+
+
+def dish_pointer(aws_client: botocore.client, aws_bucket: str, norad: str, latitude: float, longitude: float) -> tuple:
+    """
+    Calculates the dish pointing angle for a satellite based on the user's location.
+
+    Parameters
+    ----------
+    aws_client: botocore.client
+        AWS S3 client
+    aws_bucket: str
+        AWS S3 bucket name
+    norad: str
+        NORAD ID of the satellite
+    key: str
+        Key for the satellite data file
+    latitude: float
+        User's latitude
+    longitude: float
+        User's longitude
+
+    Returns
+    -------
+    tuple
+        Azimuth and Elevation angles in degrees
+    """
+
+    
+
+    # Load satellite data from S3
+    source_path = f"satbeams.csv"
+    if utilities.prefix_exists(aws_client, aws_bucket, source_path):
+        obj = aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
+        df = pd.read_csv(obj, header=0)
+
+        # Get Celestrak data
+        source_path = f"celestrak.csv"
+        if utilities.prefix_exists(aws_client, aws_bucket, source_path):
+            obj = aws_client.get_object(
+                Bucket=aws_bucket, Key=source_path)["Body"]
+            df = pd.read_csv(obj, header=0)
+
+            # Calculate azimuth and elevation
+            if norad in df["Norad"].values:
+                df_subset = df[df["Norad"] == norad]
+                tle_2 = df_subset["TLE-2"].tolist()[0].replace("*", " ")
+
+                tle_line_2_elements = tle_2.split()
+                sat_latitude = float(tle_line_2_elements[2])  # In degrees
+                sat_longitude = float(tle_line_2_elements[4])  # In degrees
+
+                observer_lat_rad = math.radians(float(latitude))
+                observer_lon_rad = math.radians(float(longitude))
+                sat_lat_rad = math.radians(sat_latitude)
+                sat_lon_rad = math.radians(sat_longitude)
+
+                # Calculate azimuth angle (in degrees)
+                azimuth = math.degrees(math.atan2(
+                    math.sin(sat_lon_rad - observer_lon_rad),
+                    math.cos(observer_lat_rad) * math.tan(sat_lat_rad) -
+                    math.sin(observer_lat_rad) *
+                    math.cos(sat_lon_rad - observer_lon_rad)
+                ))
+
+                # Calculate elevation angle (in degrees)
+                elevation = math.degrees(math.asin(
+                    math.sin(observer_lat_rad) * math.sin(sat_lat_rad) +
+                    math.cos(observer_lat_rad) * math.cos(sat_lat_rad) *
+                    math.cos(sat_lon_rad - observer_lon_rad)
+                ))
+
+                return azimuth, elevation
+    return 0.0, 0.0  # Data file not found or satellite not found
+
+  
+
+def update_lat_long_and_calculate(n_clicks, latitude, longitude, aws_client: botocore.client, aws_bucket: str, norad: str, key: str):
+    """
+    Callback to update latitude and longitude inputs and recalculate azimuth and elevation.
+
+    Parameters
+    ----------
+    n_clicks: int
+        Number of button clicks.
+    latitude: str
+        Latitude input value.
+    longitude: str
+        Longitude input value.
+
+    Returns
+    -------
+    list of updated values for latitude, longitude, azimuth, elevation, and map src.
+    """
+  
+    
+    if n_clicks:
+        global LATITUDE, LONGITUDE
+        LATITUDE = float(latitude)
+        LONGITUDE = float(longitude)
+
+        # Recalculate azimuth and elevation based on the new latitude and longitude
+        azimuth, elevation = dish_pointer(
+            aws_client=aws_client,  # Replace with actual AWS client
+            aws_bucket=aws_bucket,  # Replace with your AWS bucket name
+            norad=norad,  # Replace with the NORAD ID
+            latitude=LATITUDE, 
+            longitude=LONGITUDE,
+        )
+
+        # Update the map iframe src
+        map_src = f"https://www.google.com/maps/embed/v1/place?key={API_KEY}&q={LATITUDE},{LONGITUDE}"
+
+        # Return updated values
+        return LATITUDE, LONGITUDE, f"{azimuth:.2f}°", f"{elevation:.2f}°", map_src
+
+    # If the button hasn't been clicked, return the current state
+    return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+ 

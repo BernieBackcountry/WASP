@@ -151,8 +151,8 @@ if __name__ == "__main__":
         while True:
             get_satbeams_data()
             get_altervista_data()
-            #get_lyngsat_data()
+            get_lyngsat_data()
             get_celestrak_data()
-            time.sleep(1800)
+            time.sleep(3600)
  
 
