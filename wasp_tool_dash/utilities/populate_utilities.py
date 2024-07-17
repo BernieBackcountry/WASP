@@ -344,10 +344,9 @@ def populate_freq_plans(
     df = pd.read_csv(obj, header=0)
     if sat in df["Primary Satellite"].values:
         df_subset = df[df["Primary Satellite"] == sat]
-        image_url = df_subset["Frequency Plan URL"].values[0]
-    
+        image_url = df_subset["Frequency Plan URL"].values[0]   
         return html.Div([
-            html.Iframe(src=f"https://www.google.com/search?q=%{image_url}", style={
+            html.Iframe(src=image_url, style={
                         'width': '100%', 'height': '700px'}),
         ])
     else:
