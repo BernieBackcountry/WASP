@@ -345,10 +345,10 @@ def populate_freq_plans(
     if sat in df["Primary Satellite"].values:
         df_subset = df[df["Primary Satellite"] == sat]
         image_url = df_subset["Frequency Plan URL"].values[0]
-
+    
         return html.Div([
-            html.Iframe(src=image_url, style={
-                        'width': '100%', 'height': '700px'}),
+            html.Embed(src=image_url, type="application/pdf",
+                       style={'width': '100%', 'height': '700px'})
         ])
     else:
         return html.P("Information not available.", style=STYLE_INFO)

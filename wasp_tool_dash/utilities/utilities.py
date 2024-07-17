@@ -28,7 +28,7 @@ from pathlib import Path
 import botocore
 import boto3
 from dash import html
-from flask import request
+import requests
 
 
 def get_project_path() -> Path:

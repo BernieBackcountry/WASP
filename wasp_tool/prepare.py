@@ -88,7 +88,6 @@ def get_celestrak_data():
     Turn dict into df by indexing then flattening
     """
     print("Getting celestrak data")
-    celestrak_data.to_csv("celestrak.csv", index=False)
     utilities.save_df_to_csv(
         BUCKET_NAME, DIGITAL_OCEAN_CLIENT, celestrak_data, "celestrak.csv")
 
@@ -151,7 +150,7 @@ if __name__ == "__main__":
         while True:
             get_satbeams_data()
             get_altervista_data()
-            get_lyngsat_data()
+            #get_lyngsat_data()
             get_celestrak_data()
             time.sleep(3600)
  
