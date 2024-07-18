@@ -186,17 +186,19 @@ def update_rows( sat: str):
         Output("map-frame", "src")
     ],
     [
-        Input("button-update-latlong", "n_clicks"),
+        Input("button-update", "n_clicks"),
         Input("tabs", "value"),
+        Input("sat-dropdown", "value"),
     ],
     [
         dash.State("latitude-input", "value"),
         dash.State("longitude-input", "value"),
-        dash.State("sat-dropdown", "value"),
+        dash.State("location-input", "value"),
+        
     ],
     suppress_callback_exceptions=True,
 )
-def update_map(n_clicks,value,latitude, longitude, satellite):
+def update_map(n_clicks, value, satellite,latitude, longitude, location):
     """
     Callback to update the map, azimuth, and elevation when the button is clicked or tab is switched.
     
@@ -217,6 +219,8 @@ def update_map(n_clicks,value,latitude, longitude, satellite):
     global CURRENT_LOCATION
 
     if n_clicks or value == "tab-dishpointer" or satellite or CURRENT_LOCATION:
+        if location:
+            latitude, longitude = utilities.get_location_data(location)
         if satellite:
             source_path = "satbeams.csv"  # Adjust as per your setup
             does_exist = utilities.prefix_exists(
@@ -230,14 +234,7 @@ def update_map(n_clicks,value,latitude, longitude, satellite):
                 if satellite in df.iloc[:, 0].values:
                     df_subset = df[df.iloc[:, 0] == satellite]
                     norad = df_subset.iloc[0, 3]
-
-                    azimuth, elevation = dish_pointer(
-                        aws_client=AWS_CLIENT,  # Replace with actual AWS client
-                        aws_bucket=AWS_BUCKET_NAME,  # Replace with your AWS bucket name
-                        norad=norad,  # Replace with the NORAD ID
-                        latitude=latitude,
-                        longitude=longitude,
-                    )
+                    
                     
                     if CURRENT_LOCATION == 1:
                         ipinfo_handler = ipinfo.getHandler(access_token)
@@ -248,31 +245,27 @@ def update_map(n_clicks,value,latitude, longitude, satellite):
 
                     map_src = f"https://www.google.com/maps/embed/v1/place?key={
                         API_KEY}&q={latitude},{longitude}"
-
-                    return latitude, longitude, f"{azimuth:.2f}°", f"{elevation:.2f}°", map_src
+                    
+                    azimuth, elevation = dish_pointer(
+                        aws_client=AWS_CLIENT,  # Replace with actual AWS client
+                        aws_bucket=AWS_BUCKET_NAME,  # Replace with your AWS bucket name
+                        norad=norad,  # Replace with the NORAD ID
+                        latitude=latitude,
+                        longitude=longitude,
+                    )
+                    # Check if azimuth and elevation are within valid ranges
+                    if (azimuth > 360 or azimuth < 0) or (elevation > 90 or elevation < 0):
+                        azimuth_text = "IMPOSSIBLE TO REACH SATELLITE"
+                        elevation_text = "Azimuth: {:.2f}°, Elevation: {:.2f}°".format(
+                            azimuth, elevation)
+                    else:
+                        azimuth_text = f"Azimuth: {azimuth:.2f}°"
+                        elevation_text = f"Elevation: {elevation:.2f}°"
+                    
+                    return latitude, longitude, azimuth_text, elevation_text, map_src
 
     return latitude, longitude, "", "", ""
 
-
-# @app.callback(
-#     Output(component_id="current-output", component_property="children"),
-#     [Input(component_id="button-update-current", component_property="n_clicks")],
-#     suppress_callback_exceptions=True
-# )
-# def update_current_location(click: int):
-#     """
-#     Callback to update the current location.
-
-#     Parameters
-#     ----------
-#     click: int
-#         Integer representing if the button is clicked.
-#     """
-#     global CURRENT_LOCATION
-#     if click:
-#         CURRENT_LOCATION = 1
-#         return "Current location updated successfully!"
-#     return ""
 
 if __name__ == "__main__":
     app.run_server(debug=True)

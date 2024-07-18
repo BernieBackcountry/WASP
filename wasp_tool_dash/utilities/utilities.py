@@ -26,9 +26,10 @@ import base64
 from pathlib import Path
 
 import botocore
-import boto3
 from dash import html
-import requests
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
+from config import API_KEY
 
 
 def get_project_path() -> Path:
@@ -124,3 +125,32 @@ def get_file_keys(
                 if file_extension in key_string:
                     file_keys.append(key_string)
     return file_keys
+
+
+def get_location_data(location):
+    """
+    Fetch latitude, longitude, azimuth, elevation, and map source using geopy.
+
+    Parameters
+    ----------
+    location: str
+        Location string to be geocoded.
+
+    Returns
+    -------
+    tuple
+        Tuple containing latitude (float), longitude (float), azimuth (str), elevation (str), map_src (str).
+    """
+    geolocator = Nominatim(user_agent="your_app_name_here")
+
+    try:
+        location = geolocator.geocode(location)
+        if location:
+            latitude = round(location.latitude, 4)
+            longitude = round(location.longitude, 4)
+           
+            return float(latitude), float(longitude)
+        else:
+            return None, None
+    except GeocoderTimedOut:
+        return None, None

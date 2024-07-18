@@ -187,6 +187,7 @@ class LayoutCreator:
                 dcc.Dropdown(
                     id="sat-dropdown",
                     placeholder="INPUT A SATELLITE",
+                    value="GALAXY 16",
                     options=utilities.populate_inputs(
                         AWS_CLIENT, AWS_BUCKET_NAME,  PATH_KEY
                     ),
@@ -350,83 +351,77 @@ class LayoutCreator:
         html.Div
         """
         return dcc.Tab(
-            label="Dish Pointer", value="tab-dishpointer" ,children=[
+            label="Dish Pointer", value="tab-dishpointer", children=[
 
 
-                    html.Div(
-                        children=[
-                            html.P("Azimuth: "), html.P(id="azimuth-text"),
-                            html.P("Elevation: "), html.P(id="elevation-text"),
-                         
-                        ],
-                        style={"margin": "10px",
-                               "padding": "10px", "color": "#00263A"},
-                    ),
-                    html.Iframe(
-                        id="map-frame",
-                        width="100%",
-                        height="500px",
-                    ),
-                    html.Div(
-                        className="latlong",
-                        children=[
-                            html.Div(
-                                children=[
-                                    html.P(" Latitude: "),
-                                    dcc.Input(
-                                        id="latitude-input",
-                                        type="number",
-                                        value=0,
-                                        step=0.0001
-                                    ),
-                                    html.P(" Longitude: "),
-                                    dcc.Input(
-                                        id="longitude-input",
-                                        type="number",
-                                        value=0,
-                                        step=0.0001
-                                    ),
-                                ],
-                                style={"margin": "10px",
-                                       "padding": "10px", "color": "#00263A"},
-                            ),
-                            html.Div(
-                                className="button_latlong",
-                                children=[
-                                    html.Button(
-                                        "Update Lat/Long",
-                                        id="button-update-latlong",
-                                        n_clicks=0,
-                                        style={
-                                            "width": "auto",
-                                            "background-color": "#00263A",
-                                            "color": "white",
-                                            "text-align": "center",
-                                            "margin": "10px",
-                                            "font-size": "auto",
-                                        },
-                                    )
-                                ],
-                            ),
-                            # html.Div(
-                            #     className="button_current",
-                            #     children=[
-                            #         html.Button(
-                            #             "Update Current Location",
-                            #             id="button-update-current",
-                            #             n_clicks=0,
-                            #             style={
-                            #                 "width": "auto",
-                            #                 "background-color": "#00263A",
-                            #                 "color": "white",
-                            #                 "text-align": "center",
-                            #                 "margin": "10px",
-                            #                 "font-size": "auto",
-                            #             },
-                            #         )
-                            #     ],
-                            # ),
-                        ],
-                    ),
-                ],
+                html.Div(
+                    children=[
+                        html.P(""), html.P(id="azimuth-text"),
+                        html.P(""), html.P(id="elevation-text"),
+
+                    ],
+                    style={"margin": "10px",
+                           "padding": "10px", "color": "#00263A","display": "flex","align-items": "center","justify-content": "center"},
+                ),
+                html.Iframe(
+                    id="map-frame",
+                    width="100%",
+                    height="500px",
+                ),
+                html.Div(
+                    className="latlong",
+                    children=[
+                        html.Div(
+                            children=[
+                                html.P(" Latitude: "),
+                                dcc.Input(
+                                    id="latitude-input",
+                                    type="number",
+                                    value=0,
+                                    step=0.0001
+                                ),
+                                html.P(" Longitude: "),
+                                dcc.Input(
+                                    id="longitude-input",
+                                    type="number",
+                                    value=0,
+                                    step=0.0001
+                                ),
+                            ],
+                            style={"margin": "10px",
+                                   "padding": "10px", "color": "#00263A"},
+                        ),
+                        html.Div(
+                            children=[
+                                html.P("Input Location: "),
+                                dcc.Input(
+                                    id="location-input",
+                                    type="text",
+                                ),
+                            ], style={"margin": "10px",
+                                      "padding": "10px", "color": "#00263A"},),
+                        html.Div(
+                            className="button_update",
+                            children=[
+                                html.Button(
+                                    "Update",
+                                    id="button-update",
+                                    n_clicks=0,
+                                    style={
+                                        "width": "auto",
+                                        "background-color": "#00263A",
+                                        "color": "white",
+                                        "text-align": "center",
+                                        "margin": "10px",
+                                        "font-size": "auto",
+                                        
+                                    },
+                                )
+                            ],
+                            
+                        ),
+
+                    ],
+                ),
+            ],
         )

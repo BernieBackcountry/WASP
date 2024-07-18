@@ -37,9 +37,7 @@ from config import KEY, SECRET_KEY
 import math
 import dash
 from config import BUCKET_NAME, KEY, SECRET_KEY, API_KEY, access_token
-
-
-
+from skyfield.api import Topos, load,EarthSatellite
 
 
 STYLE_TEXT = {
@@ -344,10 +342,15 @@ def populate_freq_plans(
     df = pd.read_csv(obj, header=0)
     if sat in df["Primary Satellite"].values:
         df_subset = df[df["Primary Satellite"] == sat]
-        image_url = df_subset["Frequency Plan URL"].values[0]   
+        image_url = df_subset["Frequency Plan URL"].values[0]
+        menlo_url = "https://safe.menlosecurity.com/" +image_url[len("http://"):]
+
         return html.Div([
             html.Iframe(src=image_url, style={
                         'width': '100%', 'height': '700px'}),
+            html.H1("View PDF"),
+            html.A("Click here to view the Frequency Plans", href=menlo_url, target="_blank", style={
+                'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),
         ])
     else:
         return html.P("Information not available.", style=STYLE_INFO)
@@ -428,8 +431,6 @@ def dish_pointer(aws_client: botocore.client, aws_bucket: str, norad: str, latit
         Azimuth and Elevation angles in degrees
     """
 
-    
-
     # Load satellite data from S3
     source_path = f"satbeams.csv"
     if utilities.prefix_exists(aws_client, aws_bucket, source_path):
@@ -446,36 +447,36 @@ def dish_pointer(aws_client: botocore.client, aws_bucket: str, norad: str, latit
             # Calculate azimuth and elevation
             if norad in df["Norad"].values:
                 df_subset = df[df["Norad"] == norad]
-                tle_2 = df_subset["TLE-2"].tolist()[0].replace("*", " ")
+                try:
+                    # Retrieve and format TLE data
+                    tle_1 = df_subset["TLE-1"].tolist()[0].replace("*", " ")
+                    tle_2 = df_subset["TLE-2"].tolist()[0].replace("*", " ")
+                    satellite_name = df_subset["Primary Satellite"].tolist()[0]
 
-                tle_line_2_elements = tle_2.split()
-                sat_latitude = float(tle_line_2_elements[2])  # In degrees
-                sat_longitude = float(tle_line_2_elements[4])  # In degrees
+                    # Get the time from Skyfield (you can use other time sources as well)
+                    ts = load.timescale()
+                    t = ts.now()
 
-                observer_lat_rad = math.radians(float(latitude))
-                observer_lon_rad = math.radians(float(longitude))
-                sat_lat_rad = math.radians(sat_latitude)
-                sat_lon_rad = math.radians(sat_longitude)
+                    # Use the satellite name as the key
+                    satellite = EarthSatellite(tle_1, tle_2, satellite_name, ts)
 
-                # Calculate azimuth angle (in degrees)
-                azimuth = math.degrees(math.atan2(
-                    math.sin(sat_lon_rad - observer_lon_rad),
-                    math.cos(observer_lat_rad) * math.tan(sat_lat_rad) -
-                    math.sin(observer_lat_rad) *
-                    math.cos(sat_lon_rad - observer_lon_rad)
-                ))
+                    # Create a location for the observer
+                    observer = Topos(latitude_degrees=float(latitude),
+                                    longitude_degrees=float(longitude))
 
-                # Calculate elevation angle (in degrees)
-                elevation = math.degrees(math.asin(
-                    math.sin(observer_lat_rad) * math.sin(sat_lat_rad) +
-                    math.cos(observer_lat_rad) * math.cos(sat_lat_rad) *
-                    math.cos(sat_lon_rad - observer_lon_rad)
-                ))
+                    # Calculate the position of the satellite relative to the observer
+                    difference = satellite - observer
 
-                return azimuth, elevation
-    return 0.0, 0.0  # Data file not found or satellite not found
+                    # Get the azimuth and elevation angles
+                    topocentric = difference.at(t)
+                    alt, az, distance = topocentric.altaz()
 
-  
+                    return az.degrees, alt.degrees
+
+                except Exception as e:
+                    print(f"Error calculating satellite angles: {e}")
+                    return 0.0, 0.0  # Return default values or handle error as needed
+
 
 def update_lat_long_and_calculate(n_clicks, latitude, longitude, aws_client: botocore.client, aws_bucket: str, norad: str, key: str):
     """
@@ -494,8 +495,7 @@ def update_lat_long_and_calculate(n_clicks, latitude, longitude, aws_client: bot
     -------
     list of updated values for latitude, longitude, azimuth, elevation, and map src.
     """
-  
-    
+
     if n_clicks:
         global LATITUDE, LONGITUDE
         LATITUDE = float(latitude)
@@ -506,16 +506,16 @@ def update_lat_long_and_calculate(n_clicks, latitude, longitude, aws_client: bot
             aws_client=aws_client,  # Replace with actual AWS client
             aws_bucket=aws_bucket,  # Replace with your AWS bucket name
             norad=norad,  # Replace with the NORAD ID
-            latitude=LATITUDE, 
+            latitude=LATITUDE,
             longitude=LONGITUDE,
         )
 
         # Update the map iframe src
-        map_src = f"https://www.google.com/maps/embed/v1/place?key={API_KEY}&q={LATITUDE},{LONGITUDE}"
+        map_src = f"https://www.google.com/maps/embed/v1/place?key={
+            API_KEY}&q={LATITUDE},{LONGITUDE}"
 
         # Return updated values
         return LATITUDE, LONGITUDE, f"{azimuth:.2f}°", f"{elevation:.2f}°", map_src
 
     # If the button hasn't been clicked, return the current state
     return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
- 
