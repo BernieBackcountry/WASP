@@ -16,4 +16,4 @@ s3cmd
 numpy
 datetime
 ipinfo
-geopu
+geopy
