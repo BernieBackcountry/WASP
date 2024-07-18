@@ -347,9 +347,9 @@ def populate_freq_plans(
 
         return html.Div([
             html.Iframe(src=image_url, style={
-                        'width': '100%', 'height': '100%'}),
+                        'width': '100%', 'height': '100%'}),html.Br(),
             html.A("Click here to view the Frequency Plans on NIPR", href=menlo_url, target="_blank", style={
-                'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),
+                'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),html.Br(),
             html.A("Click here to view the Frequency Plans if not diplayed", href=image_url, target="_blank", style={
                 'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),
         ])
