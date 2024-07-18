@@ -143,36 +143,38 @@ def populate_general_info(aws_client: botocore.client, aws_bucket: str, sat: str
         is data is not available, returns "information not available" message
         if data does not exist, returns "populate data sources" message
     """
-    source_path = f"{key}satbeams.csv"
-    does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
-    if does_exist:
-        obj = (
-            aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
+    try: 
+        source_path = f"{key}satbeams.csv"
+        does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+        if does_exist:
+            obj = (
+                aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
 
-        )
-        df = pd.read_csv(obj, header=0)
-
-        if norad in df.iloc[:, 3].values:
-            df_subset = df[df.iloc[:, 3] == norad]
-            position = str(df_subset.iloc[0, 2])
-            norad = str(df_subset.iloc[0, 3])
-            beacon = str(df_subset.iloc[0, 4])
-            return html.P(
-                [
-                    "Satellite: " + sat,
-                    html.Br(),
-                    "Position: " + position,
-                    html.Br(),
-                    "NORAD: " + norad,
-                    html.Br(),
-                    "Beacon(s): " + beacon,
-                ],
-                style=STYLE_INFO,
             )
-        return html.P("Information not available.", style=STYLE_INFO)
-    return html.P(
-        "Populate data sources to obtain requested information.", style=STYLE_INFO
-    )
+            df = pd.read_csv(obj, header=0)
+
+            if norad in df.iloc[:, 3].values:
+                df_subset = df[df.iloc[:, 3] == norad]
+                position = str(df_subset.iloc[0, 2])
+                norad = str(df_subset.iloc[0, 3])
+                beacon = str(df_subset.iloc[0, 4])
+                return html.P(
+                    [
+                        "Satellite: " + sat,
+                        html.Br(),
+                        "Position: " + position,
+                        html.Br(),
+                        "NORAD: " + norad,
+                        html.Br(),
+                        "Beacon(s): " + beacon,
+                    ],
+                    style=STYLE_INFO,
+                )
+            return html.P("Information not available.", style=STYLE_INFO)
+    except Exception as e:  
+        return html.P(
+            "Populate data sources to obtain requested information.", style=STYLE_INFO
+        )
 
 
 def populate_tles(
@@ -199,23 +201,25 @@ def populate_tles(
         is data is not available, returns "information not available" message
         if data does not exist, returns "populate data sources" message
     """
-    source_path = f"{key}celestrak.csv"
-    does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
-    if does_exist:
-        obj = (
-            aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
+    try:
+        source_path = f"{key}celestrak.csv"
+        does_exist = utilities.prefix_exists(aws_client, aws_bucket, source_path)
+        if does_exist:
+            obj = (
+                aws_client.get_object(Bucket=aws_bucket, Key=source_path)["Body"]
 
+            )
+            df = pd.read_csv(obj, header=0)
+            if norad in df["Norad"].values:
+                df_subset = df[df["Norad"] == norad]
+                tle_1 = df_subset["TLE-1"].tolist()[0]
+                tle_2 = df_subset["TLE-2"].tolist()[0]
+                return html.P([tle_1, html.Br(), tle_2], style=STYLE_INFO)
+            return html.P("Information not available.", style=STYLE_INFO)
+    except Exception as e:
+        return html.P(
+            "Populate data sources to obtain requested information.",  style=STYLE_INFO
         )
-        df = pd.read_csv(obj, header=0)
-        if norad in df["Norad"].values:
-            df_subset = df[df["Norad"] == norad]
-            tle_1 = df_subset["TLE-1"].tolist()[0]
-            tle_2 = df_subset["TLE-2"].tolist()[0]
-            return html.P([tle_1, html.Br(), tle_2], style=STYLE_INFO)
-        return html.P("Information not available.", style=STYLE_INFO)
-    return html.P(
-        "Populate data sources to obtain requested information.",  style=STYLE_INFO
-    )
 
 
 def populate_footprints(
@@ -243,53 +247,55 @@ def populate_footprints(
         is data is not available, returns "information not available" message
         if data does not exist, returns "populate data sources" message
     """
-    csv_path = f"{key}satbeams.csv"
-    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
-    if does_exist:
-        obj = aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
-        df = pd.read_csv(obj, header=0)
+    try:
+        csv_path = f"{key}satbeams.csv"
+        does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
+        if does_exist:
+            obj = aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
+            df = pd.read_csv(obj, header=0)
 
-        if norad in df.iloc[:, 3].values:
-            df_subset = df[df.iloc[:, 3] == norad]
-            image_keys = df_subset.iloc[0, 5].split(",")
+            if norad in df.iloc[:, 3].values:
+                df_subset = df[df.iloc[:, 3] == norad]
+                image_keys = df_subset.iloc[0, 5].split(",")
 
-            titles = eval(df_subset.iloc[0, 6])
-            urls = extract_jpg_urls(image_keys)
+                titles = eval(df_subset.iloc[0, 6])
+                urls = extract_jpg_urls(image_keys)
 
-            # Create clickable buttons and preview windows for each URL
-            children = []
-            for title, url in zip(titles, urls):
+                # Create clickable buttons and preview windows for each URL
+                children = []
+                for title, url in zip(titles, urls):
 
-                children.append(
-                    html.A(
-                        html.Button(title),  # Display title as button text
-                        href=url,
-                        target="_blank",  # Open in a new tab
-                        style={
-                            "width": "100%",
-                            "display": "block",
-                            "margin": "10px",
-                            "padding": "10px",
-                            "text-align": "center",
-                            "font-size": "auto",
-                            "white-space": "nowrap",
-                            "text-overflow": "ellipsis",
-                            "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)",
-                            "background-color": "#FFFFFF",
-                            "font-color": "white",
-                        }
+                    children.append(
+                        html.A(
+                            html.Button(title),  # Display title as button text
+                            href=url,
+                            target="_blank",  # Open in a new tab
+                            style={
+                                "width": "100%",
+                                "display": "block",
+                                "margin": "10px",
+                                "padding": "10px",
+                                "text-align": "center",
+                                "font-size": "auto",
+                                "white-space": "nowrap",
+                                "text-overflow": "ellipsis",
+                                "box-shadow": "2px 2px 8px rgba(0, 0, 0, 0.2)",
+                                "background-color": "#FFFFFF",
+                                "font-color": "white",
+                            }
+                        )
                     )
-                )
 
-            return html.Div(children,  style={"margin": "10px",
-                                              "padding": "10px",
-                                              "display": "grid",
-                                              "grid-template-columns": "repeat(auto-fit, minmax(min(260px, 50%), max(600px, 50%)))",
-                                              "align-items": "right", })
-        return html.P("Information not available.", style=STYLE_INFO)
-    return html.P(
-        "Populate data sources to obtain requested information.", style=STYLE_INFO
-    )
+                return html.Div(children,  style={"margin": "10px",
+                                                "padding": "10px",
+                                                "display": "grid",
+                                                "grid-template-columns": "repeat(auto-fit, minmax(min(260px, 50%), max(600px, 50%)))",
+                                                "align-items": "right", })
+            return html.P("Information not available.", style=STYLE_INFO)
+    except Exception as e:
+        return html.P(
+            "Populate data sources to obtain requested information.", style=STYLE_INFO
+        )
 
 
 def extract_jpg_urls(string_list):
@@ -332,28 +338,30 @@ def populate_freq_plans(
         is data is not available, returns "information not available" message
         if data does not exist, returns "populate data sources" message
     """
-    csv_path = f"{key}altervista.csv"
-    does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
-    if does_exist:
-        obj = (
-            aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
+    try:
+        csv_path = f"{key}altervista.csv"
+        does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
+        if does_exist:
+            obj = (
+                aws_client.get_object(Bucket=aws_bucket, Key=csv_path)["Body"]
 
-        )
-    df = pd.read_csv(obj, header=0)
-    if sat in df["Primary Satellite"].values:
-        df_subset = df[df["Primary Satellite"] == sat]
-        image_url = df_subset["Frequency Plan URL"].values[0]
-        menlo_url = "https://safe.menlosecurity.com/" +image_url[len("http://"):]
+            )
+        df = pd.read_csv(obj, header=0)
+        if sat in df["Primary Satellite"].values:
+            df_subset = df[df["Primary Satellite"] == sat]
+            image_url = df_subset["Frequency Plan URL"].values[0]
+            menlo_url = "https://safe.menlosecurity.com/" +image_url[len("http://"):]
 
-        return html.Div([
-            html.Iframe(src=image_url, style={
-                        'width': '100%', 'height': '100%'}),html.Br(),
-            html.A("Click here to view the Frequency Plans on NIPR", href=menlo_url, target="_blank", style={
-                'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),html.Br(),
-            html.A("Click here to view the Frequency Plans if not diplayed", href=image_url, target="_blank", style={
-                'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),
-        ])
-    else:
+            return html.Div([
+                html.Iframe(src=image_url, style={
+                            'width': '100%', 'height': '500px'}),html.Br(),
+                html.A("Click here to view the Frequency Plans on NIPR", href=menlo_url, target="_blank", style={
+                    'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),html.Br(),
+                html.A("Click here to view the Frequency Plans if not diplayed", href=image_url, target="_blank", style={
+                    'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),
+            ])
+        return html.P("Information not available.", style=STYLE_INFO)
+    except Exception as e:
         return html.P("Information not available.", style=STYLE_INFO)
 
 
