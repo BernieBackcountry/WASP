@@ -348,7 +348,6 @@ def populate_freq_plans(
         return html.Div([
             html.Iframe(src=image_url, style={
                         'width': '100%', 'height': '700px'}),
-            html.H1("View PDF"),
             html.A("Click here to view the Frequency Plans", href=menlo_url, target="_blank", style={
                 'font-size': '20px', 'color': '#00263A', 'text-decoration': 'underline'}),
         ])
