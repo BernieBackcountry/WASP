@@ -310,7 +310,7 @@ class LayoutCreator:
                         dcc.Tab(label="General Info", value="tab-general"),
                         dcc.Tab(label="TLE", value="tab-telemetry"),
                         dcc.Tab(label="Footprints", value="tab-footprints"),
-                        dcc.Tab(label="Frequency Plans",
+                        dcc.Tab(label="Transponder Plans",
                                 value="tab-freq_plans"),
                         dcc.Tab(label="Channels", value="tab-channels"),
                         LayoutCreator._create_dish_pointer(),
@@ -414,14 +414,13 @@ class LayoutCreator:
                                         "text-align": "center",
                                         "margin": "10px",
                                         "font-size": "auto",
-                                        
                                     },
                                 )
                             ],
-                            
                         ),
-
                     ],
                 ),
             ],
         )
+
+

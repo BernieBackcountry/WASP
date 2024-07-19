@@ -56,12 +56,56 @@ app.layout = layout_creator.create_layout(
 
 
 @app.callback(
-    Output(component_id="sat-dropdown", component_property="value"),
-    [Input(component_id="sat-dropdown", component_property="options")], suppress_callback_exceptions=True
+    [Output(component_id="sat-dropdown", component_property="options"),
+     Output(component_id="sat-dropdown", component_property="value")],
+    [Input(component_id="tabs", component_property="value"),
+     Input(component_id="sat-dropdown", component_property="options"),
+     Input(component_id="sat-dropdown", component_property="value")],
+    suppress_callback_exceptions=True
 )
+def update_options(selected_tab, dropdown_options, sat):
+    ctx = dash.callback_context
 
-def update_output(value):
-    return value
+    if not ctx.triggered:
+        return dropdown_options, sat
+
+    trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    if trigger_id == 'tabs':
+        if selected_tab == 'tab-freq_plans':
+            csv_path = "altervista.csv"
+            try:
+                obj_freq_plans = AWS_CLIENT.get_object(
+                    Bucket=AWS_BUCKET_NAME, Key=csv_path)["Body"]
+                df = pd.read_csv(obj_freq_plans, header=0)
+                new_options = [{'label': value, 'value': value}
+                               for value in df.iloc[:, 0].tolist()]
+                return new_options, sat if sat else ""
+            except Exception as e:
+                print(f"Error fetching or reading CSV for freq plans: {e}")
+                return [], ""
+        elif selected_tab == 'tab-channels':
+            csv_path = "lyngsat.csv"
+            try:
+                obj_lyngsat = AWS_CLIENT.get_object(
+                    Bucket=AWS_BUCKET_NAME, Key=csv_path)["Body"]
+                df = pd.read_csv(obj_lyngsat, header=0)
+                new_options = [{'label': value, 'value': value}
+                               for value in df.iloc[:, 0].tolist()]
+                return new_options, sat if sat else ""
+            except Exception as e:
+                print(f"Error fetching or reading CSV for channels: {e}")
+                return [], ""
+        else:
+            try:
+                default_options = utilities.populate_inputs(
+                    AWS_CLIENT, AWS_BUCKET_NAME, PATH_KEY)
+                return default_options, sat
+            except Exception as e:
+                print(f"Error populating default inputs: {e}")
+                return [], sat
+    elif trigger_id == 'sat-dropdown':
+        return dash.no_update, sat if sat else "Galaxy 30"
 
 @app.callback(
     Output(component_id="celestrak-output", component_property="children"),
@@ -170,10 +214,12 @@ def update_rows( sat: str):
     sat: str
         String containing valid search option chosen in search bar/dropdown.
     """
-  
-    file_name = f"channels/{sat}/{sat}.csv"
-    obj = AWS_CLIENT.get_object(Bucket=AWS_BUCKET_NAME, Key=file_name)
-    df = pd.read_csv(obj['Body'])
+    try:
+        file_name = f"channels/{sat}/{sat}.csv"
+        obj = AWS_CLIENT.get_object(Bucket=AWS_BUCKET_NAME, Key=file_name)
+        df = pd.read_csv(obj['Body'])
+    except Exception as e:
+        return []
     return df.to_dict("records")
 
 
@@ -217,54 +263,60 @@ def update_map(n_clicks, value, satellite,latitude, longitude, location):
     """
     
     global CURRENT_LOCATION
+    try:
+        if n_clicks or value == "tab-dishpointer" or satellite or CURRENT_LOCATION:
+            if location:
+                latitude, longitude = utilities.get_location_data(location)
+            if satellite:
+                source_path = "satbeams.csv"  # Adjust as per your setup
+                does_exist = utilities.prefix_exists(
+                    AWS_CLIENT, AWS_BUCKET_NAME, source_path)
 
-    if n_clicks or value == "tab-dishpointer" or satellite or CURRENT_LOCATION:
-        if location:
-            latitude, longitude = utilities.get_location_data(location)
-        if satellite:
-            source_path = "satbeams.csv"  # Adjust as per your setup
-            does_exist = utilities.prefix_exists(
-                AWS_CLIENT, AWS_BUCKET_NAME, source_path)
+                if does_exist:
+                    obj = AWS_CLIENT.get_object(
+                        Bucket=AWS_BUCKET_NAME, Key=source_path)["Body"]
+                    df = pd.read_csv(obj, header=0)
 
-            if does_exist:
-                obj = AWS_CLIENT.get_object(
-                    Bucket=AWS_BUCKET_NAME, Key=source_path)["Body"]
-                df = pd.read_csv(obj, header=0)
+                    if satellite in df.iloc[:, 0].values:
+                        df_subset = df[df.iloc[:, 0] == satellite]
+                        norad = df_subset.iloc[0, 3]
+                        
+                        
+                        if CURRENT_LOCATION == 1:
+                            ipinfo_handler = ipinfo.getHandler(access_token)
+                            details = ipinfo_handler.getDetails()
+                            latitude = details.latitude
+                            longitude = details.longitude
+                            CURRENT_LOCATION = 0
 
-                if satellite in df.iloc[:, 0].values:
-                    df_subset = df[df.iloc[:, 0] == satellite]
-                    norad = df_subset.iloc[0, 3]
-                    
-                    
-                    if CURRENT_LOCATION == 1:
-                        ipinfo_handler = ipinfo.getHandler(access_token)
-                        details = ipinfo_handler.getDetails()
-                        latitude = details.latitude
-                        longitude = details.longitude
-                        CURRENT_LOCATION = 0
+                        map_src = f"https://www.google.com/maps/embed/v1/place?key={
+                            API_KEY}&q={latitude},{longitude}"
+                        
+                        azimuth, elevation = dish_pointer(
+                            aws_client=AWS_CLIENT,  # Replace with actual AWS client
+                            aws_bucket=AWS_BUCKET_NAME,  # Replace with your AWS bucket name
+                            norad=norad,  # Replace with the NORAD ID
+                            latitude=latitude,
+                            longitude=longitude,
+                        )
+                        # Check if azimuth and elevation are within valid ranges
+                        if (azimuth > 360 or azimuth < 0) or (elevation > 90 or elevation < 0):
+                            azimuth_text = "IMPOSSIBLE TO REACH SATELLITE"
+                            elevation_text = "Azimuth: {:.2f}°, Elevation: {:.2f}°".format(
+                                azimuth, elevation)
+                        else:
+                            azimuth_text = f"Azimuth: {azimuth:.2f}°"
+                            elevation_text = f"Elevation: {elevation:.2f}°"
+                        
+                        return latitude, longitude, azimuth_text, elevation_text, map_src
 
-                    map_src = f"https://www.google.com/maps/embed/v1/place?key={
-                        API_KEY}&q={latitude},{longitude}"
-                    
-                    azimuth, elevation = dish_pointer(
-                        aws_client=AWS_CLIENT,  # Replace with actual AWS client
-                        aws_bucket=AWS_BUCKET_NAME,  # Replace with your AWS bucket name
-                        norad=norad,  # Replace with the NORAD ID
-                        latitude=latitude,
-                        longitude=longitude,
-                    )
-                    # Check if azimuth and elevation are within valid ranges
-                    if (azimuth > 360 or azimuth < 0) or (elevation > 90 or elevation < 0):
-                        azimuth_text = "IMPOSSIBLE TO REACH SATELLITE"
-                        elevation_text = "Azimuth: {:.2f}°, Elevation: {:.2f}°".format(
-                            azimuth, elevation)
-                    else:
-                        azimuth_text = f"Azimuth: {azimuth:.2f}°"
-                        elevation_text = f"Elevation: {elevation:.2f}°"
-                    
-                    return latitude, longitude, azimuth_text, elevation_text, map_src
+        return latitude, longitude, "", "", ""
+    except Exception as e:
+        return latitude, longitude, "", "", ""
 
-    return latitude, longitude, "", "", ""
+
+
+
 
 
 if __name__ == "__main__":
