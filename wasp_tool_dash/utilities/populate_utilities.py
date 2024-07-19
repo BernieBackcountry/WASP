@@ -362,7 +362,7 @@ def populate_freq_plans(
             ])
         return html.P("Information not available.", style=STYLE_INFO)
     except Exception as e:
-        return html.P("Information not available.", style=STYLE_INFO)
+        return html.P("Populate data sources to obtain requested information.", style=STYLE_INFO)
 
 
 def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, norad: str, key: str):
@@ -395,15 +395,18 @@ def populate_channels(aws_client: botocore.client, aws_bucket: str, sat: str, no
 
     does_exist = utilities.prefix_exists(aws_client, aws_bucket, csv_path)
     if does_exist:
-        obj_lyngsat = aws_client.get_object(
-            Bucket=aws_bucket, Key=csv_path)["Body"]
+        try:
+            obj_lyngsat = aws_client.get_object(
+                Bucket=aws_bucket, Key=csv_path)["Body"]
+        except:
+            return html.P("Information not available.", style=STYLE_INFO)
+        
 
         df = pd.read_csv(obj_lyngsat, header=0)
-
         # Apply the function to the entire column
         # df["Primary Satellite Name"] = df["Primary Satellite Name"].apply(lambda x: sat if x == 'Satellite' else x)
 
-        if (sat in df["Primary Satellite Name"].values) or (norad in df["Norad ID"].values):
+        if sat in df["Primary Satellite Name"].values:
             source_path = f"{key}channels/{sat}/{sat}.csv"
             obj = aws_client.get_object(
                 Bucket=aws_bucket, Key=source_path)["Body"]
