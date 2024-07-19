@@ -1,0 +1,566 @@
+﻿NORAD ID,COSPAR ID,Name,Additional names,Launch date,Flight ended,Status,Destination,Owner
+19548,1988-091B,TDRS 3,,28-Sep-88,,Operational,,United States
+20253,1989-077A,FLTSATCOM 8,USA 46,24-Sep-89,,Operational,,United States
+20776,1990-079A,SKYNET 4C,,29-Aug-90,,Operational,,United Kingdom
+21639,1991-054B,TDRS 5,,1-Aug-91,,Operational,,United States
+22314,1993-003B,TDRS 6,,13-Jan-93,,Operational,,United States
+22787,1993-056A,UFO 2,USA 95,2-Sep-93,,Operational,,United States
+22988,1994-009A,USA 99,MILSTAR-1 1,7-Feb-94,,Operational,,United States
+23467,1995-003A,UFO 4,USA 108,29-Jan-95,,Operational,,United States
+23553,1995-019A,AMSC 1,MSAT M2,6-Apr-95,,Operational,,United States
+23613,1995-035B,TDRS 7,,12-Jul-95,,Operational,,United States
+23712,1995-060A,USA 115,MILSTAR-1 2,6-Nov-95,,Operational,,United States
+23839,1996-020A,INMARSAT 3-F1,,2-Apr-96,,Operational,,International Mobile Satellite Organization (INMARSAT)
+24307,1996-053A,INMARSAT 3-F2,,5-Sep-96,,Operational,,International Mobile Satellite Organization (INMARSAT)
+24674,1996-070A,INMARSAT 3-F3,,18-Dec-96,,Operational,,International Mobile Satellite Organization (INMARSAT)
+24812,1997-026A,GALAXY 25,G-25; IA-5; TELSTAR 5; INTELSAT AMERICAS 5,23-May-97,,Partially operational,,United States
+24916,1997-046A,INTELSAT 5,IS-5; PAS-5; ARABSAT 2C; BADR-C,27-Aug-97,,Operational,,United States
+24936,1997-050A,AMC-3,GE-3,3-Sep-97,,Operational,,SES
+25019,1997-065A,USA 134,DSCS-3 B13,24-Oct-97,,Operational,,United States
+25153,1998-006B,INMARSAT 3-F5,,4-Feb-98,,Operational,,International Mobile Satellite Organization (INMARSAT)
+25462,1998-050A,ASTRA 2A,,29-Aug-98,,Operational,,SES
+25639,1999-009B,SKYNET 4E,,26-Feb-99,,Operational,,United Kingdom
+25924,1999-053A,ABS-6,LMI 1,25-Sep-99,,Operational,,Asia Broadcast Satellite
+25967,1999-063A,UFO 10,USA 146,23-Nov-99,,Operational,,United States
+26038,1999-071A,GALAXY 11,G-11,22-Dec-99,,Operational,,United States
+26052,2000-001A,USA 148,DSCS-3 B8,21-Jan-00,,Operational,,United States
+26107,2000-016A,ASIASTAR,,21-Mar-00,,Operational,,United States
+26356,2000-024A,USA 149,DSP 20,7-May-00,,Operational,,United States
+26388,2000-034A,TDRS 8,,29-Jun-00,,Operational,,United States
+26451,2000-043A,INTELSAT 9,IS-9; PAS-9,27-Jul-00,,Operational,,United States
+26554,2000-059A,NSS-11,AAP-1; GE-1A,30-Sep-00,,Operational,,SES
+26575,2000-065A,USA 153,DSCS-3 B11,19-Oct-00,,Operational,,United States
+26580,2000-067A,AMC-6,GE-6,20-Oct-00,,Operational,,SES
+26608,2000-072A,INTELSAT 1R,IS-1R; PAS-1R,16-Nov-00,,Operational,,United States
+26624,2000-076A,ANIK F1,,21-Nov-00,,Operational,,Canada
+26715,2001-009A,USA 157,MILSTAR-2 2,27-Feb-01,,Operational,,United States
+26766,2001-019A,INTELSAT 10,IS-10; PAS-10,14-May-01,,Operational,,United States
+26824,2001-024A,INTELSAT 901,IS-901,8-Jun-01,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+26853,2001-025A,ASTRA 2C,,15-Jun-01,,Operational,,SES
+26880,2001-033A,USA 159,DSP 21,5-Aug-01,,Operational,,United States
+26900,2001-039A,INTELSAT 902,IS-902,29-Aug-01,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+27168,2002-001A,USA 164,MILSTAR-2 3,16-Jan-02,,Operational,,United States
+27380,2002-007A,INTELSAT 904,IS-904,23-Feb-02,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+27414,2002-019A,NSS-7,,15-Apr-02,,Operational,,SES
+27426,2002-023A,DIRECTV 5,TEMPO 1,6-May-02,,Operational,,United States
+27438,2002-027A,INTELSAT 905,IS-905,4-Jun-02,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+27445,2002-030A,GALAXY 3C,G-3C,14-Jun-02,,Operational,,United States
+27513,2002-041A,INTELSAT 906,IS-906,5-Sep-02,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+27566,2002-055A,TDRS 10,,5-Dec-02,,Operational,,United States
+27632,2002-062A,NIMIQ 2,,29-Dec-02,,Operational,,Canada
+27691,2003-008A,USA 167,DSCS-3 A3,11-Mar-03,,Operational,,United States
+27711,2003-012A,USA 169,MILSTAR-2 4,7-Apr-03,,Operational,,United States
+27715,2003-013B,GALAXY 12,G-12,8-Apr-03,,Spare,,International Telecommunications Satellite Organization (INTELSAT)
+27718,2003-014A,ASIASAT 4,,11-Apr-03,,Operational,,Asia Satellite Telecommunications Company (ASIASAT)
+27811,2003-020A,HELLAS-SAT 2,,12-May-03,,Operational,,Greece
+27825,2003-026A,THURAYA-2,,9-Jun-03,,Operational,,United Arab Emirates
+27831,2003-028B,OPTUS C1,,10-Jun-03,,Operational,,Australia
+27854,2003-034A,GALAXY 23,G-23; ECHOSTAR 9; TELSTAR 13; IA-13; INTELSAT AMERICAS 13,7-Aug-03,,Operational,,United States
+27875,2003-040A,USA 170,DSCS-3 B6,28-Aug-03,,Operational,,United States
+27954,2003-044A,GALAXY 13,HORIZONS-1; G-13,30-Sep-03,,Operational,,United States
+28089,2003-053A,YAMAL 202,,24-Nov-03,,Operational,,Commonwealth of Independent States (former USSR)
+28117,2003-057A,UFO 11,USA 174,18-Dec-03,,Operational,,United States
+28158,2004-004A,USA 176,DSP 22,14-Feb-04,,Operational,,United States
+28184,2004-007A,ABS-4,MOBISAT-1; HAN BYUL; MBSAT; MBSAT 1; ABS-2I,13-Mar-04,,Operational,,Asia Broadcast Satellite
+28187,2004-008A,EUTELSAT 7A,EUTELSAT W3A,15-Mar-04,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+28252,2004-017A,AMC-11,GE-11,18-May-04,,Operational,,SES
+28358,2004-022A,INTELSAT 10-02,IS-10-02; THOR 4; THOR 10-02,15-Jun-04,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+28378,2004-027A,ANIK F2,,17-Jul-04,,Operational,,Canada
+28446,2004-041A,AMC-15,,13-Oct-04,,Operational,,SES
+28526,2005-003A,NSS-10,AMC-12,3-Feb-05,,Operational,,SES
+28542,2005-005A,XTAR-EUR,,12-Feb-05,,Operational,,United States
+28626,2005-008A,XM-3,RHYTHM,1-Mar-05,,Operational,,United States
+28628,2005-009A,INMARSAT 4-F1,,11-Mar-05,,Partially operational,,International Mobile Satellite Organization (INMARSAT)
+28659,2005-019A,DIRECTV 8,,21-May-05,,Operational,,United States
+28702,2005-022A,GALAXY 28,G-28; INTELSAT AMERICAS 8; IA-8,22-Jun-05,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+28786,2005-028A,THAICOM 4,MEASAT-5; IPSTAR 1,10-Aug-05,,Operational,,Thailand
+28790,2005-030A,GALAXY 14,G-14,12-Aug-05,,Operational,,United States
+28868,2005-036A,ANIK F1R,,7-Sep-05,,Operational,,Canada
+28885,2005-041B,SYRACUSE 3A,,12-Oct-05,,Operational,,France
+28899,2005-044A,INMARSAT 4-F2,,8-Nov-05,,Operational,,International Mobile Satellite Organization (INMARSAT)
+28903,2005-046B,SPACEWAY 2,,16-Nov-05,,Operational,,United States
+28912,2005-049B,METEOSAT-9,MSG-2,21-Dec-05,,Operational,,European Organization for the Exploitation of Meteorological Satellites (EUMETSAT)
+28924,2005-052A,EUTELSAT 174A,GE-23,29-Dec-05,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+28935,2006-003A,ECHOSTAR 10,,15-Feb-06,,Operational,,United States
+28945,2006-007A,SPAINSAT,,11-Mar-06,,Operational,,Spain
+28946,2006-007B,EUTELSAT HOTBIRD 13E,HOT BIRD 7A; EUROBIRD 9A,11-Mar-06,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+29045,2006-010A,JCSAT-5A,,11-Apr-06,,Operational,,Japan
+29055,2006-012A,ASTRA 1KR,,19-Apr-06,,Operational,,SES
+29155,2006-018A,EWS-G1,GOES 13,23-May-06,,Operational,,United States
+29162,2006-020A,EUTELSAT 113 WEST A,SATMEX 6,26-May-06,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+29236,2006-023A,GALAXY 16,G-16,17-Jun-06,,Operational,,United States
+29270,2006-032A,EUTELSAT HOTBIRD 13B,HOT BIRD 8,3-Aug-06,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+29272,2006-033A,JCSAT-3A,,10-Aug-06,,Operational,,Japan
+29273,2006-033B,SYRACUSE 3B,,10-Aug-06,,Operational,,France
+29349,2006-034A,KOREASAT 5,MUGUNGWHA 5,21-Aug-06,,Operational,,Republic of Korea
+29494,2006-043A,DIRECTV 9S,,12-Oct-06,,Operational,,United States
+29495,2006-043B,OPTUS D1,,12-Oct-06,,Operational,,Australia
+29520,2006-049A,XM-4,BLUES,30-Oct-06,,Operational,,United States
+29526,2006-051A,BADR-4,ARABSAT-4B,8-Nov-06,,Operational,,Arab Satellite Communications Organization
+29643,2006-054A,WILDBLUE-1,,8-Dec-06,,Operational,,United States
+29644,2006-054B,AMC-18,,8-Dec-06,,Operational,,SES
+30794,2007-007B,SKYNET 5A,,11-Mar-07,,Operational,,United Kingdom
+31102,2007-009A,ANIK F3,,8-Apr-07,,Operational,,Canada
+31306,2007-016A,ASTRA 1L,,3-May-07,,Operational,,SES
+31307,2007-016B,GALAXY 17,G-17,3-May-07,,Operational,,United States
+31800,2007-031A,ZHONGXING-6B,CHINASAT-6B,4-Jul-07,,Operational,,People's Republic of China
+31862,2007-032A,DIRECTV 10,,6-Jul-07,,Operational,,United States
+32018,2007-036A,SPACEWAY 3,,13-Aug-07,,Operational,,United States
+32019,2007-036B,BSAT-3A,,13-Aug-07,,Operational,,Japan
+32252,2007-044A,OPTUS D2,,4-Oct-07,,Operational,,Australia
+32253,2007-044B,INTELSAT 11,IS-11,4-Oct-07,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+32258,2007-046A,WGS F1,USA 195; WGS-1; WIDEBAND GLOBAL SATCOM 1,10-Oct-07,,Operational,,United States
+32294,2007-056B,SKYNET 5B,,14-Nov-07,,Operational,,United Kingdom
+32299,2007-057A,ASTRA 4A,SIRIUS 4,17-Nov-07,,Operational,,SES
+32388,2007-063B,HORIZONS-2,,21-Dec-07,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+32404,2008-001A,THURAYA-3,,15-Jan-08,,Operational,,United Arab Emirates
+32487,2008-006A,THOR 5,,11-Feb-08,,Operational,,Norway
+32708,2008-011A,AMC-14,,14-Mar-08,,Partially operational,,United States
+32729,2008-013A,DIRECTV 11,,19-Mar-08,,Operational,,United States
+32763,2008-016A,ICO G1,,13-Apr-08,,Operational,,United States
+32767,2008-018A,VINASAT-1,,17-Apr-08,,Operational,,Vietnam
+32768,2008-018B,STAR ONE C2,,17-Apr-08,,Operational,,Brazil
+32794,2008-022A,AMOS-3,,27-Apr-08,,Operational,,Israel
+32951,2008-024A,GALAXY 18,G-18,20-May-08,,Operational,,United States
+33051,2008-028A,CHINASAT 9,ZX 9; ZHONGXING 9,8-Jun-08,,Operational,,People's Republic of China
+33055,2008-030A,SKYNET 5C,,11-Jun-08,,Operational,,United Kingdom
+33056,2008-030B,TURKSAT 3A,,11-Jun-08,,Operational,,Turkey
+33153,2008-034A,INTELSAT 25,IS-25,6-Jul-08,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+33154,2008-034B,BADR-6,ARABSAT-4A,6-Jul-08,,Operational,,Arab Satellite Communications Organization
+33207,2008-035A,ECHOSTAR 11,,15-Jul-08,,Operational,,United States
+33274,2008-038A,SUPERBIRD-C2,SUPERBIRD-7,13-Aug-08,,Operational,,Japan
+33275,2008-038B,AMC-21,,13-Aug-08,,Operational,,SES
+33278,2008-039A,INMARSAT 4-F3,,17-Aug-08,,Operational,,International Mobile Satellite Organization (INMARSAT)
+33373,2008-044A,NIMIQ 4,,18-Sep-08,,Operational,,Canada
+33376,2008-045A,GALAXY 19,G-19,23-Sep-08,,Operational,,United States
+33436,2008-057A,ASTRA 1M,,5-Nov-08,,Operational,,SES
+33453,2008-063A,CIEL-2,,10-Dec-08,,Operational,,Canada
+33459,2008-065A,EUTELSAT HOTBIRD 13C,HOT BIRD 9,20-Dec-08,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+33463,2008-066A,FENGYUN 2E,FY-2E,23-Dec-08,,Partially operational,,People's Republic of China
+33595,2009-007A,EXPRESS-AM44,,11-Feb-09,,Operational,,Commonwealth of Independent States (former USSR)
+33749,2009-008A,NSS-9,,12-Feb-09,,Operational,,SES
+33750,2009-008B,EUTELSAT 33E,HOT BIRD 10; ATLANTIC BIRD 4A,12-Feb-09,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+34111,2009-009A,TELSTAR 11N,,26-Feb-09,,Operational,,Canada
+34710,2009-016A,EUTELSAT 10A,EUTELSAT W2A,2-Apr-09,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+34713,2009-017A,WGS F2,USA 204; WGS-2; WIDEBAND GLOBAL SATCOM 2,3-Apr-09,,Operational,,United States
+34941,2009-027A,SES-7,PROTOSTAR 2; INDOSTAR 2,15-May-09,,Operational,,SES
+35362,2009-032A,MEASAT-3A,,20-Jun-09,,Operational,,Malaysia
+35491,2009-033A,GOES 14,,26-Jun-09,,Backup/Standby,,United States
+35493,2009-034A,FM-5,,29-Jun-09,,Operational,,United States
+35496,2009-035A,TERRESTAR-1,,30-Jun-09,,Operational,,United States
+35696,2009-042A,ASIASAT 5,,10-Aug-09,,Operational,,Asia Satellite Telecommunications Company (ASIASAT)
+35755,2009-044A,JCSAT-12,JCSAT-RA,20-Aug-09,,Operational,,Japan
+35756,2009-044B,OPTUS D3,,20-Aug-09,,Operational,,Australia
+35873,2009-050A,NIMIQ 5,,16-Sep-09,,Operational,,Canada
+35942,2009-054A,AMAZONAS 2,,30-Sep-09,,Operational,,Spain
+35943,2009-054B,COMSATBW-1,,30-Sep-09,,Operational,,Germany
+36032,2009-058A,NSS-12,,29-Oct-09,,Operational,,SES
+36033,2009-058B,THOR 6,,29-Oct-09,,Operational,,Norway
+36097,2009-064A,INTELSAT 14,IS-14,23-Nov-09,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+36101,2009-065A,EUTELSAT 36B,EUTELSAT W7,24-Nov-09,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+36106,2009-067A,INTELSAT 15,IS-15; JCSAT-85,30-Nov-09,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+36108,2009-068A,WGS F3,USA 211; WGS-3; WIDEBAND GLOBAL SATCOM 3,6-Dec-09,,Operational,,United States
+36131,2009-075A,DIRECTV 12,,29-Dec-09,,Operational,,United States
+36287,2010-001A,BD C1,BEIDOU-2 G1; COMPASS-G1; SVN C003,16-Jan-10,,Partially operational,,People's Republic of China
+36358,2010-002A,RADUGA-1M 2,,28-Jan-10,,Operational,,Commonwealth of Independent States (former USSR)
+36395,2010-005A,SDO,,11-Feb-10,,Operational,,United States
+36397,2010-006A,INTELSAT 16,IS-16,12-Feb-10,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+36411,2010-008A,EWS-G2,GOES 15,4-Mar-10,,Backup/Standby,,United States
+36499,2010-010A,ECHOSTAR 14,,20-Mar-10,,Operational,,United States
+36516,2010-016A,SES-1,,23-Apr-10,,Operational,,SES
+36581,2010-021A,ASTRA 3B,,20-May-10,,Operational,,SES
+36582,2010-021B,COMSATBW-2,,20-May-10,,Operational,,Germany
+36590,2010-024A,BD C3,BEIDOU-2 G3; COMPASS-G3; SVN C004,1-Jun-10,,Partially operational,,People's Republic of China
+36592,2010-025A,BADR-5,ARABSAT-5B,2-Jun-10,,Operational,,Arab Satellite Communications Organization
+36744,2010-032A,COMS 1,CHOLLIAN,25-Jun-10,,Operational,,Republic of Korea
+36745,2010-032B,ARABSAT-5A,,25-Jun-10,,Operational,,Arab Satellite Communications Organization
+36792,2010-034A,ECHOSTAR 15,,9-Jul-10,,Operational,,United States
+36828,2010-036A,BD C6,BEIDOU-2 IGSO-1; COMPASS-IGSO1; SVN C005,30-Jul-10,,Operational,,People's Republic of China
+36830,2010-037A,NILESAT 201,,3-Aug-10,,Operational,,Egypt
+36831,2010-037B,RASCOM-QAF 1R,,3-Aug-10,,Operational,,RascomStar-QAF
+36868,2010-039A,AEHF-1,USA 214,13-Aug-10,,Operational,,United States
+37185,2010-053A,XM-5,,13-Oct-10,,Operational,,United States
+37207,2010-056B,BSAT-3B,,27-Oct-10,,Operational,,Japan
+37210,2010-057A,BD C4,BEIDOU-2 G4; COMPASS-G4; SVN C006,30-Oct-10,,Operational,,People's Republic of China
+37218,2010-061A,SKYTERRA 1,,14-Nov-10,,Operational,,United States
+37237,2010-065A,HYLAS 1,,26-Nov-10,,Operational,,United Kingdom
+37238,2010-065B,INTELSAT 17,IS-17,26-Nov-10,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+37256,2010-068A,BD C7,BEIDOU-2 IGSO-2; COMPASS-IGSO2; SVN C007,17-Dec-10,,Operational,,People's Republic of China
+37258,2010-069A,EUTELSAT KA-SAT 9A,KA-SAT,26-Dec-10,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+37264,2010-070A,HISPASAT 30W-5,,29-Dec-10,,Operational,,Spain
+37265,2010-070B,KOREASAT 6,OLLEH 1,29-Dec-10,,Operational,,Republic of Korea
+37384,2011-013A,BD C8,BEIDOU-2 IGSO-3; COMPASS-IGSO3; SVN C008,8-Apr-11,,Operational,,People's Republic of China
+37392,2011-016A,INTELSAT NEW DAWN,,21-Apr-11,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+37393,2011-016B,YAHSAT 1A,,21-Apr-11,,Operational,,United Arab Emirates
+37481,2011-019A,SBIRS GEO-1,USA 230,6-May-11,,Operational,,United States
+37602,2011-021A,TELSTAR 14R,,19-May-11,,Operational,,Canada
+37605,2011-022A,GSAT-8,,19-May-11,,Operational,,India
+37606,2011-022B,ST-2,,19-May-11,,Operational,,Singapore/Taiwan
+37677,2011-026A,CHINASAT 10,ZX 10; ZHONGXING 10,19-Jun-11,,Operational,,People's Republic of China
+37737,2011-032A,TIANLIAN 1-02,,10-Jul-11,,Operational,,People's Republic of China
+37748,2011-035A,SES-3,,14-Jul-11,,Operational,,United States
+7749,2011-035B,KAZSAT-2,,14-Jul-11,,Operational,,Kazakhstan
+37763,2011-038A,BD C9,BEIDOU-2 IGSO-4; COMPASS-IGSO4; SVN C009,25-Jul-11,,Operational,,People's Republic of China
+37775,2011-041A,ASTRA 1N,,5-Aug-11,,Operational,,SES
+37776,2011-041B,BSAT-3C,JCSAT-110R,5-Aug-11,,Backup/Standby,,Japan
+37779,2011-042A,PAKSAT-1R,,10-Aug-11,,Operational,,Pakistan
+37809,2011-049A,SES-2,,20-Sep-11,,Operational,,SES
+37810,2011-049B,ARABSAT-5C,,20-Sep-11,,Operational,,Arab Satellite Communications Organization
+37816,2011-051A,EUTELSAT 7 WEST A,ATLANTIC BIRD 7,23-Sep-11,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+37826,2011-054A,QUETZSAT 1,,28-Sep-11,,Operational,,Mexico
+37834,2011-056A,INTELSAT 18,IS-18,4-Oct-11,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+37836,2011-057A,EUTELSAT 16A,EUTELSAT W3C,6-Oct-11,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+37843,2011-059A,VIASAT-1,,18-Oct-11,,Partially operational,,United States
+37933,2011-069A,ASIASAT 7,,25-Nov-11,,Operational,,Asia Satellite Telecommunications Company (ASIASAT)
+37948,2011-073A,BD C10,BEIDOU-2 IGSO-5; COMPASS-IGSO5; SVN C010,1-Dec-11,,Operational,,People's Republic of China
+37951,2011-074B,LUCH-5A,,11-Dec-11,,Operational,,Commonwealth of Independent States (former USSR)
+38014,2011-077A,NIGCOMSAT 1R,,19-Dec-11,,Operational,,Nigeria
+38049,2012-002A,FENGYUN 2F,,13-Jan-12,,Operational,,People's Republic of China
+38070,2012-003A,WGS F4,USA 233; WGS-4; WIDEBAND GLOBAL SATCOM 4,20-Jan-12,,Operational,,United States
+38087,2012-007A,SES-4,,14-Feb-12,,Operational,,SES
+38091,2012-008A,BD C5,BEIDOU-2 G5; COMPASS-G5; SVN C011,24-Feb-12,,Operational,,People's Republic of China
+38093,2012-009A,MUOS-1,,24-Feb-12,,Operational,,United States
+38098,2012-011A,INTELSAT 22,IS-22,25-Mar-12,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+38107,2012-013A,APSTAR 7,,30-Mar-12,,Operational,,People's Republic of China
+38245,2012-016A,YAHSAT 1B,,22-Apr-12,,Operational,,United Arab Emirates
+38254,2012-019A,AEHF-2,USA 235,3-May-12,,Operational,,United States
+38331,2012-023A,JCSAT-13,,14-May-12,,Operational,,Japan
+38332,2012-023B,VINASAT-2,,14-May-12,,Operational,,Vietnam
+38342,2012-026A,NIMIQ 6,,16-May-12,,Operational,,Canada
+38352,2012-028A,CHINASAT 2A,ZX 2A; ZHONGXING 2A,25-May-12,,Operational,,People's Republic of China
+38356,2012-030A,INTELSAT 19,IS-19,31-May-12,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+38551,2012-035A,ECHOSTAR 17,,4-Jul-12,,Operational,,United States
+38552,2012-035B,METEOSAT-10,MSG-3,4-Jul-12,,Operational,,European Organization for the Exploitation of Meteorological Satellites (EUMETSAT)
+38652,2012-036A,SES-5,SIRIUS 5; ASTRA 4B,8-Jul-12,,Operational,,SES
+38730,2012-040A,TIANLIAN 1-03,,24-Jul-12,,Operational,,People's Republic of China
+38740,2012-043A,INTELSAT 20,IS-20,1-Aug-12,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+38741,2012-043B,HYLAS 2,,1-Aug-12,,Operational,,United Kingdom
+38749,2012-045A,INTELSAT 21,IS-21,18-Aug-12,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+38778,2012-051A,ASTRA 2F,,27-Sep-12,,Operational,,SES
+38779,2012-051B,GSAT-10,,27-Sep-12,,Operational,,India
+38867,2012-057A,INTELSAT 23,IS-23,13-Oct-12,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+38953,2012-059A,BD C2,BEIDOU-2 G6; COMPASS-G6; SVN C016,24-Oct-12,,Operational,,People's Republic of China
+38977,2012-061A,LUCH-5B,,2-Nov-12,,Operational,,Commonwealth of Independent States (former USSR)
+38978,2012-061B,YAMAL 300K,,2-Nov-12,,Operational,,Commonwealth of Independent States (former USSR)
+38991,2012-062A,STAR ONE C3,,10-Nov-12,,Operational,,Brazil
+38992,2012-062B,EUTELSAT 21B,,10-Nov-12,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+39008,2012-065A,ECHOSTAR 16,,20-Nov-12,,Operational,,United States
+39017,2012-067A,CHINASAT 12,ZX 12; ZHONGXING 12,27-Nov-12,,Operational,,People's Republic of China
+39020,2012-069A,EUTELSAT 70B,,3-Dec-12,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+39022,2012-070A,YAMAL 402,,8-Dec-12,,Operational,,Commonwealth of Independent States (former USSR)
+39034,2012-075A,SKYNET 5D,,19-Dec-12,,Operational,,United Kingdom
+39035,2012-075B,MEXSAT 3,MEXSAT BICENTENARIO,19-Dec-12,,Operational,,Mexico
+39070,2013-004A,TDRS 11,TDRS K,31-Jan-13,,Operational,,United States
+39078,2013-006A,AMAZONAS 3,,7-Feb-13,,Operational,,Spain
+39079,2013-006B,AZERSPACE 1,AFRICASAT 1A,7-Feb-13,,Operational,,Azerbaijan
+39120,2013-011A,SBIRS GEO-2,USA 241,19-Mar-13,,Operational,,United States
+39122,2013-012A,EUTELSAT 117 WEST A,SATMEX 8,26-Mar-13,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+39127,2013-014A,ANIK G1,,14-Apr-13,,Operational,,Canada
+39157,2013-020A,CHINASAT 11,ZX 11; ZHONGXING 11,30-Apr-13,,Operational,,People's Republic of China
+39163,2013-022A,EUTELSAT 7B,,13-May-13,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+39168,2013-024A,WGS F5,USA 243; WGS-5; WIDEBAND GLOBAL SATCOM 5,24-May-13,,Operational,,United States
+39172,2013-026A,SES-6,,2-Jun-13,,Operational,,SES
+39199,2013-034A,IRNSS-1A,INDIAN REGIONAL NAVIGATION SATELLITE SYSTEM-1A,30-Jun-13,,Partially operational,,India
+39206,2013-036A,MUOS-2,,18-Jul-13,,Operational,,United States
+39215,2013-038A,ALPHASAT,INMARSAT 4A-F4,24-Jul-13,,Operational,,International Mobile Satellite Organization (INMARSAT)
+39216,2013-038B,INSAT-3D,,24-Jul-13,,Operational,,India
+39222,2013-041A,WGS F6,USA 244; WGS-6; WIDEBAND GLOBAL SATCOM 6,7-Aug-13,,Operational,,United States
+39233,2013-044A,ES'HAIL 1,ES'HAIL 1,28-Aug-13,,Operational,,Arab Satellite Communications Organization
+39234,2013-044B,GSAT-7,INSAT-4F,28-Aug-13,,Operational,,India
+39237,2013-045A,AMOS-4,,30-Aug-13,,Operational,,Israel
+39256,2013-050A,AEHF-3,USA 246,17-Sep-13,,Operational,,United States
+39285,2013-056A,ASTRA 2E,,28-Sep-13,,Operational,,SES
+39360,2013-058A,FM-6,,24-Oct-13,,Operational,,United States
+39375,2013-062A,RADUGA-1M 3,,11-Nov-13,,Operational,,Commonwealth of Independent States (former USSR)
+39460,2013-071A,SES-8,,3-Dec-13,,Operational,,SES
+39476,2013-073A,INMARSAT 5-F1,,8-Dec-13,,Operational,,International Mobile Satellite Organization (INMARSAT)
+39481,2013-075A,TKSAT-1,TUPAC KATARI,20-Dec-13,,Operational,,Bolivia
+39487,2013-077A,EXPRESS-AM5,,26-Dec-13,,Operational,,Commonwealth of Independent States (former USSR)
+39498,2014-001A,GSAT-14,,5-Jan-14,,Operational,,India
+39500,2014-002A,THAICOM 6,,6-Jan-14,,Operational,,Thailand
+39504,2014-004A,TDRS 12,,24-Jan-14,,Operational,,United States
+39508,2014-006A,ABS-2,,6-Feb-14,,Partially operational,,Asia Broadcast Satellite
+39509,2014-006B,ATHENA-FIDUS,,6-Feb-14,,Operational,,France/Italy
+39522,2014-007A,TURKSAT 4A,,14-Feb-14,,Operational,,Turkey
+39612,2014-010A,EXPRESS-AT1,,15-Mar-14,,Operational,,Commonwealth of Independent States (former USSR)
+39613,2014-010B,EXPRESS-AT2,,15-Mar-14,,Operational,,Commonwealth of Independent States (former USSR)
+39616,2014-011A,AMAZONAS 4A,,22-Mar-14,,Partially operational,,Spain
+39617,2014-011B,ASTRA 5B,,22-Mar-14,,Operational,,SES
+39635,2014-017A,IRNSS-1B,,3-Apr-14,,Operational,,India
+39727,2014-023A,LUCH-5V,,27-Apr-14,,Operational,,Commonwealth of Independent States (former USSR)
+39728,2014-023B,KAZSAT-3,,27-Apr-14,,Operational,,Kazakhstan
+39773,2014-030A,EUTELSAT 3B,,25-May-14,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+40107,2014-046A,ASIASAT 8,AMOS-7,4-Aug-14,,Operational,,Asia Satellite Telecommunications Company (ASIASAT)
+40141,2014-052A,ASIASAT 6,,6-Sep-14,,Operational,,Asia Satellite Telecommunications Company (ASIASAT)
+40146,2014-054A,OPTUS 10,,10-Sep-14,,Operational,,Australia
+40147,2014-054B,MEASAT-3B,,10-Sep-14,,Operational,,Malaysia
+40258,2014-058A,LUCH,OLYMP-K 1,26-Sep-14,,Operational,,Commonwealth of Independent States (former USSR)
+40267,2014-060A,HIMAWARI-8,,6-Oct-14,,Operational,,Japan
+40269,2014-061A,IRNSS-1C,,14-Oct-14,,Operational,,India
+40271,2014-062A,INTELSAT 30,IS-30,15-Oct-14,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+40272,2014-062B,ARSAT 1,,15-Oct-14,,Operational,,Argentina
+40277,2014-064A,EXPRESS-AM6,,20-Oct-14,,Operational,,Commonwealth of Independent States (former USSR)
+40332,2014-078A,GSAT-16,,6-Dec-14,,Operational,,India
+40333,2014-078B,DIRECTV 14,,6-Dec-14,,Operational,,United States
+40345,2014-082A,YAMAL 401,,15-Dec-14,,Operational,,Commonwealth of Independent States (former USSR)
+40364,2014-089A,ASTRA 2G,,27-Dec-14,,Operational,,SES
+40367,2014-090A,FENGYUN 2G,,31-Dec-14,,Operational,,People's Republic of China
+40374,2015-002A,MUOS-3,,21-Jan-15,,Operational,,United States
+40384,2015-005A,INMARSAT 5-F2,,1-Feb-15,,Operational,,International Mobile Satellite Organization (INMARSAT)
+40424,2015-010A,ABS-3A,,2-Mar-15,,Operational,,Asia Broadcast Satellite
+40425,2015-010B,EUTELSAT 115 WEST B,SATMEX 7,2-Mar-15,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+40505,2015-012A,EXPRESS-AM7,,18-Mar-15,,Operational,,Commonwealth of Independent States (former USSR)
+40547,2015-018A,IRNSS-1D,,28-Mar-15,,Operational,,India
+40549,2015-019A,BD C31,BEIDOU-3S IGSO-1S; BEIDOU 17; BEIDOU I1-S; SVN C101,29-Mar-15,,Spare,,People's Republic of China
+40613,2015-022A,THOR 7,,25-Apr-15,,Operational,,Norway
+40617,2015-023A,TURKMENALEM52E/MONACOSAT,,26-Apr-15,,Operational,,
+40663,2015-026A,DIRECTV 15,,26-May-15,,Operational,,United States
+40664,2015-026B,SKY MEXICO-1,,26-May-15,,Operational,,Mexico
+40732,2015-034A,METEOSAT-11,MSG-4,14-Jul-15,,Operational,,European Organization for the Exploitation of Meteorological Satellites (EUMETSAT)
+40733,2015-034B,STAR ONE C4,,14-Jul-15,,Operational,,Brazil
+40746,2015-036A,WGS F7,USA 263,23-Jul-15,,Operational,,United States
+40874,2015-039A,INTELSAT 34,IS-34,19-Aug-15,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+40875,2015-039B,EUTELSAT 8 WEST B,,19-Aug-15,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+40880,2015-041A,GSAT-6,,26-Aug-15,,Operational,,India
+40882,2015-042A,INMARSAT 5-F3,,27-Aug-15,,Operational,,International Mobile Satellite Organization (INMARSAT)
+40887,2015-044A,MUOS-4,,1-Sep-15,,Operational,,United States
+40892,2015-046A,TJS-1,TONGXUN JISHU SHIYAN-1,11-Sep-15,,Operational,,People's Republic of China
+40895,2015-048A,EXPRESS-AM8,,13-Sep-15,,Operational,,Commonwealth of Independent States (former USSR)
+40938,2015-053A,BD C32,BEIDOU-3S IGSO-2S; BEIDOU 20; BEIDOU I2-S; SVN C104,28-Sep-15,,Spare,,People's Republic of China
+40940,2015-054A,SKY MUSTER 1,NBN1A,29-Sep-15,,Operational,,Australia
+40941,2015-054B,ARSAT 2,,29-Sep-15,,Operational,,Argentina
+40946,2015-056A,MORELOS 3,,1-Oct-15,,Operational,,Mexico
+40982,2015-059A,APSTAR 9,,15-Oct-15,,Operational,,People's Republic of China
+40984,2015-060A,TURKSAT 4B,,15-Oct-15,,Operational,,Turkey
+41021,2015-063A,CHINASAT 2C,ZX 2C; ZHONGXING 2C,3-Nov-15,,Operational,,People's Republic of China
+41028,2015-065A,GSAT-15,,10-Nov-15,,Operational,,India
+41029,2015-065B,BADR-7,ARABSAT-6B,10-Nov-15,,Operational,,Arab Satellite Communications Organization
+41034,2015-067A,LAOSAT 1,,20-Nov-15,,Operational,,
+41036,2015-068A,TELSTAR 12V,,24-Nov-15,,Operational,,Canada
+41105,2015-074A,ELEKTRO-L 2,,11-Dec-15,,Operational,,Commonwealth of Independent States (former USSR)
+41121,2015-075A,COSMOS 2513,,13-Dec-15,,Operational,,Commonwealth of Independent States (former USSR)
+41191,2015-082A,EXPRESS-AMU1,,24-Dec-15,,Operational,,Commonwealth of Independent States (former USSR)
+41194,2015-083A,GAOFEN-4,,28-Dec-15,,Operational,,People's Republic of China
+41238,2016-001A,BELINTERSAT-1,,15-Jan-16,,Operational,,Belarus
+41241,2016-003A,IRNSS-1E,,20-Jan-16,,Operational,,India
+41310,2016-005A,EUTELSAT 9B,,29-Jan-16,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+41380,2016-013A,SES-9,,4-Mar-16,,Operational,,SES
+41382,2016-014A,EUTELSAT 65 WEST A,,9-Mar-16,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+41384,2016-015A,IRNSS-1F,,10-Mar-16,,Operational,,India
+41434,2016-021A,BD C13,BEIDOU-2 IGSO-6; BEIDOU 22; COMPASS-IGSO6; SVN C017,28-Mar-16,,Operational,,People's Republic of China
+41469,2016-027A,IRNSS-1G,,27-Apr-16,,Partially operational,,India
+41471,2016-028A,JCSAT-2B,,5-May-16,,Operational,,Japan
+41552,2016-031A,THAICOM 8,,26-May-16,,Operational,,Thailand
+41581,2016-035A,INTELSAT 31,IS-31,8-Jun-16,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+41586,2016-037A,BD C17,BEIDOU-2 G7; BEIDOU 23; COMPASS-G7; SVN C018,11-Jun-16,,Operational,,People's Republic of China
+41588,2016-038A,ABS-2A,MONGOLSAT-1,14-Jun-16,,Operational,,Asia Broadcast Satellite
+41589,2016-038B,EUTELSAT 117 WEST B,,14-Jun-16,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+41591,2016-039A,BRISAT,,17-Jun-16,,Operational,,Indonesia
+41592,2016-039B,ECHOSTAR 18,,17-Jun-16,,Operational,,United States
+41622,2016-041A,MUOS-5,,23-Jun-16,,Operational,,United States
+41725,2016-048A,TIANTONG-1 1,,4-Aug-16,,Operational,,People's Republic of China
+41729,2016-050A,JCSAT-16,,13-Aug-16,,Operational,,Japan
+41744,2016-052A,USA 270,,18-Aug-16,,Operational,,United States
+41745,2016-052B,USA 271,,18-Aug-16,,Operational,,United States
+41747,2016-053A,INTELSAT 36,IS-36,23-Aug-16,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+41748,2016-053B,INTELSAT 33E,IS-33E,23-Aug-16,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+41752,2016-054A,INSAT-3DR,,7-Sep-16,,Operational,,India
+41793,2016-060A,GSAT-18,,4-Oct-16,,Operational,,India
+41794,2016-060B,SKY MUSTER 2,NBN1B,4-Oct-16,,Operational,,Australia
+41836,2016-064A,HIMAWARI-9,,2-Nov-16,,Operational,,Japan
+41838,2016-065A,SHIJIAN-17,SJ-17,3-Nov-16,,Operational,,People's Republic of China
+41866,2016-071A,GOES 16,,19-Nov-16,,Operational,,United States
+41869,2016-072A,TIANLIAN 1-04,,22-Nov-16,,Operational,,People's Republic of China
+41879,2016-075A,WGS F8,USA 272,7-Dec-16,,Operational,,United States
+41882,2016-077A,FENGYUN 4A,,10-Dec-16,,Operational,,People's Republic of China
+41893,2016-079A,ECHOSTAR 19,JUPITER 2,18-Dec-16,,Operational,,United States
+41903,2016-082A,JCSAT-110A,JCSAT-15,21-Dec-16,,Operational,,Japan
+41904,2016-082B,STAR ONE D1,,21-Dec-16,,Operational,,Brazil
+41911,2017-001A,TJS-2,TONGXUN JISHU SHIYAN-2,5-Jan-17,,Operational,,People's Republic of China
+41937,2017-004A,SBIRS GEO-4,USA 273,21-Jan-17,,Operational,,United States
+41942,2017-006A,HISPASAT 36W-1,,28-Jan-17,,Operational,,Spain
+41944,2017-007A,TELKOM 3S,,14-Feb-17,,Operational,,Indonesia
+41945,2017-007B,INTELSAT 32E,IS-32E; SKY BRASIL 1,14-Feb-17,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+42070,2017-014A,ECHOSTAR 23,,16-Mar-17,,Operational,,United States
+42075,2017-016A,WGS F9,USA 275,19-Mar-17,,Operational,,United States
+42432,2017-017A,SES-10,,29-Mar-17,,Operational,,SES
+42662,2017-018A,CHINASAT 16,SJ-13; SHIJIAN-13,11-Apr-17,,Operational,,People's Republic of China
+42691,2017-023A,KOREASAT 7,,3-May-17,,Operational,,Republic of Korea
+42692,2017-023B,SGDC,,3-May-17,,Operational,,Brazil
+42695,2017-024A,GSAT-9,,4-May-17,,Operational,,India
+42698,2017-025A,INMARSAT 5-F4,,14-May-17,,Operational,,International Mobile Satellite Organization (INMARSAT)
+42709,2017-026A,SES-15,,17-May-17,,Operational,,SES
+42738,2017-028A,QZS-2,MICHIBIKI-2,31-May-17,,Operational,,Japan
+42740,2017-029A,VIASAT-2,,31-May-17,,Operational,,United States
+42741,2017-029B,EUTELSAT 172B,,31-May-17,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+42747,2017-031A,GSAT-19,,4-Jun-17,,Operational,,India
+42749,2017-032A,ECHOSTAR 21,,7-Jun-17,,Operational,,United States
+42801,2017-038A,BULGARIASAT-1,,22-Jun-17,,Operational,,
+42814,2017-040A,HELLAS-SAT 3,INMARSAT S EAN,27-Jun-17,,Operational,,Greece
+42815,2017-040B,GSAT-17,,27-Jun-17,,Operational,,India
+42818,2017-041A,INTELSAT 35E,IS-35E,4-Jul-17,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+42907,2017-046A,COSMOS 2520,BLAGOVEST 11L,15-Aug-17,,Operational,,Commonwealth of Independent States (former USSR)
+42915,2017-047A,TDRS 13,,17-Aug-17,,Operational,,United States
+42917,2017-048A,QZS-3,MICHIBIKI-3,18-Aug-17,,Operational,,Japan
+42934,2017-053A,AMAZONAS 5,,10-Sep-17,,Operational,,Spain
+42942,2017-057A,ASIASAT 9,,27-Sep-17,,Operational,,Asia Satellite Telecommunications Company (ASIASAT)
+42950,2017-059A,INTELSAT 37E,IS-37E,28-Sep-17,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+42951,2017-059B,BSAT-4A,,28-Sep-17,,Operational,,Japan
+42965,2017-062A,QZS-4,MICHIBIKI-4,8-Oct-17,,Operational,,Japan
+42967,2017-063A,SES-11,ECHOSTAR 105,10-Oct-17,,Operational,,SES
+42984,2017-067A,KOREASAT 5A,,30-Oct-17,,Operational,,Republic of Korea
+43039,2017-078A,ALCOMSAT 1,,10-Dec-17,,Operational,,Algeria
+43162,2018-009A,SBIRS GEO-3,USA 282,20-Jan-18,,Operational,,United States
+43174,2018-012A,AL YAH 3,,25-Jan-18,,Operational,,United Arab Emirates
+43175,2018-012B,SES-14,,25-Jan-18,,Operational,,SES
+43226,2018-022A,GOES 17,,1-Mar-18,,Backup/Standby,,United States
+43228,2018-023A,HISPASAT 30W-6,,6-Mar-18,,Operational,,Spain
+43271,2018-033A,SUPERBIRD-B3,DSN-1; KIRAMEKI 1,4-Apr-18,,Operational,,Japan
+43272,2018-033B,HYLAS 4,,4-Apr-18,,Operational,,United Kingdom
+43286,2018-035A,IRNSS-1I,,10-Apr-18,,Operational,,India
+43339,2018-036A,USA 283,,13-Apr-18,,Operational,,United States
+43432,2018-037A,COSMOS 2526,BLAGOVEST 12L,17-Apr-18,,Operational,,Commonwealth of Independent States (former USSR)
+43450,2018-041A,APSTAR 6C,,2-May-18,,Operational,,People's Republic of China
+43463,2018-044A,BANGABANDHUSAT-1,,10-May-18,,Operational,,
+43488,2018-049A,SES-12,,3-Jun-18,,Operational,,SES
+43491,2018-050A,FENGYUN 2H,,4-Jun-18,,Operational,,People's Republic of China
+43539,2018-057A,BEIDOU-2 IGSO-7,,8-Jul-18,,Operational,,People's Republic of China
+43562,2018-059A,TELSTAR 19V,,21-Jul-18,,Operational,,Canada
+43587,2018-064A,TELKOM 4,MERAH PUTIH,6-Aug-18,,Operational,,Indonesia
+43611,2018-069A,TELSTAR 18V,APSTAR 5C,9-Sep-18,,Operational,,Canada
+43632,2018-074A,AZERSPACE 2,IS-38; INTELSAT 38,24-Sep-18,,Operational,,Azerbaijan
+43633,2018-074B,HORIZONS-3E,,24-Sep-18,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+43651,2018-079A,AEHF-4,USA 288,16-Oct-18,,Operational,,United States
+43683,2018-085A,BEIDOU-3 G1,,1-Nov-18,,Operational,,People's Republic of China
+43698,2018-089A,GSAT-29,,14-Nov-18,,Operational,,India
+43700,2018-090A,ES'HAIL 2,PHASE 4A; QO-100,15-Nov-18,,Operational,,Arab Satellite Communications Organization
+43823,2018-100A,GEO-KOMPSAT-2A,,4-Dec-18,,Operational,,Republic of Korea
+43824,2018-100B,GSAT-11,,4-Dec-18,,Operational,,India
+43864,2018-105A,GSAT-7A,,19-Dec-18,,Operational,,India
+43867,2018-107A,COSMOS 2533,BLAGOVEST 13L,21-Dec-18,,Operational,,Commonwealth of Independent States (former USSR)
+43874,2018-110A,TJS-3,,24-Dec-18,,Operational,,People's Republic of China
+43920,2019-001A,CHINASAT 2D,ZX 2D; ZHONGXING 2D,10-Jan-19,,Operational,,People's Republic of China
+44034,2019-007A,HELLAS-SAT 4 & SGS-1,HS-4; SAUDIGEOSAT 1,5-Feb-19,,Operational,,
+44035,2019-007B,GSAT-31,,5-Feb-19,,Operational,,India
+44048,2019-009A,NUSANTARA SATU,,22-Feb-19,,Operational,,Indonesia
+44067,2019-012A,CHINASAT 6C,ZX 6C; ZHONGXING 6C,9-Mar-19,,Operational,,People's Republic of China
+44071,2019-014A,WGS 10,USA 291,16-Mar-19,,Operational,,United States
+44076,2019-017A,TIANLIAN 2-01,,31-Mar-19,,Operational,,People's Republic of China
+44186,2019-021A,ARABSAT-6A,,10-Apr-19,,Operational,,Arab Satellite Communications Organization
+44204,2019-023A,BEIDOU-3 IGSO-1,,19-Apr-19,,Operational,,People's Republic of China
+44231,2019-027A,BEIDOU-2 G8,,16-May-19,,Operational,,People's Republic of China
+44307,2019-031A,YAMAL 601,,29-May-19,,Operational,,Commonwealth of Independent States (former USSR)
+44333,2019-034A,AT&T T-16,,19-Jun-19,,Operational,,United States
+44334,2019-034B,EUTELSAT 7C,,19-Jun-19,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+44337,2019-035A,BEIDOU-3 IGSO-2,,23-Jun-19,,Operational,,People's Republic of China
+44457,2019-048A,COSMOS 2539,,4-Aug-19,,Operational,,Commonwealth of Independent States (former USSR)
+44475,2019-049A,EDRS-C,,5-Aug-19,,Operational,,European Space Agency
+44476,2019-049B,INTELSAT 39,IS-39,5-Aug-19,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+44479,2019-050A,AMOS-17,,5-Aug-19,,Operational,,Israel
+44481,2019-051A,AEHF-5,USA 292,7-Aug-19,,Operational,,United States
+44624,2019-067A,EUTELSAT 5 WEST B,,8-Oct-19,,Partially operational,,European Telecommunications Satellite Organization (EUTELSAT)
+44625,2019-067B,MEV-1,,8-Oct-19,,Operational,,United States
+44637,2019-070A,TJS-4,,16-Oct-19,,Operational,,People's Republic of China
+44709,2019-073A,BEIDOU-3 IGSO-3,,4-Nov-19,,Operational,,People's Republic of China
+44800,2019-080A,TIBA-1,,26-Nov-19,,Operational,,Egypt
+44801,2019-080B,INMARSAT GX5,,26-Nov-19,,Operational,,International Mobile Satellite Organization (INMARSAT)
+44868,2019-091A,JCSAT-18,KACIFIC 1,17-Dec-19,,Operational,,Japan
+44903,2019-095A,ELEKTRO-L 3,,24-Dec-19,,Operational,,Commonwealth of Independent States (former USSR)
+44910,2019-097A,SHIJIAN-20,SJ-20,27-Dec-19,,Operational,,People's Republic of China
+44978,2020-002A,TJS-5,,7-Jan-20,,Operational,,People's Republic of China
+45026,2020-005A,GSAT-30,,16-Jan-20,,Operational,,India
+45027,2020-005B,EUTELSAT KONNECT,,16-Jan-20,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+45245,2020-013A,JCSAT-17,,18-Feb-20,,Operational,,Japan
+45246,2020-013B,GEO-KOMPSAT-2B,,18-Feb-20,,Operational,,Republic of Korea
+45344,2020-017A,BEIDOU-3 G2,,9-Mar-20,,Operational,,People's Republic of China
+45465,2020-022B,AEHF-6,USA 298,26-Mar-20,,Operational,,United States
+45807,2020-040A,BEIDOU-3 G3,,22-Jun-20,,Operational,,People's Republic of China
+45863,2020-045A,APSTAR 6D,,8-Jul-20,,Operational,,People's Republic of China
+45920,2020-048A,KOREASAT 116,ANASIS-II; KMILSATCOM 1,19-Jul-20,,Operational,,Republic of Korea
+45985,2020-053A,EXPRESS 103,,29-Jul-20,,Operational,,Commonwealth of Independent States (former USSR)
+45986,2020-053B,EXPRESS 80,,29-Jul-20,,Operational,,Commonwealth of Independent States (former USSR)
+46112,2020-056A,BSAT-4B,,14-Aug-20,,Operational,,Japan
+46113,2020-056B,MEV-2,,14-Aug-20,,Operational,,United States
+46114,2020-056C,GALAXY 30,G-30,14-Aug-20,,Operational,,United States
+46610,2020-071A,GAOFEN-13 01,,10-Oct-20,,Operational,,People's Republic of China
+46916,2020-082A,TIANTONG-1 2,,12-Nov-20,,Operational,,People's Republic of China
+47202,2020-089A,LUCAS,JDRS-1,29-Nov-20,,Operational,,Japan
+47240,2020-096A,SXM-7,,13-Dec-20,,Partially operational,,United States
+47256,2020-099A,CMS-01,,17-Dec-20,,Operational,,India
+47306,2021-001A,TURKSAT 5A,,8-Jan-21,,Operational,,Turkey
+47321,2021-003A,TIANTONG-1 3,,19-Jan-21,,Operational,,People's Republic of China
+47613,2021-010A,TJS-6,,4-Feb-21,,Operational,,People's Republic of China
+48618,2021-042A,SBIRS GEO-5,USA 315,17-May-21,,Operational,,United States
+48808,2021-047A,FENGYUN 4B,,1-Jun-21,,Operational,,People's Republic of China
+48838,2021-049A,SXM-8,,5-Jun-21,,Operational,,United States
+49011,2021-063A,TIANLIAN 1-05,,5-Jul-21,,Operational,,People's Republic of China
+49055,2021-069A,STAR ONE D2,,29-Jul-21,,Operational,,Brazil
+49056,2021-069B,EUTELSAT QUANTUM,,29-Jul-21,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+49062,2021-071A,CHINASAT 2E,ZX 2E; ZHONGXING 2E,4-Aug-21,,Operational,,People's Republic of China
+49115,2021-077A,TJS-7,,23-Aug-21,,Operational,,People's Republic of China
+49125,2021-080A,CHINASAT 9B,,8-Sep-21,,Operational,,People's Republic of China
+49330,2021-094A,SHIJIAN-21,SJ-21,23-Oct-21,,Operational,,People's Republic of China
+49332,2021-095A,SES-17,,23-Oct-21,,Operational,,SES
+49333,2021-095B,SYRACUSE 4A,,23-Oct-21,,Operational,,France
+49336,2021-096A,QZS-1R,,25-Oct-21,,Operational,,Japan
+49505,2021-114A,CHINASAT 1D,ZX 1D,26-Nov-21,,Operational,,People's Republic of China
+49817,2021-118A,STPSAT-6,,7-Dec-21,,Operational,,United States
+49818,2021-118B,LDPE-1,,7-Dec-21,,Operational,,United States
+50001,2021-123A,EXPRESS AMU-7,,13-Dec-21,,Operational,,Commonwealth of Independent States (former USSR)
+50002,2021-123B,EXPRESS AMU-3,,13-Dec-21,,Operational,,Commonwealth of Independent States (former USSR)
+50005,2021-124A,TIANLIAN 2-02,,13-Dec-21,,Operational,,People's Republic of China
+50212,2021-126A,TURKSAT 5B,,19-Dec-21,,Operational,,Turkey
+50319,2021-128A,INMARSAT 6-F1,,22-Dec-21,,Operational,,International Mobile Satellite Organization (INMARSAT)
+50321,2021-129A,SHIYAN 12 01,SY-12 01,23-Dec-21,,Operational,,People's Republic of China
+50322,2021-129B,SHIYAN 12 02,SY-12 02,23-Dec-21,,Operational,,People's Republic of China
+50574,2021-135A,TJS-9,,29-Dec-21,,Operational,,People's Republic of China
+51280,2022-006A,USA 324,,21-Jan-22,,Operational,,United States
+51281,2022-006B,USA 325,,21-Jan-22,,Operational,,United States
+51850,2022-021A,GOES 18,,1-Mar-22,,Operational,,United States
+52255,2022-038A,CHINASAT 6D,,14-Apr-22,,Operational,,People's Republic of China
+52817,2022-061A,NILESAT 301,,7-Jun-22,,Operational,,Egypt
+52903,2022-067A,CMS-02,GSAT 24,21-Jun-22,,Operational,,India
+52904,2022-067B,MEASAT 3D,,21-Jun-22,,Operational,,Malaysia
+52933,2022-071A,SES-22,,28-Jun-22,,Operational,,SES
+52940,2022-073A,WFOV,USA 332,30-Jun-22,,Operational,,United States
+53100,2022-078A,TIANLIAN 2-03,,11-Jul-22,,Operational,,People's Republic of China
+53355,2022-092A,SBIRS GEO-6,USA 336,3-Aug-22,,Operational,,United States
+53765,2022-110A,EUTELSAT KONNECT VHTS,,6-Sep-22,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+53813,2022-112A,CHINASAT 1E,ZX 1E; ZHONGXING 1E,12-Sep-22,,Operational,,People's Republic of China
+53960,2022-123A,SES-20,,3-Oct-22,,Operational,,SES
+53961,2022-123B,SES-21,,3-Oct-22,,Operational,,SES
+54026,2022-128A,GALAXY 33,G-33,7-Oct-22,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+54027,2022-128B,GALAXY 34,G-34,7-Oct-22,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+54033,2022-131A,ANGOSAT 2,,11-Oct-22,,Operational,,
+54048,2022-134A,EUTELSAT HOTBIRD 13F,,14-Oct-22,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+54225,2022-146A,EUTELSAT HOTBIRD 13G,,3-Nov-22,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+54230,2022-148A,CHINASAT 19,ZX 19,5-Nov-22,,Operational,,People's Republic of China
+54243,2022-153A,GALAXY 31,G-31,12-Nov-22,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+54244,2022-153B,GALAXY 32,G-32,12-Nov-22,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+54259,2022-157A,EUTELSAT 10B,,23-Nov-22,,Operational,,European Telecommunications Satellite Organization (EUTELSAT)
+54741,2022-170A,GALAXY 35,G-35,13-Dec-22,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+54742,2022-170B,GALAXY 36,G-36,13-Dec-22,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+54743,2022-170C,METEOSAT-12,MTG-I1,13-Dec-22,,Operational,,European Organization for the Exploitation of Meteorological Satellites (EUMETSAT)
+55131,2023-002A,SHIJIAN-23,SJ-23,8-Jan-23,,Operational,,People's Republic of China
+55138,2022-144E,USA 340,,1-Nov-22,,Operational,,United States
+55263,2023-008A,USA 342,,15-Jan-23,,Operational,,United States
+55264,2023-008B,LDPE-3A,,15-Jan-23,,Operational,,United States
+55506,2023-016A,ELEKTRO-L 4,,5-Feb-23,,Operational,,Commonwealth of Independent States (former USSR)
+55508,2023-017A,AMAZONAS NEXUS,,7-Feb-23,,Operational,,Spain
+55686,2023-023A,CHINASAT 26,ZX 26,23-Feb-23,,Operational,,People's Republic of China
+55841,2023-031A,LUCH-5X,OLYMP-K 2,12-Mar-23,,Operational,,Commonwealth of Independent States (former USSR)
+55912,2023-036A,GAOFEN-13 02,,17-Mar-23,,Operational,,People's Republic of China
+55970,2023-038A,SES-18,,17-Mar-23,,Operational,,SES
+55971,2023-038B,SES-19,,17-Mar-23,,Operational,,SES
+56174,2023-052A,INTELSAT 40E,IS-40E,6-Apr-23,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+56370,2023-060A,VIASAT-3,,30-Apr-23,,Partially operational,,United States
+56371,2023-060B,ARCTURUS,,30-Apr-23,,Partially operational,,United States
+56372,2023-060C,GS-1,,30-Apr-23,,Operational,,United States
+56564,2023-066A,BEIDOU-3 G4,,16-May-23,,Operational,,People's Republic of China
+56757,2023-075A,ARABSAT-7B,BADR-8,26-May-23,,Operational,,Arab Satellite Communications Organization
+56759,2023-076A,IRNSS-1J,NVS-01,28-May-23,,Operational,,India
+57213,2023-093A,H2SAT,HEINRICH HERTZ,4-Jul-23,,Operational,,Germany
+57479,2023-108A,JUPITER 3,ECHOSTAR 24,28-Jul-23,,Operational,,United States
+57493,2023-112A,GALAXY 37,G-37,2-Aug-23,,Operational,,International Telecommunications Satellite Organization (INTELSAT)
+57624,2023-120A,LUDI TANCE-4 01A,,11-Aug-23,,Operational,,People's Republic of China
+,,,,,,,,
